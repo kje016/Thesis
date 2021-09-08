@@ -68,7 +68,7 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders):
     new_decoders = []
     if not is_frozen_node:
         #expand decoders list
-        new_decoders = [Decoder(decoder.cword, decoder.path_metric) for decoder in input_decoders]
+        new_decoders = [Decoder(decoder.inf_bits, decoder.path_metric) for decoder in input_decoders]
         penalty = abs(1-belief)
         for decoder in new_decoders:
             decoder.cword = decoder.cword + "1"
@@ -76,7 +76,7 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders):
 
     penalty = abs(0 - belief)
     for decoder in input_decoders:
-        decoder.cword = decoder.cword + "0"
+        decoder.inf_bits = decoder.inf_bits + "0"
         decoder.path_metric = decoder.path_metric + penalty
     input_decoders.extend(new_decoders)
     input_decoders = prune_decoders(input_decoders, n_decoders)
