@@ -1,13 +1,16 @@
 # cd Desktop/Thesis/PySageMath/LDPC
 from sage.all import *
 # { a0 : [j0,...,j7], a1 : [j0, ..., j7],...}
-lifting_size_set = {2 :[0,1,2,3,4,5,6,7], 3 :[0,1,2,3,4,5,6,7], 5 : [0,1,2,3,4,5,6], 7 : [0,1,2,3,4,5],
-                    9: [0,1,2,3,4,5], 11 : [0,1,2,3,4,5], 13: [0,1,2,3,4], 15: [0,1,2,3,4]}
-for key,value in lifting_size_set.items():
+lifting_size_set = {2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 5: [0, 1, 2, 3, 4, 5, 6],
+                    7: [0, 1, 2, 3, 4, 5], 9: [0, 1, 2, 3, 4, 5], 11: [0, 1, 2, 3, 4, 5],
+                    13: [0, 1, 2, 3, 4], 15: [0, 1, 2, 3, 4]}
+
+for key, value in lifting_size_set.items():
     crnt_lift = [key * 2 ** j for j in value]
     lifting_size_set.update({key : crnt_lift})
 
 information_bits = 20  # evt len(codeword)
+bg = 2
 
 
 def get_base_matrix(bg, ils, zc):
@@ -58,7 +61,6 @@ def E(perm, z):
             row = [0]*z
             row[(perm+i)%z]= 1
             res_matrix.append(row)
-
         return matrix(GF(2), res_matrix)
 
 
@@ -75,7 +77,7 @@ def Protograph(base_matrix, z):
 kb = determine_kb_BG2(information_bits)
 Z, iLS = determine_Z(kb)
 
-BG = get_base_matrix(2, iLS, Z)
+BG = get_base_matrix(bg, iLS, Z)
 H = Protograph(BG, Z)
 
 
@@ -94,11 +96,13 @@ def calc_lamb():
         res_lambda.append(temp_comp)
     return res_lambda
 
+
 def vectors_to_vector(input_list):
     output_vec = []
     for vec in input_list:
         output_vec.extend(vec.list())
     return vector(GF(2), output_vec)
+
 # Initialisation of x = [i pc pa]
 inf_bits = [1] * information_bits
 inf_bits.extend([0] * ((kb*Z)-len(inf_bits)) )     #padding inf_bits
