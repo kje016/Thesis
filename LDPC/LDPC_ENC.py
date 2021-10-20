@@ -1,5 +1,7 @@
 # cd Desktop/Thesis/PySageMath/LDPC
+# personal access token: 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
 from sage.all import *
+import CRC
 # { a0 : [j0,...,j7], a1 : [j0, ..., j7],...}
 lifting_size_set = {2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 5: [0, 1, 2, 3, 4, 5, 6],
                     7: [0, 1, 2, 3, 4, 5], 9: [0, 1, 2, 3, 4, 5], 11: [0, 1, 2, 3, 4, 5],
@@ -9,8 +11,8 @@ for key, value in lifting_size_set.items():
     crnt_lift = [key * 2 ** j for j in value]
     lifting_size_set.update({key : crnt_lift})
 
-information_bits = 20  # evt len(codeword)
-bg = 2
+
+
 
 
 def get_base_matrix(bg, ils, zc):
@@ -73,6 +75,9 @@ def Protograph(base_matrix, z):
 
     return protograph
 
+information_bits = 20  # evt len(codeword)
+information_sequence = [1]*20
+bg = 2
 
 kb = determine_kb_BG2(information_bits)
 Z, iLS = determine_Z(kb)
