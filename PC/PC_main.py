@@ -1,3 +1,4 @@
+# cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
 
 import sys
@@ -15,7 +16,7 @@ import PC_Channel_Interleaver
 * physical_channel = sys.argv[2] is the phsyical channel used for encryption
 """
 
-# sage PC_main.py 10001000000110100110101111100100 PUCCH
+# sage PC_main.py 10001000000110100110101111100100 PDCCH
 if __name__ == "__main__":
     G = 100  # TODO: have G to not be hard-coded
     physical_channel = sys.argv[2]  # PUCCH
@@ -25,7 +26,7 @@ if __name__ == "__main__":
 
     " Mother polar code length and rate matching selection    "
     E = ceil(G/2)           # code length (after rate matching)
-    K = len(a) + 11         #  '+ 11' since using the crc11 polnomial TODO: how to decide K?
+    K = len(a) + 24         #  '+ 11' since using the crc11 polnomial TODO: how to decide K?
 
     " computing n"
     n_min, n_max = 5, 10    # n_max = 10 for uplink, 9 for downlink.
@@ -72,10 +73,12 @@ if __name__ == "__main__":
 
 
         """ Channel Interleaver """
-        f = PC_Channel_Interleaver.main_channel_interleaver(E=E, e=e, channel=physical_channel)
-
+        f, I_BIL = PC_Channel_Interleaver.main_channel_interleaver(E=E, e=e, channel=physical_channel)
+        print(f"f := {f}")
         g.append(e)
 
+        ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
+        breakpoint()
     g = g if C==1 else [elem for sublist in g for elem in sublist]
     if G%2 != 0:
         g.append(0)
