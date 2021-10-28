@@ -68,7 +68,7 @@ if __name__ == "__main__":
         #print(f"d interleaved := {y}")
 
         """ Rate Matching by Circular Buffer    """
-        e = PC_Rate_Matching.main_circular_buffer(y, E, N, N - E, K)
+        e, matching_scheme = PC_Rate_Matching.main_circular_buffer(y, E, N, N - E, K)
         print(f"rate-matched codeword := {e}")
 
 
@@ -77,7 +77,17 @@ if __name__ == "__main__":
         print(f"f := {f}")
         g.append(e)
 
+        ################################################################################
+        """                           Inverse operations                             """
+        ################################################################################
+        """Channel de-Interleaver"""
         ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
+
+        """ Rate de-Matching Circular Buffer    """
+        yy = PC_Rate_Matching.inv_circular_buffer(ee, matching_scheme, N-E)
+
+        """ Sub-Block de-Interleaver    """
+        dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
         breakpoint()
     g = g if C==1 else [elem for sublist in g for elem in sublist]
     if G%2 != 0:

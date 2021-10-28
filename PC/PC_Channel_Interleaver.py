@@ -1,5 +1,5 @@
 from sage.all import *
-
+# Following the steps from "Design of Polar Codes in 5G New Radio"
 
 def r_fun(i, T):
     return (i*(2*T-i+1))/2

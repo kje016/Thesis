@@ -21,4 +21,20 @@ def main_circular_buffer(y, E, N, U, K):
         e = y[0:len(y)-U]    # last U bits are not transmitted
     else:
         e = y + y[0:U]       # first U bits are transmitted twice
-    return e
+    return e, matching_scheme
+
+
+def inv_circular_buffer(e, matching_scheme, U):
+    if matching_scheme == 'shortening':
+        # the corresponding LLRs set to infinity and appended to the set of E received LLRs
+        y = e + [+Infinity]*U
+    elif matching_scheme == "puncturing":
+        # the corresponding LLRs can be set to infinity
+        # and prepended to the set of E received LLRs
+        y = [0]*U + e
+    else:   # repetition
+        # the LLRs pertaining to the replicas of each bit in sequence y
+        # may be accumulated, in order to obtain a corresponding sequence
+        # of N LLRs.
+        return matching_scheme
+    return y
