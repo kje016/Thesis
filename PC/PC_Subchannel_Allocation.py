@@ -25,11 +25,10 @@ def J_fun(elem, N):
     return result
 
 
-
 def get_Q_N0(N):
     Q_N_0 = []
     for elem in reliability_sequence:
-        if elem-1 <= N:
+        if elem-1 < N:
             Q_N_0.append(elem-1)
         if len(Q_N_0) >= N:
             break
@@ -37,30 +36,29 @@ def get_Q_N0(N):
 
 
 def freeze(N, K, E, npc):
-    Q_N_F = []
+    Q_N_I = []
     if E < N:
         if K/E <= 7/16: # puncturing
             for n in range(N-E):
-                Q_N_F = Q_N_F.union({J_fun(n, N)})
+                Q_N_I = Q_N_I.union({J_fun(n, N)})
             if E >= (3*N)/4:
-                Q_N_F.append([a for a in range(ceil((3*N)/4 - E/2))])
+                Q_N_I.append([a for a in range(ceil((3*N)/4 - E/2))])
             else:
-                Q_N_F.append([a for a in range(ceil((9*N)/16 - E/4))])
+                Q_N_I.append([a for a in range(ceil((9*N)/16 - E/4))])
         else: # shortening
             for n in range(E, N):
-                Q_N_F.append(J_fun(n, N))
+                Q_N_I.append(J_fun(n, N))
 
     Q_N_0 = get_Q_N0(N)
-    Q_N_I = set(Q_N_0[:K+npc])
-    Q_N_F = set(Q_N_0)-Q_N_I
-
-    return Q_N_I, Q_N_F
+    Q_N_I = Q_N_0[-(K+npc):]   #set(Q_N_0[-(K+npc):])
+    Q_N_F = Q_N_0[:-(K+npc)] #set(Q_N_0)-Q_N_I
+    return Q_N_F, Q_N_I
 
 
 def main(N, c_ap, A, E, channel):
     K = len(c_ap)
     npc, n_wm_pc = get_n_pc_bits(channel, A, E)
-    QNI, QNF = freeze(N, K, E, npc)
+    QNF, QNI = freeze(N, K, E, npc)
     u = []
     c_get = 0
     for i in range(N):
@@ -69,5 +67,5 @@ def main(N, c_ap, A, E, channel):
         else:
             u.append(c_ap[c_get])
             c_get += 1
-    return u, npc, n_wm_pc
+    return u, npc, n_wm_pc, QNF
 

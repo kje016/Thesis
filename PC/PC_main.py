@@ -10,6 +10,7 @@ import PC_Encoder
 import PC_Sub_Block_Interleaver
 import PC_Rate_Matching
 import PC_Channel_Interleaver
+import LL_PC_DEC
 
 """calling PC_main and its arguments 
 * a = sys.argv[1] are the original information bits before they are treated in the polar code process
@@ -18,7 +19,7 @@ import PC_Channel_Interleaver
 
 # sage PC_main.py 10001000000110100110101111100100 PDCCH
 if __name__ == "__main__":
-    G = 100  # TODO: have G to not be hard-coded
+    G = 200  # TODO: have G to not be hard-coded
     physical_channel = sys.argv[2]  # PUCCH
 
     a, A = [int(x) for x in sys.argv[1]], len(sys.argv[1])
@@ -57,7 +58,7 @@ if __name__ == "__main__":
 
         """ Subchannel allocation """
         #print(f"N={N}, K={K}, E={E}, U={N-E} ")
-        u, n_pc, n_wm_pc = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
+        u, n_pc, n_wm_pc, frozen_set = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
         #print(f"u := {u}")
 
         """ Polar Code Encoding """
@@ -88,7 +89,11 @@ if __name__ == "__main__":
 
         """ Sub-Block de-Interleaver    """
         dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
+
+        """ SC Decoder  """
         breakpoint()
+        uu = LL_PC_DEC.BPSK_decoder(dd, N, frozen_set)
+        #breakpoint()
     g = g if C==1 else [elem for sublist in g for elem in sublist]
     if G%2 != 0:
         g.append(0)

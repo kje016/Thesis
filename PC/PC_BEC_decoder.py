@@ -112,6 +112,7 @@ while done == 0:
             node = node * 2;
             depth = depth + 1
             temp = temp / 2
+            breakpoint()
             beliefs[depth, int(temp * node) : int(temp * (node + 1))] = f(alpha_l, alpha_r)
             node_state[npos] = 1
 
@@ -127,6 +128,7 @@ while done == 0:
             temp = temp / 2
 
             beta = list(ucap[left_depth][int(left_temp * left_node) : int(left_temp*(left_node+1))])
+            breakpoint()
             beliefs[depth, int(temp * node) : int(temp * (node+1)) ] = g(alpha_l, alpha_r, beta)
             node_state[npos] = 2;
 

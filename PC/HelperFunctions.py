@@ -23,8 +23,10 @@ def sign_rev(rv):
         return 0
     return 1
 
+
 def BPSK(codeword):
     return [(-1)**x for x in codeword]
+
 
 def f_BPSK(alpha1, alpha2):
     result = []
@@ -32,13 +34,12 @@ def f_BPSK(alpha1, alpha2):
         result.append((sign(x)*sign(y))*min(abs(x), abs(y)))
     return vector(RR, result)
 
+
 def g_BPSK(alpha1, alpha2, beta):
     result = []
     for a1,a2,b in zip(alpha1, alpha2, beta):
         result.append( (a2 + (1-2*b)*a1) )
     return vector(RR, result)
-
-
 
 
 class Decoder:
@@ -60,6 +61,7 @@ def prune_decoders(input_decoders, decoder_size):
     input_decoders.sort(key=lambda x: x.path_metric)
     input_decoders = input_decoders[0:decoder_size]
     return input_decoders
+
 
 # @arg is_frozen_node Boolean of the current node is a frozen node
 # @belief the belief for the current node
