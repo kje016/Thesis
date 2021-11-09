@@ -57,6 +57,7 @@ def g(alpha1, alpha2, beta):
 def op_or(a,b):
     return [min(x,y) for x,y in zip(a,b)]
 
+
 def xor(alpha1, alpha2):
     if (alpha1 == error_symbol or alpha2 == error_symbol):
         return error_symbol
@@ -100,7 +101,7 @@ while done == 0:
 
             result = list(xor(a, b) for a, b in zip(ucapnr, ucapnl))
             result.extend(ucapnr)
-
+            breakpoint()
             ucap[depth, int(temp * node): int(temp * (node + 1))] = vector(ZZ, result)
             node = floor(node / 2);
             depth = depth - 1
@@ -112,7 +113,6 @@ while done == 0:
             node = node * 2;
             depth = depth + 1
             temp = temp / 2
-            breakpoint()
             beliefs[depth, int(temp * node) : int(temp * (node + 1))] = f(alpha_l, alpha_r)
             node_state[npos] = 1
 
@@ -128,12 +128,12 @@ while done == 0:
             temp = temp / 2
 
             beta = list(ucap[left_depth][int(left_temp * left_node) : int(left_temp*(left_node+1))])
-            breakpoint()
             beliefs[depth, int(temp * node) : int(temp * (node+1)) ] = g(alpha_l, alpha_r, beta)
             node_state[npos] = 2;
 
 
 message = list(ucap[n])
+print(f"sc outout := {message}")
 for x in reversed(frozen_set):
     message.pop(x)
 

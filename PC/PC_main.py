@@ -94,6 +94,7 @@ if __name__ == "__main__":
         breakpoint()
         uu = LL_PC_DEC.BPSK_decoder(dd, N, frozen_set)
         #breakpoint()
+
     g = g if C==1 else [elem for sublist in g for elem in sublist]
     if G%2 != 0:
         g.append(0)
