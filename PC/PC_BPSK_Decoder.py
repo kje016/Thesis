@@ -24,7 +24,7 @@ for index, elem in enumerate(reliability_sequence):
 frozen_set = reliability_sequence_N[0:(N-K)]
 
 #TODO: codeword should be generated from PC_Encoder.py
-d = [1, 0, 1, 0, 0, 1, 0, 1]
+#d = [1, 0, 1, 0, 0, 1, 0, 1]
 
 
 
@@ -39,7 +39,7 @@ def sign(rv):
 
 def f(alpha1, alpha2):
     result = []
-    for x,y in zip(alpha1,alpha2):
+    for x,y in zip(alpha1, alpha2):
         result.append((sign(x)*sign(y))*min(abs(x), abs(y)))
     return vector(RR, result)
 
@@ -47,14 +47,14 @@ def f(alpha1, alpha2):
 
 def g(alpha1, alpha2, beta):
     result = []
-    for a1,a2,b in zip(alpha1, alpha2, beta):
+    for a1, a2, b in zip(alpha1, alpha2, beta):
         result.append( (a2 + (1-2*b)*a1) )
     return vector(RR, result)
 
 
-d_modulated = BPSK(d)
+#d_modulated = BPSK(d)
 
-#d_modulated = [ 1.1531403,  0.42099311,  1.04529288, -0.81021667,  0.96074431,  0.37959046, -0.86606408, -0.54630906]
+d_modulated = [ 1.1531403,  0.42099311,  1.04529288, -0.81021667,  0.96074431,  0.37959046, -0.86606408, -0.54630906]
 
 r = d_modulated + sigma * np.random.normal(0, 1, N)
 print("D_MODULATED", d_modulated)

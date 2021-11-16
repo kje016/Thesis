@@ -85,6 +85,8 @@ while done == 0:
 
     # is non-leaf
     else:
+        if depth == 0:
+            breakpoint()
         temp = 2 ** (n - depth)
         belief_node = list(beliefs[depth][temp * node:temp * (node + 1)])
         alpha_l = belief_node[0:int(temp / 2)]
@@ -98,10 +100,9 @@ while done == 0:
             ctemp = int(temp / 2)
             ucapnl = ucap[cdepth][int(ctemp * left_node): ctemp * (left_node + 1)]
             ucapnr = ucap[cdepth][int(ctemp * right_node): ctemp * (right_node + 1)]
-
             result = list(xor(a, b) for a, b in zip(ucapnr, ucapnl))
             result.extend(ucapnr)
-            breakpoint()
+            #breakpoint()
             ucap[depth, int(temp * node): int(temp * (node + 1))] = vector(ZZ, result)
             node = floor(node / 2);
             depth = depth - 1
@@ -114,6 +115,7 @@ while done == 0:
             depth = depth + 1
             temp = temp / 2
             beliefs[depth, int(temp * node) : int(temp * (node + 1))] = f(alpha_l, alpha_r)
+            #breakpoint()
             node_state[npos] = 1
 
 
@@ -129,6 +131,7 @@ while done == 0:
 
             beta = list(ucap[left_depth][int(left_temp * left_node) : int(left_temp*(left_node+1))])
             beliefs[depth, int(temp * node) : int(temp * (node+1)) ] = g(alpha_l, alpha_r, beta)
+            #breakpoint()
             node_state[npos] = 2;
 
 
