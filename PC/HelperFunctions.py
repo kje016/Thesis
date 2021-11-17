@@ -10,18 +10,16 @@ def get_realiability_sequence():
     reliability_sequence = [int(x) for x in reliability_sequence]
     return reliability_sequence
 
+
 # @arg float rv: real value digit
 def sign(rv):
-    if rv < 0:
-        return -1
-    return 1
+    return -1 if rv<0 else 1
+
 
 # @arg float rv: real value digit
 # reverse of sign(rv)
 def sign_rev(rv):
-    if rv >= 0:
-        return 0
-    return 1
+    return 0 if rv >= 0 else 1
 
 
 def BPSK(codeword):
@@ -43,12 +41,12 @@ def g_BPSK(alpha1, alpha2, beta):
 
 
 class Decoder:
-    def __init__(self, cword, path_metric):
-        self.cword = cword
+    def __init__(self, inf_bits, path_metric):
+        self.inf_bits = inf_bits
         self.path_metric = path_metric
 
     def __repr__(self):
-        pp = '('+ self.cword + ', ' + str(self.path_metric) + ')'
+        pp = '('+ str(self.inf_bits) + ', ' + str(self.path_metric) + ')'
         return pp
 
 
@@ -70,16 +68,11 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders):
     new_decoders = []
     if not is_frozen_node:
         #expand decoders list
-        new_decoders = [Decoder(decoder.inf_bits, decoder.path_metric) for decoder in input_decoders]
         penalty = abs(1-belief)
-        for decoder in new_decoders:
-            decoder.cword = decoder.cword + "1"
-            decoder.path_metric = decoder.path_metric + penalty
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric+penalty) for decoder in input_decoders]
 
     penalty = abs(0 - belief)
     for decoder in input_decoders:
-        decoder.inf_bits = decoder.inf_bits + "0"
-        decoder.path_metric = decoder.path_metric + penalty
-    input_decoders.extend(new_decoders)
-    input_decoders = prune_decoders(input_decoders, n_decoders)
-    return input_decoders
+        new_decoders.append(Decoder(decoder.inf_bits + "0", decoder.path_metric + penalty))
+    new_decoders = prune_decoders(new_decoders, n_decoders)
+    return new_decoders
