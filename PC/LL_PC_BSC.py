@@ -25,6 +25,7 @@ def ft(beliefs):
     return vector(F, result)
 
 
+
 def gt(beliefs,beta):
     result = []
     for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
