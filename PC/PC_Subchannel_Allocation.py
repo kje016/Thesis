@@ -57,6 +57,7 @@ def freeze(N, K, E, npc):
 
 def main(N, c_ap, A, E, channel):
     K = len(c_ap)
+    breakpoint()
     npc, n_wm_pc = get_n_pc_bits(channel, A, E)
     QNF, QNI = freeze(N, K, E, npc)
     u = []
@@ -68,4 +69,6 @@ def main(N, c_ap, A, E, channel):
             u.append(c_ap[c_get])
             c_get += 1
     return u, npc, n_wm_pc, QNF
+
+tess = main(8, [1,0,1,1], 4, 8, 'bsc')
 
