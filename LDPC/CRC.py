@@ -45,11 +45,7 @@ def CRC_calc(message, polynomial):
 
 
 def paramater_decision(bg, B, Zc):
-    Kcb = 0
-    L = 0
-    C = 0
-    K = 0
-    B_ap = 0
+    Kcb, L, C, K, B_ap = 0, 0, 0, 0, 0
     """ getting maximum code block size Kb"""
     if bg == 1:
         Kcb = 8448
@@ -59,9 +55,8 @@ def paramater_decision(bg, B, Zc):
 
     """ Total number of code blocks 'C' is determined by:    """
     if B <= Kcb:
-        L = 0
-        C = 1
-        B_ap = B
+        L, C, B_ap = 0, 1, B
+
     else:
         L = 24
         C = ceil(B/(Kcb-L))

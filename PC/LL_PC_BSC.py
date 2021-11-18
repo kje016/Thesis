@@ -43,11 +43,11 @@ def init_tree(N, r):
     return tree
 
 
-def BPSK_decoder(d, N, frozen_set, p_cross):
+def SC_decoder(d, N, frozen_set, p_cross):
+    breakpoint()
     llr1 = log(p_cross) - log(1 - p_cross)
-    llr_r = vector(F, list(map(lambda x: x - 1, 2 * d))) * llr1
+    llr_r = vector(F, list(map(lambda x: x - 1, 2 * vector(F, d)))) * llr1
     tree = init_tree(N, llr_r)
-
     depth, done, node = 0, False, tree[0]
     while not done:
         if depth == log(N, 2):
@@ -86,7 +86,3 @@ def BPSK_decoder(d, N, frozen_set, p_cross):
 
 node_states = ['l', 'r', 'u']
 F = RealField(10)
-message = list(BPSK_decoder(vector(F, [1, 0, 1, 0, 0, 1, 0, 1]), 8, [0, 1, 2, 4], 0.2))
-print(f"llr_r:={message}")
-
-

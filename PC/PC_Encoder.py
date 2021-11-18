@@ -21,8 +21,5 @@ def main_encoder(u, N, n_pc, n_wm_pc):
     GN = Kronecker_Product(G2, G2)
     for i in range(1, log(N, 2)-1):
         GN = Kronecker_Product(G2, GN)
-    breakpoint()
     dv = vector(GF(2), u) *GN
     return list(dv)
-
-c = main_encoder([0, 0, 0, 1, 0, 0, 1, 1], 8, 0, 0)

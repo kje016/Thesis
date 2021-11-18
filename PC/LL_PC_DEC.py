@@ -10,6 +10,9 @@ class Node:
         self.beliefs = []
         self.state = state
 
+    def __repr__(self):
+        return f'beliefs:{str(self.beliefs)}, state:{self.state}, left_child: {str(self.l_child)}, right_child:{str(self.r_child)}'
+
     def __str__(self):
         return f'beliefs:{str(self.beliefs)}, state:{self.state}, left_child: {str(self.l_child)}, right_child:{str(self.r_child)}'
 
@@ -81,6 +84,6 @@ def BPSK_decoder(d, N, frozen_set):
 node_states = ['l', 'r', 'u']
 error_symbol = 2
 F = GF(3)
-message = list(BPSK_decoder(vector(F, [2, 0, 2, 0, 2, 1, 0, 1]), 8, [0, 1, 2, 4]))
+#message = list(BPSK_decoder(vector(F, [2, 0, 2, 0, 2, 1, 0, 1]), 8, [0, 1, 2, 4]))
 
 

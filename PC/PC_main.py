@@ -11,6 +11,7 @@ import PC_Sub_Block_Interleaver
 import PC_Rate_Matching
 import PC_Channel_Interleaver
 import LL_PC_DEC
+import LL_PC_BSC
 
 """calling PC_main and its arguments 
 * a = sys.argv[1] are the original information bits before they are treated in the polar code process
@@ -89,11 +90,10 @@ if __name__ == "__main__":
 
         """ Sub-Block de-Interleaver    """
         dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
-
-        """ SC Decoder  """
-        breakpoint()
-        uu = LL_PC_DEC.BPSK_decoder(dd, N, frozen_set)
         #breakpoint()
+        """ SC Decoder  """
+        uu = LL_PC_BSC.SC_decoder(dd, N, frozen_set, 0.2)
+        print(f"uu := {uu}")
 
     g = g if C==1 else [elem for sublist in g for elem in sublist]
     if G%2 != 0:
