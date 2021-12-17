@@ -10,7 +10,7 @@ for i, elem in enumerate(pattern):
 
 
 def interleaver(flag_param, c_seq):
-    if flag_param:
+    if not flag_param:
         return c_seq
 
     PI= []
@@ -31,6 +31,7 @@ def interleaver(flag_param, c_seq):
 
 
 def main_bit_interleaver(channel, c):
-    flag = channel in ["PBCCH", "PDCCH"]
+    breakpoint()
+    flag = channel in ["PBCCH", "PDCCH"]    # interleaver is used in PBCH, PDCCH, bypassed for PUCCH & PUSCH
     c_ap = interleaver(flag, c)
     return flag, c_ap

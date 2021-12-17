@@ -13,7 +13,7 @@ def get_realiability_sequence():
 
 # @arg float rv: real value digit
 def sign(rv):
-    return -1 if rv<0 else 1
+    return -1 if rv < 0 else 1
 
 
 # @arg float rv: real value digit
@@ -28,7 +28,7 @@ def BPSK(codeword):
 
 def f_BPSK(alpha1, alpha2):
     result = []
-    for x,y in zip(alpha1,alpha2):
+    for x, y in zip(alpha1, alpha2):
         result.append((sign(x)*sign(y))*min(abs(x), abs(y)))
     return vector(RR, result)
 
@@ -64,15 +64,13 @@ def prune_decoders(input_decoders, decoder_size):
 # @arg is_frozen_node Boolean of the current node is a frozen node
 # @belief the belief for the current node
 # @input_decoders list of current decoders
-def update_decoders(is_frozen_node, belief, input_decoders, n_decoders):
+def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders):
     new_decoders = []
     if not is_frozen_node:
+        penalty = sign_rev(belief)
         #expand decoders list
-        penalty = abs(1-belief)
-        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric+penalty) for decoder in input_decoders]
-
-    penalty = abs(0 - belief)
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(belief+(-llr))) for decoder in input_decoders]
     for decoder in input_decoders:
-        new_decoders.append(Decoder(decoder.inf_bits + "0", decoder.path_metric + penalty))
+        new_decoders.append(Decoder(decoder.inf_bits + "0", decoder.path_metric + (0+sign_rev(belief))*abs(belief+llr)))
     new_decoders = prune_decoders(new_decoders, n_decoders)
     return new_decoders

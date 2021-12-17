@@ -1,6 +1,9 @@
 # cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
 
+node_states = ['l', 'r', 'u']
+F = RealField(10)
+
 
 class Node:
     def __init__(self, l_child, r_child, state):
@@ -15,7 +18,7 @@ class Node:
 
 # @arg float rv: real value digit
 def sign(rv):
-    return -1 if rv<0 else 1
+    return -1 if rv < 0 else 1
 
 
 def ft(beliefs):
@@ -25,8 +28,7 @@ def ft(beliefs):
     return vector(F, result)
 
 
-
-def gt(beliefs,beta):
+def gt(beliefs, beta):
     result = []
     for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
         result.append(a2 + a1*(1-2*b))
@@ -44,10 +46,7 @@ def init_tree(N, r):
 
 
 def SC_decoder(d, N, frozen_set, p_cross):
-    breakpoint()
-    llr1 = log(p_cross) - log(1 - p_cross)
-    llr_r = vector(F, list(map(lambda x: x - 1, 2 * vector(F, d)))) * llr1
-    tree = init_tree(N, llr_r)
+    tree = init_tree(N, d)
     depth, done, node = 0, False, tree[0]
     while not done:
         if depth == log(N, 2):
@@ -82,7 +81,3 @@ def SC_decoder(d, N, frozen_set, p_cross):
     for x in reversed(frozen_set):
         message.pop(x)
     return vector(GF(2), message)
-
-
-node_states = ['l', 'r', 'u']
-F = RealField(10)

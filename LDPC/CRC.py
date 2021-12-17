@@ -83,9 +83,8 @@ def calc_crk(K_ap, input_pol, B_seq, C):
     L = input_pol.degree()
     B = len(B_seq)
     code_block = [B_seq[i:K_ap] for i in range(0, K_ap-L, B)]
-    if C > 1:
-        for k in code_block:
-            code_block.append(calc_crk(CRC_calc(k, crc24b)))
+    for k in code_block:
+        code_block.append(calc_crk(CRC_calc(k, crc24b)))
     return code_block
 
 

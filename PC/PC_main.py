@@ -14,21 +14,24 @@ import LL_PC_DEC
 import LL_PC_BSC
 
 """calling PC_main and its arguments 
-* a = sys.argv[1] are the original information bits before they are treated in the polar code process
+* a = sys.argv[1] length of the original information bits before they are treated in the polar code process
 * physical_channel = sys.argv[2] is the phsyical channel used for encryption
 """
 
-# sage PC_main.py 10001000000110100110101111100100 PDCCH
+# sage PC_main.py 10001000000110100110101111100100 PDCCH BSC
+# sage PC_main.py 4 PDCCH BSC
 if __name__ == "__main__":
     G = 200  # TODO: have G to not be hard-coded
     physical_channel = sys.argv[2]  # PUCCH
-
-    a, A = [int(x) for x in sys.argv[1]], len(sys.argv[1])
-    A = len(a)      # a := 10001000000110100110101111100100
+    soft_channel = sys.argv[3]
+    p_cross = 0.2   # TODO: for now, only BSC
+    a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
+    print(f"a:= {a}")
+    # a, A = [int(x) for x in sys.argv[1]], len(sys.argv[1])  # a := 10001000000110100110101111100100
 
     " Mother polar code length and rate matching selection    "
     E = ceil(G/2)           # code length (after rate matching)
-    K = len(a) + 24         #  '+ 11' since using the crc11 polnomial TODO: how to decide K?
+    K = A + 24         # '+ 24' since using the crc24 polnomial TODO: how to decide K?
 
     " computing n"
     n_min, n_max = 5, 10    # n_max = 10 for uplink, 9 for downlink.
@@ -43,20 +46,21 @@ if __name__ == "__main__":
     N = 2**n
     if physical_channel == "PBCH":
         N = 512
-
     """ Code-Block Segmentation """
     a_ap, C = PC_Code_Block_Segmentation.main_block_segmentation(physical_channel, a, A, G)
 
     g = []
     for a_elem in a_ap:
+        ################################################################################
+        """                           Encryption                                     """
+        ################################################################################
         """ adding CRC bits"""
         c, polynomial = PC_CRC.main_CRC(a_elem, physical_channel)
         #print(f"CRC_codeword := {c} \n polynomial used := {polynomial.degree()}")
-
         """ Interleaving the CRC bits """
         I_IL, c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(physical_channel, c)
         #print(f" interleaver CRC := {c_ap}")
-
+        breakpoint()
         """ Subchannel allocation """
         #print(f"N={N}, K={K}, E={E}, U={N-E} ")
         u, n_pc, n_wm_pc, frozen_set = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
@@ -80,20 +84,20 @@ if __name__ == "__main__":
         g.append(e)
 
         ################################################################################
-        """                           Inverse operations                             """
+        """                           Decryption                                     """
         ################################################################################
         """Channel de-Interleaver"""
         ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
 
         """ Rate de-Matching Circular Buffer    """
-        yy = PC_Rate_Matching.inv_circular_buffer(ee, matching_scheme, N-E)
+        yy = PC_Rate_Matching.inv_circular_buffer(e=ee, matching_scheme=matching_scheme, U=N-E, channel=soft_channel, p_cross=p_cross)
 
         """ Sub-Block de-Interleaver    """
         dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
-        #breakpoint()
         """ SC Decoder  """
         uu = LL_PC_BSC.SC_decoder(dd, N, frozen_set, 0.2)
         print(f"uu := {uu}")
+        breakpoint()
 
     g = g if C==1 else [elem for sublist in g for elem in sublist]
     if G%2 != 0:
