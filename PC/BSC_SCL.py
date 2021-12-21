@@ -45,11 +45,8 @@ def init_tree(N, r):
 
 
 def BPSK_decoder(d, N, frozen_set, p_cross):
-    llr1 = log(p_cross) - log(1 - p_cross)
-    llr_r = vector(F, list(map(lambda x: x - 1, 2 * d))) * llr1
-    llr_r = vector(F, [0,0] + list(llr_r)[2:len(llr_r)])
-    print(llr_r)
-    tree = init_tree(N, llr_r)
+    llr = log(p_cross / (1 - p_cross))
+    tree = init_tree(N, d)
     """SCL initialization"""
     L = 8   # TODO: list size of L =8. From "The Development and Operations of...
     list_decoders = [HF.Decoder("", 0)]
@@ -57,9 +54,10 @@ def BPSK_decoder(d, N, frozen_set, p_cross):
     depth, done, node = 0, False, tree[0]
     while not done:
         if depth == log(N, 2):
+            breakpoint()
             node.state = node_states[2]
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set # alternatively var name,
-            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr1,  list_decoders, L)
+            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L)
             node.beliefs = vector(F, [HF.sign_rev(node.beliefs)])
 
             if tree.index(node) == len(tree)-1:
@@ -84,7 +82,7 @@ def BPSK_decoder(d, N, frozen_set, p_cross):
         dec.inf_bits = vector(GF(2), [str(a) for a in bits]) #''.join(a for a in bits)
 
     # TODO: not always the case that the most likely codeword is the sent symbol
-    return list_decoders[0].inf_bits
+    return list_decoders
 
 
 

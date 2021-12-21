@@ -2,6 +2,8 @@
 from sage.all import *
 
 import sys
+
+import BSC_SCL
 import PC_Code_Block_Segmentation
 import PC_CRC
 import PC_Input_Bits_Interleaver
@@ -25,9 +27,10 @@ if __name__ == "__main__":
     physical_channel = sys.argv[2]  # PUCCH
     soft_channel = sys.argv[3]
     p_cross = 0.2   # TODO: for now, only BSC
-    a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
+    # a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
+    a = [1, 0, 1, 0]
+    A = len(a)
     print(f"a:= {a}")
-    # a, A = [int(x) for x in sys.argv[1]], len(sys.argv[1])  # a := 10001000000110100110101111100100
 
     " Mother polar code length and rate matching selection    "
     E = ceil(G/2)           # code length (after rate matching)
@@ -52,7 +55,7 @@ if __name__ == "__main__":
     g = []
     for a_elem in a_ap:
         ################################################################################
-        """                           Encryption                                     """
+        """                           Encoding                                      """
         ################################################################################
         """ adding CRC bits"""
         c, polynomial = PC_CRC.main_CRC(a_elem, physical_channel)
@@ -60,42 +63,47 @@ if __name__ == "__main__":
         """ Interleaving the CRC bits """
         I_IL, c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(physical_channel, c)
         #print(f" interleaver CRC := {c_ap}")
-        breakpoint()
         """ Subchannel allocation """
         #print(f"N={N}, K={K}, E={E}, U={N-E} ")
-        u, n_pc, n_wm_pc, frozen_set = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
+        u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
         #print(f"u := {u}")
 
         """ Polar Code Encoding """
         d = PC_Encoder.main_encoder(u=u, N=N, n_pc=n_pc, n_wm_pc=n_wm_pc)
         #print(f"codeword: := {d}")
         """ Sub-Block Interleaver"""
-        y = PC_Sub_Block_Interleaver.main_sub_block_interleaver(d=d, N=N)
+        #y = PC_Sub_Block_Interleaver.main_sub_block_interleaver(d=d, N=N)
         #print(f"d interleaved := {y}")
 
         """ Rate Matching by Circular Buffer    """
-        e, matching_scheme = PC_Rate_Matching.main_circular_buffer(y, E, N, N - E, K)
-        print(f"rate-matched codeword := {e}")
+        e = PC_Rate_Matching.circular_buffer(y=d, matching_scheme=matching_scheme, matching_set=MS)
+        #e, matching_scheme = PC_Rate_Matching.main_circular_buffer(y, E, N, N - E, K, QNF, QNI)
+        print(f"e:=\n {e}")
 
 
         """ Channel Interleaver """
         f, I_BIL = PC_Channel_Interleaver.main_channel_interleaver(E=E, e=e, channel=physical_channel)
-        print(f"f := {f}")
+        print(f"f :=\n {f}")
         g.append(e)
 
         ################################################################################
-        """                           Decryption                                     """
+        """                           Decoding                                       """
         ################################################################################
         """Channel de-Interleaver"""
-        ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
+        #ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
+        ee = d
 
         """ Rate de-Matching Circular Buffer    """
-        yy = PC_Rate_Matching.inv_circular_buffer(e=ee, matching_scheme=matching_scheme, U=N-E, channel=soft_channel, p_cross=p_cross)
-
+        yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=ee, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross)
+        #yy = PC_Rate_Matching.inv_circular_buffer(e=f, matching_scheme=matching_scheme, U=N-E, channel=soft_channel, p_cross=p_cross)
+        print(f"yy :=\n {yy}")
+        print(f"MS :=\n {MS}")
         """ Sub-Block de-Interleaver    """
-        dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
+        #dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
+        dd = yy
         """ SC Decoder  """
-        uu = LL_PC_BSC.SC_decoder(dd, N, frozen_set, 0.2)
+        uu = BSC_SCL.BPSK_decoder(d=dd, N=N, frozen_set=QNF, p_cross=p_cross)
+        #uu = LL_PC_BSC.SC_decoder(dd, N, list(QNF))
         print(f"uu := {uu}")
         breakpoint()
 

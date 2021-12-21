@@ -5,11 +5,20 @@ from sage.all import *
 def get_realiability_sequence():
     with open('Reliability_Sequence.txt') as f:
         reliability_sequence = f.read()
-    reliability_sequence = reliability_sequence.replace(' ', '')
     reliability_sequence = reliability_sequence.split(",")
     reliability_sequence = [int(x) for x in reliability_sequence]
     return reliability_sequence
 
+
+def get_inf_pos(K):
+    output = []
+    R = get_realiability_sequence()
+    for i in R:
+        if i <= K:
+            output.append(i)
+        if len(output) >= K:
+            return output
+    return output
 
 # @arg float rv: real value digit
 def sign(rv):

@@ -45,7 +45,7 @@ def init_tree(N, r):
     return tree
 
 
-def SC_decoder(d, N, frozen_set, p_cross):
+def SC_decoder(d, N, frozen_set):
     tree = init_tree(N, d)
     depth, done, node = 0, False, tree[0]
     while not done:
