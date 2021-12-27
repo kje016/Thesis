@@ -10,14 +10,11 @@ for i, elem in enumerate(pattern):
 
 
 def interleaver(flag_param, c_seq):
-    return c_seq    # TODO: remove this line (currently there for debugging)
     if not flag_param:
         return c_seq
-
-    PI= []
-    K = len(c_seq)
+    PI, K  = [], len(c_seq)
     h = K_max_il-K
-
+    breakpoint()
     if flag_param:
         PI = list(range(0, K))
     else:

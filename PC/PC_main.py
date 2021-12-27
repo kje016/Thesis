@@ -59,18 +59,16 @@ if __name__ == "__main__":
         ################################################################################
         """ adding CRC bits"""
         c, polynomial = PC_CRC.main_CRC(a_elem, physical_channel)
-        #print(f"CRC_codeword := {c} \n polynomial used := {polynomial.degree()}")
+
         """ Interleaving the CRC bits """
         I_IL, c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(physical_channel, c)
-        #print(f" interleaver CRC := {c_ap}")
+
         """ Subchannel allocation """
-        #print(f"N={N}, K={K}, E={E}, U={N-E} ")
         u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
-        #print(f"u := {u}")
 
         """ Polar Code Encoding """
         d = PC_Encoder.main_encoder(u=u, N=N, n_pc=n_pc, n_wm_pc=n_wm_pc)
-        #print(f"codeword: := {d}")
+
         """ Sub-Block Interleaver"""
         #y = PC_Sub_Block_Interleaver.main_sub_block_interleaver(d=d, N=N)
         #print(f"d interleaved := {y}")
@@ -78,32 +76,36 @@ if __name__ == "__main__":
         """ Rate Matching by Circular Buffer    """
         e = PC_Rate_Matching.circular_buffer(y=d, matching_scheme=matching_scheme, matching_set=MS)
         #e, matching_scheme = PC_Rate_Matching.main_circular_buffer(y, E, N, N - E, K, QNF, QNI)
-        print(f"e:=\n {e}")
+        #print(f"e:=\n {e}")
 
 
         """ Channel Interleaver """
         f, I_BIL = PC_Channel_Interleaver.main_channel_interleaver(E=E, e=e, channel=physical_channel)
-        print(f"f :=\n {f}")
+        #print(f"f :=\n {f}")
         g.append(e)
 
         ################################################################################
         """                           Decoding                                       """
         ################################################################################
         """Channel de-Interleaver"""
-        #ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
-        ee = d
+        # N, matching_scheme, d, p_cross, MS, QNF = 8, 'puncturing', [0, 0, 0, 1, 0, 0, 1, 0], 0.2, [0, 4], [0, 1, 2, 4]
+        # ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
+        ee = f
 
         """ Rate de-Matching Circular Buffer    """
+        #breakpoint()
         yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=ee, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross)
         #yy = PC_Rate_Matching.inv_circular_buffer(e=f, matching_scheme=matching_scheme, U=N-E, channel=soft_channel, p_cross=p_cross)
-        print(f"yy :=\n {yy}")
+        #print(f"yy :=\n {yy}")
         print(f"MS :=\n {MS}")
         """ Sub-Block de-Interleaver    """
         #dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
         dd = yy
         """ SC Decoder  """
-        uu = BSC_SCL.BPSK_decoder(d=dd, N=N, frozen_set=QNF, p_cross=p_cross)
+        #breakpoint()
+        #uu = BSC_SCL.BPSK_decoder(d=dd, N=N, frozen_set=QNF, p_cross=p_cross)
         #uu = LL_PC_BSC.SC_decoder(dd, N, list(QNF))
+        uu = BSC_SCL.decoder(d=dd, N=N, frozen_set=QNF, p_cross=p_cross)
         print(f"uu := {uu}")
         breakpoint()
 

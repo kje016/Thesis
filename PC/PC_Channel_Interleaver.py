@@ -6,7 +6,7 @@ def r_fun(i, T):
 
 
 def main_channel_interleaver(e, E, channel):
-    I_BIL = channel in ['PDCCH', 'PBCH']
+    I_BIL = channel in ['PUCCH', 'PUSCH']
     if I_BIL:
         f = []
         T = ceil( (sqrt(8*E+1)-1)/2 )
@@ -49,19 +49,3 @@ def inv_channel_interleaver(f, E, I_BIL):
                 else:
                     e.append(V[i, j])
         return e
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

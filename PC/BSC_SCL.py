@@ -44,7 +44,7 @@ def init_tree(N, r):
     return tree
 
 
-def BPSK_decoder(d, N, frozen_set, p_cross):
+def decoder(d, N, frozen_set, p_cross):
     llr = log(p_cross / (1 - p_cross))
     tree = init_tree(N, d)
     """SCL initialization"""
@@ -52,9 +52,9 @@ def BPSK_decoder(d, N, frozen_set, p_cross):
     list_decoders = [HF.Decoder("", 0)]
 
     depth, done, node = 0, False, tree[0]
+    breakpoint()
     while not done:
         if depth == log(N, 2):
-            breakpoint()
             node.state = node_states[2]
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set # alternatively var name,
             list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L)
@@ -88,6 +88,6 @@ def BPSK_decoder(d, N, frozen_set, p_cross):
 
 node_states = ['l', 'r', 'u']
 F = RealField(10)
-message = list(BPSK_decoder(vector(F, [1, 0, 1, 0, 0, 1, 0, 1]), 8, [0, 1, 2, 4], 0.2))
-print(f"llr_r:={message}")
+#message = list(BPSK_decoder(vector(F, [1, 0, 1, 0, 0, 1, 0, 1]), 8, [0, 1, 2, 4], 0.2))
+#print(f"llr_r:={message}")
 
