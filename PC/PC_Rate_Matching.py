@@ -27,43 +27,13 @@ def get_rm_set(U, matching_scheme, QN0):
         return matching_set
 
 
-def circular_buffer(y, matching_scheme, matching_set):
+def circular_buffer(y, matching_set):
     e, counter = [], 0
     for a in range(len(y)):
         if a not in matching_set:
             e.append(y[counter])
         counter += 1
     return e
-
-
-def main_circular_buffer(y, E, N, U, K, QNF, QNI):
-    matchin_scheme = "puncturing"
-    matching_scheme = matching_selection(E, N, K)
-    N, K, U = 8, 4, 2
-    y = [0, 1, 0, 1, 1, 0, 1, 0]
-
-    e = []
-    if matching_scheme == "repetition":
-        e = y + y[0:U]  # first U bits are transmitted twice
-    else:
-        rnm = [a-1 for a in HF.get_inf_pos(8)]
-        bit_len = len("{0:b}".format(rnm[-1]))
-        bnm = [int(("0"*(bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in rnm]
-        print(f"Bnm := {bnm}")
-        if matchin_scheme == "puncturing":
-            matching_set = set(bnm[:U])
-        else: # matching_scheme == "shortening"
-            matching_set = set(bnm[-U::])
-
-        QNI, QNF = QNI-set(matching_set), QNF + set(matching_set)
-        y_get = 0
-        for a in range(N):
-            if a in QNI:
-                e.append(y[y_get])
-                y_get += 1
-            if len(e) == N-U:
-                break
-        return e, (matching_set, matching_scheme)
 
 
 def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross):

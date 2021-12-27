@@ -1,11 +1,10 @@
 # cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
-from collections import Counter
 import HelperFunctions
 import PC_Rate_Matching as RM
 
 reliability_sequence = HelperFunctions.get_realiability_sequence()
-
+# TODO: Implement pc bits
 
 def get_n_pc_bits(channel, A, E):
     n_pc, n_wm_pc = 0, 0
@@ -28,7 +27,7 @@ def get_Q_N0(N):
 
 def freeze(N, K, E, npc):
     QN0 = get_Q_N0(N)
-    matching_scheme = RM.matching_selection(E, N, K)
+    matching_scheme = RM.matching_selection(E=E, N=N, K=K)
     MS = RM.get_rm_set(U=N-E, matching_scheme=matching_scheme, QN0=QN0)
     QNI = set(list(set(QN0)-MS)[-(K+npc):])
     QNF = set(QN0) - QNI
@@ -38,8 +37,8 @@ def freeze(N, K, E, npc):
 def main(N, c_ap, A, E, channel):
     npc, n_wm_pc = get_n_pc_bits(channel, A, E)
     QNF, QNI, MS, matching_scheme = freeze(N, len(c_ap), E, npc)
-    u = []
-    c_get = 0
+
+    u, c_get = [], 0
     for i in range(N):
         if i in QNF:
             u.append(0)

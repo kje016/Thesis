@@ -74,8 +74,7 @@ if __name__ == "__main__":
         #print(f"d interleaved := {y}")
 
         """ Rate Matching by Circular Buffer    """
-        e = PC_Rate_Matching.circular_buffer(y=d, matching_scheme=matching_scheme, matching_set=MS)
-        #e, matching_scheme = PC_Rate_Matching.main_circular_buffer(y, E, N, N - E, K, QNF, QNI)
+        e = PC_Rate_Matching.circular_buffer(y=d, matching_set=MS)
         #print(f"e:=\n {e}")
 
 
@@ -102,7 +101,6 @@ if __name__ == "__main__":
         #dd = PC_Sub_Block_Interleaver.inv_sub_block_interleaver(yy, len(yy))
         dd = yy
         """ SC Decoder  """
-        #breakpoint()
         #uu = BSC_SCL.BPSK_decoder(d=dd, N=N, frozen_set=QNF, p_cross=p_cross)
         #uu = LL_PC_BSC.SC_decoder(dd, N, list(QNF))
         uu = BSC_SCL.decoder(d=dd, N=N, frozen_set=QNF, p_cross=p_cross)

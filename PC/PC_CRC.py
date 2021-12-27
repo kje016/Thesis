@@ -7,8 +7,6 @@ R.inject_variables()
 crc6 = x**6 + x**5 + x**0
 crc11 = x**11 + x**10 + x**9 + x**5 + x**0
 crc16 = x**16 + x**12 + x**5 + x**0
-#crc24a = x**24 + x**23 + x**18 + x**17 + x**14 + x**11 + x**10 + x**7 + x**6 + x**5 + x**4 + x**3 + x + x**0
-#crc24b = x**24 + x**23 + x**6 + x**5 + x + x**0
 crc24 = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
 
 
@@ -22,13 +20,6 @@ def get_pol(A_seq, channel):
             return crc11
     else:
         return crc24
-    # TODO: check if in specification there are more 24-bit crc's for PC
-    #elif channel == "PBCH":
-    #    return crc24a
-    #elif channel == "PBCH":
-    #    return crc24a
-    #elif channel == "PDCCH":
-    #    return crc24a
 
 
 def bit_long_division(A_seq, pol):
