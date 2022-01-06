@@ -52,7 +52,6 @@ def decoder(d, N, frozen_set, p_cross):
     list_decoders = [HF.Decoder("", 0)]
 
     depth, done, node = 0, False, tree[0]
-    breakpoint()
     while not done:
         if depth == log(N, 2):
             node.state = node_states[2]
@@ -81,7 +80,7 @@ def decoder(d, N, frozen_set, p_cross):
         bits = [dec.inf_bits[a] for a in bits]
         dec.inf_bits = vector(GF(2), [str(a) for a in bits]) #''.join(a for a in bits)
 
-    # TODO: not always the case that the most likely codeword is the sent symbol
+    # TODO: not always the case that the most likely codeword was the sent symbol
     return list_decoders
 
 

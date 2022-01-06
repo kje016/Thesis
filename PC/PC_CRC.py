@@ -11,28 +11,25 @@ crc24 = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x
 
 
 def get_pol(A_seq, channel):
-    if channel == "PUCCH" or channel == "PUSCH":
-        if len(A_seq) < 12:
-            return None
-        if 12 <= len(A_seq) <= 12:
-            return crc6
-        elif 20 <= len(A_seq) <= 1706:
-            return crc11
-    else:
-        return crc24
+    #if channel == "PUCCH" or channel == "PUSCH":
+    if len(A_seq) < 12:
+        return None
+    if 12 <= len(A_seq) <= 19:
+        return crc6
+    elif 20 <= len(A_seq) <= 1706:
+        return crc11
+    #else:
+        #return crc24
 
 
-def bit_long_division(A_seq, pol):
-    A = len(A_seq)
-    remainder = A_seq[:]
-    pos = remainder.index(1)
-    divisor = pol.list()[::-1]
+def bit_long_division(a, pol):
+    A = len(a)
+    remainder, divisor = a[:], pol.list()[::-1]
     while 1 in remainder[:A-pol.degree()]:
-        calc = remainder[pos:pos+(pol.degree()+1)]
-        calc = [a+b for a, b in zip(calc, divisor)]
+        pos = remainder.index(1)
+        calc = [b+c for b, c in zip(remainder[pos:pos+(pol.degree()+1)], divisor)]
 
         remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
-        pos = remainder.index(1)
     return remainder[A-pol.degree():]
 
 
@@ -46,8 +43,10 @@ def CRC_calc(message, polynomial):
     return message
 
 
-def main_CRC(A_seq, channel):
-    A_seq = [int(x) for x in A_seq]
-    polynomial = get_pol(A_seq, channel)
-    output = CRC_calc(A_seq, polynomial)
+def main_CRC(a, channel):
+    a = list(a)
+    polynomial = get_pol(a, channel)
+    polynomial = crc24
+    output = CRC_calc(a, polynomial)
+    #breakpoint()
     return output, polynomial

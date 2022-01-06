@@ -1,4 +1,16 @@
 from sage.all import *
+from numpy.random import default_rng
+from numpy.random import uniform
+
+def standard_to_list(input_text):
+    with open(input_text) as f:
+        temp = f.read()
+    temp = temp.replace('\n', ' ')
+    temp = temp.split(' ')
+    rel = {}
+    for i in range(0, len(temp), 2):
+        rel.update({int(temp[i]): int(temp[i+1])})
+    return [rel.get(i) for i in range(len(rel))]
 
 
 # return the reliability sequence as [ints] 1 indexed
@@ -40,6 +52,17 @@ def f_BPSK(alpha1, alpha2):
     for x, y in zip(alpha1, alpha2):
         result.append((sign(x)*sign(y))*min(abs(x), abs(y)))
     return vector(RR, result)
+
+
+def channel_noise(s, channel, p):
+    if channel == 'BSC':
+        noise = [1 if abs(x) <= p else 0 for x in list(default_rng().normal(0, 1, len(s)))]
+        #noise = [1 if x >= p else 0 for x in list(default_rng().uniform(0, 1, len(s)))]
+        r = vector(GF(2), s) + vector(GF(2), noise)
+    else:
+        print("channel_noise () not fully implemented")
+        r = s
+    return r
 
 
 def g_BPSK(alpha1, alpha2, beta):
