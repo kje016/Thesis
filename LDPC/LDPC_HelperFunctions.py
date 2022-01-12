@@ -1,106 +1,38 @@
 from sage.all import *
 
 
-def determine_kb_BG2(k_bits):
-    if k_bits > 640:
-        return 10
-    elif (k_bits > 560 and k_bits <= 640):
-        return 9
-    elif (k_bits > 192 and k_bits <= 560):
-        return 8
+def P(perm, z):
+    if perm == -1:
+        return zero_matrix(GF(2), z, z)
+    if perm == 0:
+        return identity_matrix(GF(2), z)
     else:
-        return 6
-
-def get_param(bg, B):
-    Kcb = 8448 if bg==1 else 3840
-    if B <= Kcb:
-        L, C, B_ap = 0, 1, B
-    else:
-        L = 24
-        C = ceil(B/(Kcb-L))
-        B_ap = B + C * L
-    return L, C, B_ap
-
-def determine_kb(B, B_ap, C, bg):
-    K_ap = B_ap//C    # number of bits in each code block
-    kb = 0
-    if bg == 1:
-        kb = 22
-    else:
-        if B > 640:
-            kb = 10
-        elif B > 560:
-            kb = 9
-        elif B > 192:
-            kb = 8
-        else:
-            kb = 6
-    return K_ap, kb
+        res_matrix = []
+        for i in range(z):
+            row = [0]*z
+            row[(perm+i)%z]= 1
+            res_matrix.append(row)
+        return matrix(GF(2), res_matrix)
 
 
-def paramater_decision(bg, B, Zc):
-    Kcb, L, C, K, B_ap = 0, 0, 0, 0, 0
-    """ getting maximum code block size Kb"""
-    if bg == 1:
-        Kcb = 8448
-    else:
-        Kcb = 3840
-
-
-    """ Total number of code blocks 'C' is determined by:    """
-    if B <= Kcb:
-        L, C, B_ap = 0, 1, B
-
-    else:
-        L = 24
-        C = ceil(B/(Kcb-L))
-        B_ap = B + C*L
-
-    """ number of bits 'K' in each code block: """
-    K_ap = B_ap//C
-
-    """
-    Find the minimum value of 'Z' denoted as Zc s.t Kb * Zc >= K_ap
-    set K = 22*Zc for BG1
-    set K = 10*Zc for BG2
-    """
-    if bg == 1:
-        K = 22 * Zc
-    else:
-        K = 10 * Zc
-
-    return Kcb, L, C, K, K_ap, B_ap
-
-
-# Z = a * 2**j
-def determine_Z(bg, input_kb, lifting_size_set, K_ap):
-    lifted_set = {}
-    for key, value in lifting_size_set.items():
-        crnt_lift = min([x for x in value if input_kb*x >= K_ap])
-        lifted_set.update({key: crnt_lift})
-    lifting_size = min(lifted_set.values())
-    set_index = list(lifted_set.values()).index(lifting_size)
-    K = 22*lifting_size if bg == 1 else 10*lifting_size
-    return lifting_size, set_index, K
+def Protograph(base_matrix, z):
+    protograph = Matrix(GF(2), len(base_matrix.rows())*z, len(base_matrix.columns())*z)
+    for i_row, row in enumerate(base_matrix):
+        for i_col, col in enumerate(row):
+            protograph.set_block(i_row * z, i_col * z, P(row[i_col], z))
+    return protograph
 
 
 def calc_crk(C, K_ap, K, L, b_bits):
-    B= len(b_bits)
-    s = 0
-    crk = []
+    s, crk = 0, []
     for r in range(C):
         for k in range(K_ap-L):
             crk.append(b_bits[s])
             s += 1
         if C > 1:
             print("calc_crk() need implementing when C>1")
-    crk.append([0]*(K_ap-(K-1)))
+    crk.extend([None]*(K-K_ap))
     return crk
-
-
-def gen_bg(bg, Z):
-    pass
-
 
 
 def get_base_matrix(bg, ils, zc):
@@ -113,3 +45,20 @@ def get_base_matrix(bg, ils, zc):
     matrix.pop(-1)          # matrix contains an empty list at the end
     return Matrix(matrix)
 
+
+# C := Input to channel coding
+# D := Bits after encoding
+def get_d_c(Zc, K, C):
+    D = []
+    for k in range(2*Zc, K):
+        if C[k] != None:
+            D.append(C[k])
+        else:
+            C[k] = 0
+            D.append(None)
+    return D, C
+
+
+
+def print_H_square(H, i_row, i_col, zc):
+    print(H.matrix_from_rows_and_columns(list(range(i_row*zc, (i_row+1)*zc)), list(range(i_col*zc, (i_col+1)*zc))))

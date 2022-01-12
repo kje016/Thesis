@@ -2,81 +2,60 @@
 # personal access token: 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
 from sage.all import *
 import LDPC_HelperFunctions as HF
-import CRC
-# { a0 : [j0,...,j7], a1 : [j0, ..., j7],...}
-lifting_size_set = {2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 5: [0, 1, 2, 3, 4, 5, 6],
-                    7: [0, 1, 2, 3, 4, 5], 9: [0, 1, 2, 3, 4, 5], 11: [0, 1, 2, 3, 4, 5],
-                    13: [0, 1, 2, 3, 4], 15: [0, 1, 2, 3, 4]}
-
-for key, value in lifting_size_set.items():
-    crnt_lift = [key * 2 ** j for j in value]
-    lifting_size_set.update({key : crnt_lift})
+import Parameter_Functions as PF
 
 
-def E(perm, z):
-    if perm == -1:
-        return zero_matrix(GF(2), z, z)
-    if perm == 0:
-        return identity_matrix(GF(2), z)
-    else:
-        res_matrix = []
-        for i in range(z):
-            row = [0]*z
-            row[(perm+i)%z]= 1
-            res_matrix.append(row)
-        return matrix(GF(2), res_matrix)
+lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
+       2: [5, 10, 20, 40, 80, 160, 320], 3: [7, 14, 28, 56, 112, 224], 4: [9, 18, 36, 72, 144, 288],
+       5: [11, 22, 44, 88, 176, 352], 6: [13, 26, 52, 104, 208], 7: [15, 30, 60, 120, 240]}
 
 
-def Protograph(base_matrix, z):
-    protograph = Matrix(GF(2), len(base_matrix.rows())*z, len(base_matrix.columns())*z)
-    for i_row, row in enumerate(base_matrix):
-        for i_col, col in enumerate(row):
-            protograph.set_block(i_row*z, i_col*z, E(row[i_col], z))
-    return protograph
+def mul_sh(a, vec):
+    if a == -1:
+        return vector(GF(2), [0]*len(vec))
+    res = vec[a:]+ vec[:a]
+    return vector(GF(2), res)
 
 
-B = 20
-b_bits = [1] * B
-bg = 2
-L, C, B_ap = HF.get_param(bg=bg, B=B)
-K_ap, kb = HF.determine_kb(B=B, B_ap=B_ap, C=C, bg=bg)
-
-# TODO: calculate crk
-kb = HF.determine_kb_BG2(B)
-Z, iLS, K = HF.determine_Z(bg, kb, lifting_size_set, K_ap)
-#crk = HF.calc_crk(C=C, K_ap=K_ap, K=K, L=L, b_bits=b_bits)
-BG = HF.get_base_matrix(bg, iLS, Z)
-H = Protograph(BG, Z)
-A = H.matrix_from_rows_and_columns(list(range(4 * Z)), list(range(kb * Z)))
-B = H.matrix_from_rows_and_columns(list(range(4*Z)), list(range((kb*Z), (kb*Z)+4*Z)))
-# C = H.matrix_from_rows_and_columns(list(range((mb-4)*Z)), list(range(kb*Z)))
-# D = H.matrix_from_rows_and_columns(list(range((mb-4)*Z)), list(range(kb*Z, (kb*Z)+4*Z)))
-b_bits.extend([0] * ((kb * Z) - len(b_bits)))     #padding inf_bits
-b_bits = vector(GF(2), b_bits)
-breakpoint()
-def lambda_it(kb, H, Z, b_bits):
-    result, A = [], H.matrix_from_rows_and_columns(list(range(4 * Z)), list(range(kb * Z)))
+def calc_lambdas(kb, H, Z, D, K):
+    result, A = [], H.matrix_from_rows_and_columns(list(range(4 * Z)), list(range(K)))
     for j in range(4):
-        lam_ji = vector(GF(2), Z)
+        lam_j = vector(GF(2), Z)
         for l in range(kb):
-            a = A.matrix_from_rows_and_columns(list(range((j*4), (j+1)*4)), list(range(l*Z, (l+1)*Z)))
-            lam_ji += (a*b_bits[l*Z:(l*Z)+Z])
-        result.append(lam_ji)
+            a = H.matrix_from_rows_and_columns(list(range((j*4), (j+1)*4)), list(range(l*Z, (l+1)*Z)))
+            lam_j = lam_j + (a*D[l*Z:(l+1)*Z])
+        result.append(lam_j)
     return result
 
 
-# Initialisation of x = [i pc pa]
-mb = BG.ncols()-kb
-nb = kb + mb
-len_pc, len_pa = 4*Z, (mb-4)*Z
+B, bg = 20, 2
+#b_bits = [1]*20
+b_bits = [1,0,1,0, 0,1,0,0, 1,1,1,1, 0,0,0,0, 1,1,1,1]
+L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
+K_ap = B_ap //C
 
-lambdas = lambda_it(kb, H, Z, b_bits)
+kb = PF.determine_kb(B=B_ap, bg=bg)
+Zc, iLS, K = PF.det_Z(bg, kb, lss, K_ap)
+crk = HF.calc_crk(C=C, K_ap=K_ap, K=K, L=L, b_bits=b_bits)
+_, D = HF.get_d_c(Zc=Zc, K=K, C=crk)
+D = vector(GF(2), D)
+
+BG = HF.get_base_matrix(bg, iLS, Zc)
+H = HF.Protograph(BG, Zc)
+mb, nb = BG.nrows(), BG.ncols()
+Am, Bm = H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(10 * Zc))), H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range((10 * Zc), (10 * Zc) + 4 * Zc)))
+Cm, Dm = H.matrix_from_rows_and_columns(list(range((mb-4) * Zc)), list(range(kb * Zc))), H.matrix_from_rows_and_columns(list(range((mb - 4) * Zc)), list(range(kb * Zc, (kb * Zc) + 4 * Zc)))
+BGA, BGB = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(kb+Zc))), BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(kb+Zc, kb+Zc+Zc)))
+
 # Pc (core parity): can be calculated from submatrices A & B
+lambdas = calc_lambdas(kb, H, Zc, D, K)
 pc1 = sum(lambdas)
-if B[2, B.ncols()-B.rows()] == -1:
-
-pc1_shift = vector(GF(2), [pc1[-1]] + list(pc1)[:len(pc1)-1])
+pc1_shift = vector(GF(2), [pc1[-1]] + list(pc1)[:len(pc1)-1])   # TODO: find correct shift
+#pc1_shift = mul_sh(4, list(pc1))
 pc2 = lambdas[0] + pc1_shift
+pc3 = lambdas[1] + pc2
+pc4 = lambdas[3] + pc1_shift
+breakpoint()
 """
 pc4 = lambdas[3] + pc1_shift
 pc3 = lambdas[1] + pc2
@@ -93,21 +72,30 @@ pc3 = lambdas[2] + pc4
 pc3 = lambdas[1] + pc2
 pc4 = lambdas[3] + pc1_shift
 """
+"""
 pc3 = lambdas[1] + pc2
-pc4 = lambdas[2] + pc1_shift
+pc4 = lambdas[3] + pc3
+"""
 # Pa (additional parity): calculated from information core and parit bits using C & D
 def calc_pa(H, Pc, b_bits):
-    C = H.matrix_from_rows_and_columns(list(range((mb-4)*Z)), list(range(kb*Z)))
-    D = H.matrix_from_rows_and_columns(list(range((mb-4)*Z)), list(range(kb*Z, (kb*Z)+4*Z)))
+    CD = H.matrix_from_rows_and_columns(list(range((mb - 4) * Zc)), list(range((10 * Zc) + (4 * Zc))))
+    #return CD * vector(GF(2), list(b_bits)+list(Pc))
+    C = H.matrix_from_rows_and_columns(list(range((mb-4) * Zc)), list(range(10 * Zc)))
+    D = H.matrix_from_rows_and_columns(list(range((mb-4) * Zc)), list(range(10 * Zc, (10 * Zc) + 4 * Zc)))
+    #breakpoint()
     return C*b_bits + D*Pc
 
 
-I = b_bits  # len of kb*Z
-Pc = vector(GF(2), flatten(list(pc1)+list(pc2)+list(pc3)+list(pc4)))    # len of 4*Z
-Pa = calc_pa(H=H, Pc=Pc, b_bits=b_bits)     # len of (mb-4)*Z
+I = D  # len of kb*Z
+Pc = vector(GF(2), list(pc1)+list(pc2)+list(pc3)+list(pc4))    # len of 4*Z
+Pa = calc_pa(H=H, Pc=Pc, b_bits=D)     # len of (mb-4)*Z
 # x = [i pc pa]
 X = vector(GF(2), list(I)+list(Pc)+list(Pa))
-print(X)
+print(f"H*X := {H*X}")
+print(f"pc1 := {pc1}")
+print(f"pc1_shift {pc1_shift}")
 print()
-print(A*b_bits + B*Pc)
-breakpoint()
+print(f"Am*D := {Am*D}")
+print(f"Bm*Pc:= {Bm*Pc}")
+print(f"res  :={Am*D+Bm*Pc}")
+

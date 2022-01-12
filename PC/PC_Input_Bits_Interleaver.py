@@ -11,15 +11,20 @@ crc11 = x**11 + x**10 + x**9 + x**5 + x**0
 crc16 = x**16 + x**12 + x**5 + x**0
 crc24 = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
 
+c1 = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+c2 = [1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-def div(a, pol):
-    A = 3
+# here: A is the index+1 of the last information bit
+def div(a, A, pol):
+    #A = len(a)
     remainder, divisor = a[:], pol.list()[::-1]
-    while 1 in remainder[:A-pol.degree()]:
+    breakpoint()
+    while 1 in remainder[:A+1]:
         pos = remainder.index(1)
-        calc = [b+c for b, c in zip(remainder[pos:pos+(pol.degree()+1)], divisor)]
+        print(pos, remainder[:A+1])
+        calc = [b+c for b, c in zip(remainder[pos:], divisor)]
+        remainder = remainder[:pos] + calc + remainder[pos+len(calc):]
 
-        remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
     return remainder
 ######################################################################################
 
@@ -48,6 +53,8 @@ def interleaver(flag_param, c_seq):
         return c_seq
     PI = get_pi(len(c_seq))
     output = [c_seq[value] for value in PI]
+    print(f"PI:={PI}")
+    tess = div(output, max(PI.index(0), PI.index(1), PI.index(2)), crc24)
     breakpoint()
     return output
 

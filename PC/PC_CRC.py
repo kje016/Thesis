@@ -48,5 +48,4 @@ def main_CRC(a, channel):
     polynomial = get_pol(a, channel)
     polynomial = crc24
     output = CRC_calc(a, polynomial)
-    #breakpoint()
     return output, polynomial
