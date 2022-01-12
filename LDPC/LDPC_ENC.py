@@ -30,7 +30,7 @@ def calc_lambdas(kb, H, Z, D, K):
 
 B, bg = 20, 2
 #b_bits = [1]*20
-b_bits = [1,0,1,0, 0,1,0,0, 1,1,1,1, 0,0,0,0, 1,1,1,1]
+b_bits = [1,1,1,0, 0,1,0,1, 1,0,0,1, 0,1,1,0, 1,0,1,0]
 L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
 K_ap = B_ap //C
 
@@ -49,12 +49,14 @@ BGA, BGB = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(kb+Zc))),
 
 # Pc (core parity): can be calculated from submatrices A & B
 lambdas = calc_lambdas(kb, H, Zc, D, K)
-pc1 = sum(lambdas)
-pc1_shift = vector(GF(2), [pc1[-1]] + list(pc1)[:len(pc1)-1])   # TODO: find correct shift
+pc1_shift = sum(lambdas)
+pc1 = vector(GF(2), [pc1_shift[-1]] + list(pc1_shift)[:len(pc1_shift)-1])   # TODO: find correct shift
 #pc1_shift = mul_sh(4, list(pc1))
-pc2 = lambdas[0] + pc1_shift
+pc2 = lambdas[0] + pc1
+pc4 = lambdas[3] + pc1
 pc3 = lambdas[1] + pc2
-pc4 = lambdas[3] + pc1_shift
+#pc3 = lambdas[1] + pc2
+#pc4 = lambdas[3] + pc1_shift
 breakpoint()
 """
 pc4 = lambdas[3] + pc1_shift
@@ -98,4 +100,5 @@ print()
 print(f"Am*D := {Am*D}")
 print(f"Bm*Pc:= {Bm*Pc}")
 print(f"res  :={Am*D+Bm*Pc}")
+breakpoint()
 
