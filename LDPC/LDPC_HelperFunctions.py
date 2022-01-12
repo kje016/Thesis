@@ -23,18 +23,6 @@ def Protograph(base_matrix, z):
     return protograph
 
 
-def calc_crk(C, K_ap, K, L, b_bits):
-    s, crk = 0, []
-    for r in range(C):
-        for k in range(K_ap-L):
-            crk.append(b_bits[s])
-            s += 1
-        if C > 1:
-            print("calc_crk() need implementing when C>1")
-    crk.extend([None]*(K-K_ap))
-    return crk
-
-
 def get_base_matrix(bg, ils, zc):
     matrix = []
     f = open("base_matrices\\" + f"NR_{bg}_{ils}_{zc}.txt", "r")

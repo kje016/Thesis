@@ -29,6 +29,8 @@ if __name__ == "__main__":
         soft_channel = sys.argv[3]
         p_cross = 0.1  # TODO: for now, only BSC
         a, A = [1, 1, 1], 3
+        a = a + [0]*(12-A)
+        A = len(a)
         #a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
         #print(f"a:= {a}")
 
