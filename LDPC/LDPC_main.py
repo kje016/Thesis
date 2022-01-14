@@ -40,6 +40,6 @@ if __name__ == "__main__":
     _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
     D = vector(GF(2), D)
     X, H, BG = LDPC_Encoding.Encoding(bg=bg, iLS=iLS, Zc=Zc, D=D, K=K, kb=Kb)
-    E = LDPC_Rate_Matching.ty(D=X, Zc=Zc, BG=BG, H=H, K=K, K_ap=K_ap, B=B, R=R)
+    #E = LDPC_Rate_Matching.ty(D=X, Zc=Zc, BG=BG, H=H, K=K, K_ap=K_ap, B=B, R=R)
     E = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, BG=BG, H=H, K=K, K_ap=K_ap, B=B, R=R)
     breakpoint()
