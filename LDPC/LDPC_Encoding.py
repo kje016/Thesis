@@ -2,13 +2,12 @@
 # personal access token: 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
 from sage.all import *
 import LDPC_HelperFunctions as HF
-import Parameter_Functions as PF
 
 
 def mul_sh(a, vec):
     if a == -1:
         return vector(GF(2), [0]*len(vec))
-    res = vec[a:]+ vec[:a]
+    res = vec[a:] + vec[:a]
     return vector(GF(2), res)
 
 
@@ -23,43 +22,44 @@ def calc_lambdas(kb, H, Z, D, K):
     return result
 
 
-# Pa (additional parity): calculated from information core and parit bits using C & D
-def calc_pa(H, Pc, D, mb, Zc):
-    CD = H.matrix_from_rows_and_columns(list(range(4*Zc, mb*Zc)), list(range((10 * Zc) + (4 * Zc))))
+# Pa (additional parity): calculated from information core and parity bits using C & D
+def calc_pa(H, Pc, D, Zc, K):
+    CD = H.matrix_from_rows_and_columns(list(range(4*Zc, H.nrows())), list(range(K + (4 * Zc))))
     return CD * vector(GF(2), list(D)+list(Pc))
+
 
 def Encoding(bg, iLS, Zc, D, K, kb):
     BG = HF.get_base_matrix(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
-    mb, nb = BG.nrows(), BG.ncols()
-    Am, Bm = H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(10 * Zc))), H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range((10 * Zc), (10 * Zc) + 4 * Zc)))
-    Cm, Dm = H.matrix_from_rows_and_columns(list(range((mb-4) * Zc)), list(range(kb * Zc))), H.matrix_from_rows_and_columns(list(range((mb - 4) * Zc)), list(range(kb * Zc, (kb * Zc) + 4 * Zc)))
-    BGA, BGB = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(kb+Zc))), BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(kb, kb+Zc+Zc)))
 
     # Pc (core parity): can be calculated from submatrices A & B
     lambdas = calc_lambdas(kb, H, Zc, D, K)
     pc1_shift = sum(lambdas)
     pc1 = vector(GF(2), [pc1_shift[-1]] + list(pc1_shift)[:len(pc1_shift)-1])   # TODO: find correct shift
+
     pc2 = lambdas[0] + pc1
     pc3 = lambdas[1] + pc2
     pc4 = lambdas[3] + pc1
 
     I = D  # len of kb*Z
     Pc = vector(GF(2), list(pc1)+list(pc2)+list(pc3)+list(pc4))    # len of 4*Z
-    Pa = calc_pa(H=H, Pc=Pc, D=D, mb=mb, Zc=Zc)     # len of (mb-4)*Z
+    Pa = calc_pa(H=H, Pc=Pc, D=D, Zc=Zc, K=K)     # len of (mb-4)*Z
 
     # x = [i pc pa]
     X = vector(GF(2), list(I)+list(Pc)+list(Pa))
-
-    print(f"pc1_shift {pc1_shift}")
-    print(f"pc1 := {pc1}")
-    print()
-    print(f"Am*D+Bm*Pc  := {Am*D+Bm*Pc}")
     print(f"H*X ==0 := {H*X==0}")
-    breakpoint()
-
-    return X
+    return X, H, BG
 
 
+"""
+    mb, nb = BG.nrows(), BG.ncols()
+    Am, Bm = H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(K))), H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(K, K + 4*Zc)))
+    Cm, Dm = H.matrix_from_rows_and_columns(list(range((4*Zc, H.nrows())), list(range(kb * Zc))), H.matrix_from_rows_and_columns(list(range((mb - 4) * Zc)), list(range(kb * Zc, (kb * Zc) + 4 * Zc)))
+    
+    BG2A, BG2B = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(10))), BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
+    BG1A , BG1B = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(22))), BG.matrix_from_rows_and_columns(list(range(4)), list(range(22, 22+4)))
+    
+    print(f"Am*D:= {Am*D+Bm*Pc} \n Bm*Pc := {Bm*Pc} \n Am*D+Bm*Pc := {Am*D+Bm*Pc}")
+"""
 
 
