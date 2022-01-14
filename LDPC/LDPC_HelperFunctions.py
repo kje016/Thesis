@@ -1,4 +1,19 @@
 from sage.all import *
+from numpy.random import default_rng
+from numpy.random import uniform
+
+
+def channel_noise(s, channel, p):
+    if channel == 'BSC':
+        noise = [1 if abs(x) <= p else 0 for x in list(default_rng().normal(0, 1, len(s)))]
+        #noise = [1 if x >= p else 0 for x in list(default_rng().uniform(0, 1, len(s)))]
+        r = vector(GF(2), s) + vector(GF(2), noise)
+    else:
+        print("!!!!!!!!!!!!!")
+        print("channel_noise () not fully implemented")
+        print("!!!!!!!!!!!!!")
+        r = s   # TODO: implement channel noises
+    return r
 
 
 def P(perm, z):

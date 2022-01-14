@@ -43,11 +43,11 @@ def min_fun(Lc, n_mins):
     return mins
 
 
-def minsum_SPA(r, H, N0, Ec):
-    Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
+def minsum_SPA(H, r):
+    # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
+    Lj = list(r)
     Lv = [RealNumber(elem)*Lj[j] for i in range(H.nrows()) for j, elem in enumerate(H.row(i))]
     Lv = Matrix(RealField(10), H.nrows(), H.ncols(), Lv)
-
     codeword, runs = False, 0
     while not codeword and runs < 20:
         min_vals = min_fun(Lv, 2)
@@ -69,10 +69,10 @@ def minsum_SPA(r, H, N0, Ec):
     return v_hat, codeword
 
 
-def spa_main(H, r, N0, Ec):
+def spa_main(H, r):
     # RDF = RealDoubleField(), the elements are of double precision floating numbers
-    v_hat, is_codeword = minsum_SPA(r, H, N0, Ec)
+    v_hat, is_codeword = minsum_SPA(H, r)
     #m_hat = vector(GF(2), list(v_hat)[:G.nrows()])
-    return m_hat, is_codeword
+    return v_hat, is_codeword
 
 
