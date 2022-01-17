@@ -52,7 +52,6 @@ if __name__ == "__main__":
 
     X, H, BG = LDPC_Encoding.Encoding(bg=bg, iLS=iLS, Zc=Zc, D=D, K=K, kb=Kb)
     e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
-    breakpoint()
     r = HF.channel_noise(e, channel, 0.1)
     # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
     # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)

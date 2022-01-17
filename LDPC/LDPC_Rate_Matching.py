@@ -21,30 +21,20 @@ def fill_e(r, Zc, K, K_ap, p, Kb, channel):
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
     llr = log((1-p)/p)
-
     if channel == 'AWGN':
-        punct_inf = LLR_fun([0.5]*(2*Zc), 'BSC', 0.1)
+        punct_inf = [0]*(2*Zc)
         inf_bits = r[:A]
-        short_bits = vector(RealField(10), [-1]*floor((K-K_ap)//Zc) * Zc)
+        short_bits = [-1]*floor((K-K_ap)//Zc) * Zc
         p_bits = r[A:]
     elif channel == 'BSC':
-        punct_inf = LLR_fun([0.5]*(2*Zc), 'BSC', 0.1)
-        inf_bits = LLR_fun(r[:A], 'BSC', 0.1)
-        short_bits = [llr]*floor((K-K_ap)//Zc) * Zc
-        p_bits = LLR_fun(r[A:], 'BSC', 0.1)
+        punct_inf = [0]*(2*Zc)
+        inf_bits = map(lambda y: y*llr, r[:A])
+        short_bits = [-llr]*floor((K-K_ap)//Zc) * Zc
+        p_bits = map(lambda y: y*llr, r[A:]) #LLR_fun(r[A:], 'BSC', 0.1)
     else:   # channel = BEC
-        breakpoint()
-        punct_inf = LLR_fun([0.5] * (2 * Zc), 'BSC', 0.1)
+        punct_inf = [0] * (2 * Zc)
+        inf_bits = map(lambda y: y*oo, r[:A])
+        short_bits = [oo] * (floor((K - K_ap) // Zc) * Zc)
+        p_bits = map(lambda y: y*oo, r[A:])
 
-        pass
-    return vector(RealField(10), list(punct_inf) + list(inf_bits) + list(short_bits) + list(p_bits))
-
-
-# p_cross gjelder egt bare for BSC. evnt bytte til channel_metric/channel_characteristic
-def LLR_fun(e, channel, p_cross):
-    F = RealField(10)
-    if channel in ['AWGN', 'BSC']:
-        llr1 = log(p_cross/(1-p_cross))
-        return vector(F, list(map(lambda x: x - 1, 2 * vector(F, e)))) * llr1
-    else:
-        return vector(F, list())
+    return vector(RealField(10), punct_inf + list(inf_bits) + list(short_bits) + list(p_bits))
