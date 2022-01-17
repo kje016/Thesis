@@ -33,7 +33,7 @@ if __name__ == "__main__":
     print(f"a := {a}")
     R = [int(x) for x in sys.argv[2].split('/')]
     R = R[0] / R[1]
-    channel = sys.argv[3]
+    channel = sys.argv[3].upper()
 
     sigma = vector(RealField(10), map(lambda z: sqrt(1/(2*R*10**(z/10))), SNR))
     N0 = 2*sigma[0]**2
@@ -52,12 +52,12 @@ if __name__ == "__main__":
 
     X, H, BG = LDPC_Encoding.Encoding(bg=bg, iLS=iLS, Zc=Zc, D=D, K=K, kb=Kb)
     e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
-
-    r = HF.channel_noise(e, channel, sigma[0])
+    breakpoint()
+    r = HF.channel_noise(e, channel, 0.1)
     # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
     # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
     llr_r = LDPC_Rate_Matching.fill_e(r, Zc, K, K_ap, 0.1, H.ncols()-H.nrows(), channel)
-    aa, is_codeword = LDPC_Decoding.spa_main(HRM, llr_r, N0, channel, sigma[0])
+    aa, is_codeword = LDPC_Decoding.spa_main(HRM, llr_r, N0, channel, 0.1)
     print(f"H*v_hat == 0 := {is_codeword}")
     crc_check = CRC.CRC_check(aa[:B], crc24a)
     print(f"crc_check == 0 := {vector(GF(2), crc_check) == 0}")

@@ -7,17 +7,20 @@ from numpy.random import uniform
 
 
 # 2 is representing the erasure symbol
+# returns the modulation of the codeword with added noise
 def channel_noise(s, channel, p):
     if channel == 'BSC':
-        noise = [1 if x <= p else 0 for x in list(numpy.random.uniform(0, 1, size=len(s)))]
-        r = vector(GF(2), s) + vector(GF(2), noise)
+        noise = vector(ZZ, [1 if x <= p else 0 for x in list(numpy.random.uniform(0, 1, size=len(s)))])
+        r = vector(ZZ, list(map(lambda y: (2 * y) - 1, (s+noise)%2)))
 
     elif channel == 'AWGN':
         noise = vector(RealField(10), list(default_rng().normal(0, p, len(s))))
         r = 2*vector(RealField(10), s) - vector(RealField(10), [1]*len(s)) + noise
 
     else: # channel == 'BEC'
-        r = vector(GF(2), [2 if list(numpy.random.uniform(0, 1, size=len(s)))[i] <= p else s[i] for i, e in enumerate(s)])
+        s_mod = vector(ZZ, list(map(lambda y: (2 * y) - 1, vector(ZZ, s))))
+        r = vector(ZZ, [2 if list(numpy.random.uniform(0, 1, size=len(s)))[i] <= p else s[i] for i, e in enumerate(s_mod)])
+
     return r
 
 

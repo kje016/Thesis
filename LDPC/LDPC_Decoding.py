@@ -81,6 +81,7 @@ def spa_main(H, r, N0, channel, sigma):
     #m_hat = vector(GF(2), list(v_hat)[:G.nrows()])
     return v_hat, is_codeword
 
+
 """
 K = 80
 mb = 42

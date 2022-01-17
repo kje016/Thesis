@@ -12,7 +12,7 @@ def RM_main(D, Zc, H, K, K_ap, R):
 
     Hm = H.matrix_from_rows_and_columns(list(range(E-A)), list(range(Kb + (E-A))))
     #ee = fill_e(e, Zc, K, K_ap, A)
-    return e, Hm
+    return vector(ZZ, e), Hm
 
 
 # punctured bits are unknown
@@ -27,17 +27,24 @@ def fill_e(r, Zc, K, K_ap, p, Kb, channel):
         inf_bits = r[:A]
         short_bits = vector(RealField(10), [-1]*floor((K-K_ap)//Zc) * Zc)
         p_bits = r[A:]
-    else:
+    elif channel == 'BSC':
         punct_inf = LLR_fun([0.5]*(2*Zc), 'BSC', 0.1)
         inf_bits = LLR_fun(r[:A], 'BSC', 0.1)
         short_bits = [llr]*floor((K-K_ap)//Zc) * Zc
         p_bits = LLR_fun(r[A:], 'BSC', 0.1)
+    else:   # channel = BEC
+        breakpoint()
+        punct_inf = LLR_fun([0.5] * (2 * Zc), 'BSC', 0.1)
+
+        pass
     return vector(RealField(10), list(punct_inf) + list(inf_bits) + list(short_bits) + list(p_bits))
 
 
 # p_cross gjelder egt bare for BSC. evnt bytte til channel_metric/channel_characteristic
 def LLR_fun(e, channel, p_cross):
     F = RealField(10)
-    if channel == 'BSC':
+    if channel in ['AWGN', 'BSC']:
         llr1 = log(p_cross/(1-p_cross))
         return vector(F, list(map(lambda x: x - 1, 2 * vector(F, e)))) * llr1
+    else:
+        return vector(F, list())
