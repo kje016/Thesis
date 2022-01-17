@@ -5,6 +5,8 @@ import Parameter_Functions as PF
 import LDPC_Encoding
 import LDPC_Rate_Matching
 import LDPC_HelperFunctions as HF
+from scipy.stats import norm
+
 from sage.all import *
 # cd Desktop/Thesis/PySageMath/LDPC
 
@@ -23,18 +25,18 @@ crc24a = x**24 + x**23 + x**18 + x**17 + x**14 + x**11 + x**10 + x**7 + x**6 + x
 crc24b = x**24 + x**23 + x**6 + x**5 + x + x**0
 crc24c = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
 
-#SNR = [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6]
-
-# sage LDPC_main.py 20 1/2
+SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
+# sage LDPC_main.py 20 1/2 AWGN
 if __name__ == "__main__":
     a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
     # a = vector(GF(2), [1]*A)
     print(f"a := {a}")
     R = [int(x) for x in sys.argv[2].split('/')]
     R = R[0] / R[1]
+    channel = sys.argv[3]
 
-    #sigma = sqrt(1/(2*R*10**(SNR/10)))
-    #p = 1-norm.cdf
+    sigma = vector(RealField(10), map(lambda z: sqrt(1/(2*R*10**(z/10))), SNR))
+    N0 = 2*sigma[0]**2
 
     bg = PF.det_BG(A, R)
     b = CRC.main_CRC(a, crc24a)
@@ -42,7 +44,8 @@ if __name__ == "__main__":
     L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
-    Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss,K_ap=K_ap)
+    Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
+    # print(f"Zc := {Zc}")
     crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)
     _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
     D = vector(GF(2), D)
@@ -50,9 +53,13 @@ if __name__ == "__main__":
     X, H, BG = LDPC_Encoding.Encoding(bg=bg, iLS=iLS, Zc=Zc, D=D, K=K, kb=Kb)
     e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
 
-    r = HF.channel_noise(e, 'BSC', 0.1)
-    #breakpoint()
-    llr_r = LDPC_Rate_Matching.fill_e(r, Zc, K, K_ap, 0.1, H.ncols()-H.nrows())
-    aa, is_codeword = LDPC_Decoding.spa_main(HRM, llr_r)
+    r = HF.channel_noise(e, channel, sigma[0])
+    # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
+    # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
+    llr_r = LDPC_Rate_Matching.fill_e(r, Zc, K, K_ap, 0.1, H.ncols()-H.nrows(), channel)
+    aa, is_codeword = LDPC_Decoding.spa_main(HRM, llr_r, N0, channel, sigma[0])
     print(f"H*v_hat == 0 := {is_codeword}")
-    print(f"res := \n {aa}")
+    crc_check = CRC.CRC_check(aa[:B], crc24a)
+    print(f"crc_check == 0 := {vector(GF(2), crc_check) == 0}")
+    if vector(GF(2), crc_check) == 0:
+        print(f" aa = {aa[:A]}")

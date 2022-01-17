@@ -31,7 +31,6 @@ def calc_pa(H, Pc, D, Zc, K):
 def Encoding(bg, iLS, Zc, D, K, kb):
     BG = HF.get_base_matrix(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
-
     # Pc (core parity): can be calculated from submatrices A & B
     lambdas = calc_lambdas(kb, H, Zc, D, K)
     pc1_shift = sum(lambdas)
@@ -48,13 +47,19 @@ def Encoding(bg, iLS, Zc, D, K, kb):
     # x = [i pc pa]
     X = vector(GF(2), list(I)+list(Pc)+list(Pa))
     print(f"H*X ==0 := {H*X==0}")
+    # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")
     return X, H, BG
 
 
 """
-    mb, nb = BG.nrows(), BG.ncols()
-    Am, Bm = H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(K))), H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(K, K + 4*Zc)))
-    Cm, Dm = H.matrix_from_rows_and_columns(list(range((4*Zc, H.nrows())), list(range(kb * Zc))), H.matrix_from_rows_and_columns(list(range((mb - 4) * Zc)), list(range(kb * Zc, (kb * Zc) + 4 * Zc)))
+    mb = 42
+    nb = 52
+    kb = 10
+    Zc = 8
+    Am = H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(K)))
+    Bm = H.matrix_from_rows_and_columns(list(range(4 * Zc)), list(range(K, K + 4*Zc)))
+    Cm = H.matrix_from_rows_and_columns(list(range((4*Zc, H.nrows())), list(range(kb * Zc)))
+    Dm = H.matrix_from_rows_and_columns(list(range((mb - 4) * Zc)), list(range(kb * Zc, (kb * Zc) + 4 * Zc)))
     
     BG2A, BG2B = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(10))), BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
     BG1A , BG1B = BG.matrix_from_rows_and_columns(list(range(Zc)), list(range(22))), BG.matrix_from_rows_and_columns(list(range(4)), list(range(22, 22+4)))

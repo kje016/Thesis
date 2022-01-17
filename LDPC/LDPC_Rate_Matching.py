@@ -17,14 +17,21 @@ def RM_main(D, Zc, H, K, K_ap, R):
 
 # punctured bits are unknown
 # shortened filler bits are known to be 0
-def fill_e(r, Zc, K, K_ap, p, Kb):
+def fill_e(r, Zc, K, K_ap, p, Kb, channel):
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
     llr = log((1-p)/p)
-    punct_inf = LLR_fun([0.5]*(2*Zc), 'BSC', 0.1)
-    inf_bits = LLR_fun(r[:A], 'BSC', 0.1)
-    short_bits = [llr]*floor((K-K_ap)//Zc) * Zc
-    p_bits = LLR_fun(r[A:], 'BSC', 0.1)
+
+    if channel == 'AWGN':
+        punct_inf = LLR_fun([0.5]*(2*Zc), 'BSC', 0.1)
+        inf_bits = r[:A]
+        short_bits = vector(RealField(10), [-1]*floor((K-K_ap)//Zc) * Zc)
+        p_bits = r[A:]
+    else:
+        punct_inf = LLR_fun([0.5]*(2*Zc), 'BSC', 0.1)
+        inf_bits = LLR_fun(r[:A], 'BSC', 0.1)
+        short_bits = [llr]*floor((K-K_ap)//Zc) * Zc
+        p_bits = LLR_fun(r[A:], 'BSC', 0.1)
     return vector(RealField(10), list(punct_inf) + list(inf_bits) + list(short_bits) + list(p_bits))
 
 

@@ -1,18 +1,23 @@
+import random
+
+import numpy.random
 from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
 
 
+# 2 is representing the erasure symbol
 def channel_noise(s, channel, p):
     if channel == 'BSC':
-        noise = [1 if abs(x) <= p else 0 for x in list(default_rng().normal(0, 1, len(s)))]
-        #noise = [1 if x >= p else 0 for x in list(default_rng().uniform(0, 1, len(s)))]
+        noise = [1 if x <= p else 0 for x in list(numpy.random.uniform(0, 1, size=len(s)))]
         r = vector(GF(2), s) + vector(GF(2), noise)
-    else:
-        print("!!!!!!!!!!!!!")
-        print("channel_noise () not fully implemented")
-        print("!!!!!!!!!!!!!")
-        r = s   # TODO: implement channel noises
+
+    elif channel == 'AWGN':
+        noise = vector(RealField(10), list(default_rng().normal(0, p, len(s))))
+        r = 2*vector(RealField(10), s) - vector(RealField(10), [1]*len(s)) + noise
+
+    else: # channel == 'BEC'
+        r = vector(GF(2), [2 if list(numpy.random.uniform(0, 1, size=len(s)))[i] <= p else s[i] for i, e in enumerate(s)])
     return r
 
 

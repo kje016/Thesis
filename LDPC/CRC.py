@@ -40,4 +40,12 @@ def main_CRC(a, polynomial):
     return output
 
 
+def CRC_check(a, pol):
+    A = len(a)
+    remainder, divisor = list(a[:]), pol.list()[::-1]
+    while 1 in remainder[:A-pol.degree()]:
+        pos = remainder.index(1)
+        calc = [b+c for b, c in zip(remainder[pos:pos+(pol.degree()+1)], divisor)]
 
+        remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
+    return remainder
