@@ -33,8 +33,7 @@ def fill_e(r, Zc, K, K_ap, p, Kb, channel):
         p_bits = map(lambda y: y*llr, r[A:]) #LLR_fun(r[A:], 'BSC', 0.1)
     else:   # channel = BEC
         punct_inf = [0] * (2 * Zc)
-        inf_bits = map(lambda y: y*oo, r[:A])
-        short_bits = [oo] * (floor((K - K_ap) // Zc) * Zc)
-        p_bits = map(lambda y: y*oo, r[A:])
-
+        inf_bits = map(lambda y: 0 if y == 2 else y*oo, r[:A])
+        short_bits = [-oo] * (floor((K - K_ap) // Zc) * Zc)
+        p_bits = map(lambda y: 0 if y == 2 else y*oo, r[A:])
     return vector(RealField(10), punct_inf + list(inf_bits) + list(short_bits) + list(p_bits))

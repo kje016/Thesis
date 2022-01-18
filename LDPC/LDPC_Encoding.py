@@ -47,7 +47,7 @@ def Encoding(bg, iLS, Zc, D, K, kb):
     # x = [i pc pa]
     X = vector(GF(2), list(I)+list(Pc)+list(Pa))
     print(f"H*X ==0 := {H*X==0}")
-    # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")
+    # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")S
     return X, H, BG
 
 

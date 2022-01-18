@@ -3,23 +3,19 @@ from sage.all import *
 
 
 def min_update_row(row, min_vals, signs, H_row):
-    # Should not happen that we only have one min_value
-    output = []
+    output, min_get = [], len(min_vals)
     for i, elem in enumerate(row):
         if H_row[i] != 0:
-            if min_vals[0] == abs(elem):
-                if len(min_vals) == 1:
-                    output.append(0)
-                else:
-                    output.append(min_vals[1]*signs[i])
+            if min_vals[-min_get] == abs(elem):
+                output.append(min_vals[min_get-1]*signs[i])
             else:
-                output.append(min_vals[-len(min_vals)]*signs[i])
+                output.append(min_vals[-min_get]*signs[i])
         else:
             output.append(0)
     return output
 
 
-def extrensic_information(Lv, min_vals, H):
+def sum_approx(Lv, min_vals, H):
     output = []
     for i, row in enumerate(Lv):
         sign = (-1)**(len(H[i].nonzero_positions()))
@@ -31,8 +27,12 @@ def extrensic_information(Lv, min_vals, H):
     return Matrix(output)
 
 
-def comp_l_tot(lc, r):
-    return vector([sum(lc.column(i))+r[i] for i in range(len(r))])
+def comp_l_tot(lc, r, channel):
+    if channel == 'BEC':
+        res = [-1 if sum(list(map(lambda a: sgn(a) if a > 0 else 0, lc.column(i))))%2 == 0 else 1 for i in range(lc.ncols())]
+        return vector(RealField(10), list(map(lambda a: a * oo, res)))
+    else:
+        return vector(RealField(10), [sum(lc.column(i))+r[i] for i in range(len(r))])
 
 
 def min_fun(Lc, n_mins):
@@ -49,16 +49,16 @@ def minsum_SPA(H, r, N0, channel, sigma):
         Lj = [(2/sigma)*rj for rj in r]
     else:
         Lj = list(r)
-
-    Lv = [RealNumber(elem)*Lj[j] for i in range(H.nrows()) for j, elem in enumerate(H.row(i))]
+    Lv = [0 if elem == 0 else RealNumber(elem)*Lj[j] for i in range(H.nrows()) for j, elem in enumerate(H.row(i))]
     Lv = Matrix(RealField(10), H.nrows(), H.ncols(), Lv)
     codeword, runs = False, 0
-    while not codeword and runs < 30:
+    while not codeword and runs < 10:
         min_vals = min_fun(Lv, 2)
-        Lc = extrensic_information(Lv=Lv, min_vals=min_vals, H=H)
-        l_tot = comp_l_tot(Lc, r)
+        Lc = sum_approx(Lv=Lv, min_vals=min_vals, H=H)
+        l_tot = comp_l_tot(Lc, r, channel)
         v_hat = vector(GF(2), [0 if elem <= 0 else 1 for elem in l_tot])
         runs += 1
+        #print(v_hat[:20])
 
         # check if v_hat is a valid codeword
         if H * v_hat == 0:
@@ -71,7 +71,7 @@ def minsum_SPA(H, r, N0, channel, sigma):
                 if H[i, j] != 0:
                     col_res = list(col)[0:i] + list(col)[i + 1:len(col)]
                     Lv[i, j] = Lj[j] + sum(col_res)  # Lj[j]
-    print(f"    MinSum runs := {runs}")
+    # print(f"    MinSum runs := {runs}")
     return v_hat, codeword
 
 

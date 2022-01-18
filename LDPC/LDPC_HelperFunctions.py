@@ -18,7 +18,6 @@ def channel_noise(s, channel, p):
     else: # channel == 'BEC'
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
         r = vector(F, [2 if list(numpy.random.uniform(0, 1, size=len(s)))[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
-
     return r
 
 
