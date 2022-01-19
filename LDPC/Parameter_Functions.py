@@ -39,7 +39,6 @@ def determine_kb(B, bg):
 # D := Bits after encoding
 def get_d_c(Zc, K, C):
     D = []
-    breakpoint()
     for k in range(2*Zc, K):
         if C[k] != None:
             D.append(C[k])
@@ -67,7 +66,6 @@ def calc_crk(C, K_ap, K, L, b_bits):
             tess.extend(CRC.main_CRC(tess, CRC.crc24b))
         tess.extend([0]*(K-K_ap))
         output.append(tess)
-
     if len(output) == 1:
         return output[0]
     return output

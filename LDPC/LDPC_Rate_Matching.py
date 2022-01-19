@@ -2,14 +2,12 @@ from sage.all import *
 
 
 def RM_main(D, Zc, H, K, K_ap, R):
-    E = ceil(len(D)/Zc*R) * Zc
-    Kb, punct, short = H.ncols()-H.nrows(), 2*Zc, floor((K-K_ap)//Zc) * Zc
-    # floor so it doesnt take more filler bits than there actullay is filler bits
-
+    Kb, punct, short = H.ncols() - H.nrows(), 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct  # A is the amount of information bits after removing 2 cols and padding
+    E = ceil((Kb/R)/Zc) * Zc
     pbits = D[Kb: Kb + (E-A)]   # getting the parity bits and
-    e = list(D[2*Zc: A + 2*Zc]) + list(pbits)
 
+    e = list(D[2*Zc: A + 2*Zc]) + list(pbits)
     Hm = H.matrix_from_rows_and_columns(list(range(E-A)), list(range(Kb + (E-A))))
     #print(f"e := {vector(ZZ, e)}")
     return vector(ZZ, e), Hm

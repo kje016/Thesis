@@ -46,14 +46,11 @@ def minsum_SPA(H, r, N0, channel, sigma):
     Lv = [0 if elem == 0 else RealNumber(elem)*Lj[j] for i in range(H.nrows()) for j, elem in enumerate(H.row(i))]
     Lv = Matrix(RealField(10), H.nrows(), H.ncols(), Lv)
     codeword, runs = False, 0
-    guesses = []
-    while not codeword and runs < 50:
+    while not codeword and runs < 25:
         min_vals = min_fun(Lv, 2)
         Lc = sum_approx(Lv=Lv, min_vals=min_vals, H=H)
         l_tot = vector(RealField(10), [sum(Lc.column(i))+r[i] for i in range(len(r))])
         v_hat = vector(GF(2), [0 if elem <= 0 else 1 for elem in l_tot])
-        print(v_hat[:40], v_hat in guesses)
-        guesses.append(v_hat)
         runs += 1
         #print(v_hat[:20])
 

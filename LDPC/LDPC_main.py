@@ -51,20 +51,20 @@ if __name__ == "__main__":
         # print(f"a := {a}")
         b = CRC.main_CRC(a, crc24a)
         # print(f"Zc := {Zc}")
-        crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)
-        _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
-        D = vector(GF(2), D)
+        crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
+        # _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
+        D = vector(GF(2), crk)
 
         X, H, BG = LDPC_Encoding.Encoding(bg=bg, iLS=iLS, Zc=Zc, D=D, K=K, kb=Kb)
         e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
-        r = HF.channel_noise(e, channel, sigma[0])
+        r = HF.channel_noise(e, channel, 0.1)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, sigma[0], H.ncols() - H.nrows(), channel)
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.1, H.ncols() - H.nrows(), channel)
         if channel == 'BEC':
             aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
-            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, sigma[0])
+            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.1)
         #print(f"H*v_hat := {is_codeword}")
         if is_codeword:
             crc_check = CRC.CRC_check(aa[:B], crc24a)
