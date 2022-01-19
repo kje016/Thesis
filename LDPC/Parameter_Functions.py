@@ -39,6 +39,7 @@ def determine_kb(B, bg):
 # D := Bits after encoding
 def get_d_c(Zc, K, C):
     D = []
+    breakpoint()
     for k in range(2*Zc, K):
         if C[k] != None:
             D.append(C[k])
@@ -59,16 +60,14 @@ def det_Z(bg, kb, lifting_set, K_ap):
 
 
 def calc_crk(C, K_ap, K, L, b_bits):
-    s, crk = 0, []
+    s, output = 0, []
     for r in range(C):
-        for k in range(K_ap-L):
-            crk.append(b_bits[s])
-            s += 1
+        tess = b_bits[r*(K_ap-L): (r+1)*(K_ap-L)]
         if C > 1:
-            print("calc_crk() not finished for C > 1")
-            crk.append(CRC.main_CRC(b_bits[r*K_ap-L: (r+1)*K_ap-L], CRC.crc24b))
-            for elem, a in enumerate(crk):
-                crk[a] = crk[a].extend([0]*len(crk[a])-K_ap)
-            print("calc_crk() need implementing when C>1")
-    crk.extend([0]*(K-K_ap))
-    return crk
+            tess.extend(CRC.main_CRC(tess, CRC.crc24b))
+        tess.extend([0]*(K-K_ap))
+        output.append(tess)
+
+    if len(output) == 1:
+        return output[0]
+    return output

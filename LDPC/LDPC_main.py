@@ -47,8 +47,8 @@ if __name__ == "__main__":
     runs = 30
     for i in range(runs):
         a = list(random_vector(GF(2), int(sys.argv[1])))
-        a = vector(GF(2), [1]*A)
-        print(f"a := {a}")
+        # a = vector(GF(2), [1]*A)
+        # print(f"a := {a}")
         b = CRC.main_CRC(a, crc24a)
         # print(f"Zc := {Zc}")
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)
@@ -69,5 +69,5 @@ if __name__ == "__main__":
         if is_codeword:
             crc_check = CRC.CRC_check(aa[:B], crc24a)
             print(f"crc_check := {vector(GF(2), crc_check) == 0}")
-            print(f" aa = {aa[:A]}")
+            #print(f" aa = {aa[:A]}")
         print(f"RUNS:= {i} \n \n")
