@@ -41,7 +41,7 @@ def minsum_BEC(H, r):
 
         # check if v_hat is a valid codeword
         if H * v_hat == 0:
-            print(f"MinSum runs := {runs}")
+            print(f"MinSum runs := {runs, H*v_hat == 0}")
             return v_hat, True
 
         col_res = [list(map(lambda a: sgn(a), Lc.column(i))) for i in range(Lc.ncols())]
@@ -52,6 +52,6 @@ def minsum_BEC(H, r):
                         belief = sum(col_res[i][:j]+col_res[i][j+1:])
                         Lv[j, i] = belief
 
-    print(f"    MinSum runs := {runs}")
+    print(f"MinSum runs := {runs, H*v_hat == 0}")
     return v_hat, codeword
 

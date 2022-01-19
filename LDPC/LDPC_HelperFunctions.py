@@ -10,7 +10,6 @@ def channel_noise(s, channel, p):
     if channel == 'BSC':
         noise = vector(F, [1 if x <= p else 0 for x in list(numpy.random.uniform(0, 1, size=len(s)))])
         r = vector(F, list(map(lambda y: (2 * y) - 1, (s+noise)%2)))
-
     elif channel == 'AWGN':
         noise = vector(F, list(default_rng().normal(0, p, len(s))))
         r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise

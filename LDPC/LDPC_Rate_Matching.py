@@ -11,13 +11,13 @@ def RM_main(D, Zc, H, K, K_ap, R):
     e = list(D[2*Zc: A + 2*Zc]) + list(pbits)
 
     Hm = H.matrix_from_rows_and_columns(list(range(E-A)), list(range(Kb + (E-A))))
-    #ee = fill_e(e, Zc, K, K_ap, A)
+    #print(f"e := {vector(ZZ, e)}")
     return vector(ZZ, e), Hm
 
 
 # punctured bits are unknown
 # shortened filler bits are known to be 0
-def fill_e(r, Zc, K, K_ap, p, Kb, channel):
+def fill_w_llr(r, Zc, K, K_ap, p, Kb, channel):
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
     llr = log((1-p)/p)
