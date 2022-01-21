@@ -37,36 +37,88 @@ def min_fun(Lc, n_mins):
     return mins
 
 
+def nz_update_row(row, min_vals, signs):
+    output, min_get = [0] * len(row), len(min_vals)
+    for i, elem in enumerate(row):
+        if min_vals[-min_get] == abs(elem):
+            output[i] = min_vals[min_get-1]*signs[i]
+        else:
+            output[i] = min_vals[-min_get]*signs[i]
+    return output
+
+
+def nz_sum_approx(Lv, min_vals):
+    output = []
+    for i, row in enumerate(Lv):
+        vec = vector(RealField(10), (row.values()))
+        sign = (-1)**(len(vec))
+        signs = [-1 if vec[j] < 0 else 1 for j in range(len(vec))]
+        P = product(signs)
+        Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs)
+        output.append({k:v for k,v in zip(row.keys(), Lvi)})
+    return output
+
+
+def nz_min_fun(Lc, n_mins):
+    mins = []
+    for i, row in enumerate(Lc):
+        vec = vector(RealField(10), (row.values()))
+        non_zeros = [abs(vec[a]) for a in vec.nonzero_positions()]
+        minis = sorted(non_zeros[:n_mins])
+        for j in range(n_mins, len(non_zeros)):
+            if non_zeros[j] < minis[-1]:
+                minis[-1] = non_zeros[j]
+                minis.sort()
+        mins.append(vector(RealField(10), minis))
+    return mins
+
+def nz_com_ltot(NZMatrix, r):
+    output = [0]*len(r)
+    for index, row in enumerate(NZMatrix):
+        for j, elem in row.items():
+            output[j] += elem
+    return vector(RealField(10), output)
+
+
+def get_column_vectors(nzmatrix, length):
+    output = [{} for i in range(length)]
+    for index, row in enumerate(nzmatrix):
+        for j, elem in row.items():
+            output[j].update({index: elem})
+    return output
+
+
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
 def minsum_SPA(H, r, N0, channel, sigma):
     if channel == 'AWGN':
         Lj = [(2/sigma)*rj for rj in r]
     else:
         Lj = list(r)
-    Lv = [0 if elem == 0 else RealNumber(elem)*Lj[j] for i in range(H.nrows()) for j, elem in enumerate(H.row(i))]
-    Lv = Matrix(RealField(10), H.nrows(), H.ncols(), Lv)
+    lv = []
+    for i in range(H.nrows()):
+        temp = {}
+        for j in H.row(i).nonzero_positions():
+            temp.update({j: Lj[j]})
+        lv.append(temp)
+
     codeword, runs = False, 0
-    while not codeword and runs < 25:
-        min_vals = min_fun(Lv, 2)
-        Lc = sum_approx(Lv=Lv, min_vals=min_vals, H=H)
-        l_tot = vector(RealField(10), [sum(Lc.column(i))+r[i] for i in range(len(r))])
-        v_hat = vector(GF(2), [0 if elem <= 0 else 1 for elem in l_tot])
+    while not codeword and runs < 30:
+        min_vals = nz_min_fun(lv, 2)
+        Lc = nz_sum_approx(lv, min_vals)
+        ltot = nz_com_ltot(Lc, Lj) + r
+        vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
-        #print(v_hat[:20])
-
         # check if v_hat is a valid codeword
-        if H * v_hat == 0:
-            print(f"MinSum runs := {runs, H*v_hat == 0}")
-            return v_hat, True
-
+        if H * vhat == 0:
+            print(f"MinSum runs := {runs}")
+            return vhat, True
 
         # update Lv
-        for j in range(Lc.ncols()):
-            pos = H.column(j).nonzero_positions()
-            col = [Lc[i, j] for i in pos]
-            for i in range(len(col)):
-                belief = sum(col[:i] + col[i+1:])
-                Lv[pos[i], j] = belief + Lj[j]
+        colvecs = get_column_vectors(Lc, len(r))
+        for j, col in enumerate(colvecs):
+            col_sum = sum(col.values())
+            for i, elem in col.items():
+                lv[i].update({j: col_sum - col.get(i) + Lj[j]})
 
-    print(f"MinSum runs := {runs, H*v_hat == 0}")
-    return v_hat, codeword
+    return vhat, codeword

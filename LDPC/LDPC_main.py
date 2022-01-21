@@ -43,31 +43,37 @@ if __name__ == "__main__":
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
+    BG = HF.get_base_matrix(bg, iLS, Zc)
+    H = HF.Protograph(BG, Zc)
 
-    runs = 30
+    runs, correct = 50, 0
     for i in range(runs):
         a = list(random_vector(GF(2), int(sys.argv[1])))
         # a = vector(GF(2), [1]*A)
-        # print(f"a := {a}")
+        print(f"a := {a}")
         b = CRC.main_CRC(a, crc24a)
         # print(f"Zc := {Zc}")
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
         # _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
         D = vector(GF(2), crk)
 
-        X, H, BG = LDPC_Encoding.Encoding(bg=bg, iLS=iLS, Zc=Zc, D=D, K=K, kb=Kb)
+        X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb)
         e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
         r = HF.channel_noise(e, channel, 0.1)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.1, H.ncols() - H.nrows(), channel)
+        # TODO: not send HRM, but the nonzero positions.
         if channel == 'BEC':
             aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
             aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.1)
-        #print(f"H*v_hat := {is_codeword}")
+        print(f"H*v_hat := {is_codeword}")
         if is_codeword:
+            correct += 1
+            print(f"correct := {correct}")
             crc_check = CRC.CRC_check(aa[:B], crc24a)
-            print(f"crc_check := {vector(GF(2), crc_check) == 0}")
+            #print(f"crc_check := {vector(GF(2), crc_check) == 0}")
             #print(f" aa = {aa[:A]}")
-        print(f"RUNS:= {i} \n \n")
+        # print(f"RUNS:= {i} \n \n")
+    print(f"Pe := {(correct/runs)*100} %")

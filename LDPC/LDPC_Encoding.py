@@ -28,13 +28,12 @@ def calc_pa(H, Pc, D, Zc, K):
     return CD * vector(GF(2), list(D)+list(Pc))
 
 
-def Encoding(bg, iLS, Zc, D, K, kb):
-    BG = HF.get_base_matrix(bg, iLS, Zc)
-    H = HF.Protograph(BG, Zc)
+def Encoding(H, Zc, D, K, kb):
+
     # Pc (core parity): can be calculated from submatrices A & B
     lambdas = calc_lambdas(kb, H, Zc, D, K)
     pc1_shift = sum(lambdas)
-    pc1 = vector(GF(2), [pc1_shift[-1]] + list(pc1_shift)[:len(pc1_shift)-1])   # TODO: find correct shift
+    pc1 = vector(GF(2), [pc1_shift[-1]] + list(pc1_shift)[:len(pc1_shift)-1])
 
     pc2 = lambdas[0] + pc1
     pc3 = lambdas[1] + pc2
@@ -46,9 +45,9 @@ def Encoding(bg, iLS, Zc, D, K, kb):
 
     # x = [i pc pa]
     X = vector(GF(2), list(I)+list(Pc)+list(Pa))
-    # print(f"H*X ==0 := {H*X==0}")
+    print(f"H*X ==0 := {H*X==0}")
     # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")S
-    return X, H, BG
+    return X
 
 
 """

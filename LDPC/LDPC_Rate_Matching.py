@@ -9,7 +9,6 @@ def RM_main(D, Zc, H, K, K_ap, R):
 
     e = list(D[2*Zc: A + 2*Zc]) + list(pbits)
     Hm = H.matrix_from_rows_and_columns(list(range(E-A)), list(range(Kb + (E-A))))
-    #print(f"e := {vector(ZZ, e)}")
     return vector(ZZ, e), Hm
 
 
