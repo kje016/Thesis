@@ -14,9 +14,40 @@ def extrensic_information(Lv, H):
     return Matrix(output)
 
 
+def nz_sum_approx(Lv):
+    output = []
+    for i, row in enumerate(Lv):
+        vec = vector(RealField(10), (row.values()))
+        sign = (-1)**(len(vec))
+        signs = [-1 if vec[j] < 0 else 1 for j in range(len(vec))]
+        P = product(signs)
+        Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+        Lvi = [Lvi_signs[j]*oo for j in range(len(vec))]
+        output.append({k: v for k, v in zip(row.keys(), Lvi)})
+    return output
+
+
+def nz_col_sum(NZMatrix, r):
+    output = r[:]
+    for index, row in enumerate(NZMatrix):
+        col_pos = list(row.keys())
+        nzelems = [col_pos[j] for j, elem in enumerate(col_pos) if r[elem] == 0]
+        for elem in nzelems:
+            output[elem] += sgn(row.get(elem))
+    return vector(RealField(10), output)
+
+
 def comp_l_tot(lc):
     res = [sum(map(lambda a: sgn(a), lc.column(i))) for i in range(lc.ncols())]
     return vector(RealField(10), list(map(lambda a: 0 if a == 0 else a*oo, res)))
+
+
+def get_column_vectors(nzmatrix, length):
+    output = [{} for i in range(length)]
+    for index, row in enumerate(nzmatrix):
+        for j, elem in row.items():
+            output[j].update({index: sgn(elem)})
+    return output
 
 
 def min_fun(Lc, n_mins):
@@ -30,28 +61,33 @@ def min_fun(Lc, n_mins):
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
 def minsum_BEC(H, r):
     Lj = r
-    Lv = [0 if elem == 0 else RealNumber(elem)*Lj[j] for i in range(H.nrows()) for j, elem in enumerate(H.row(i))]
-    Lv = Matrix(H.nrows(), H.ncols(), Lv)
+    lv = []
+    for i in range(H.nrows()):
+        temp = {}
+        for j in H.row(i).nonzero_positions():
+            temp.update({j: Lj[j]})
+        lv.append(temp)
+
     codeword, runs = False, 0
     while not codeword and runs < 20:
-        Lc = extrensic_information(Lv=Lv, H=H)
-        l_tot = comp_l_tot(Lc)
-        v_hat = vector(GF(2), [0 if elem <= 0 else 1 for elem in l_tot])
+        Lc = nz_sum_approx(lv)
+        ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
+        vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
 
         # check if v_hat is a valid codeword
-        if H * v_hat == 0:
-            print(f"MinSum runs := {runs, H*v_hat == 0}")
-            return v_hat, True
+        if H * vhat == 0:
+            print(f"MinSum runs := {runs, H*vhat == 0}")
+            return vhat, True
 
-        col_res = [list(map(lambda a: sgn(a), Lc.column(i))) for i in range(Lc.ncols())]
-        for i, elem in enumerate(r):
-            if r[i] == 0:
-                for j in range(Lc.nrows()):
-                    if H[j, i] == 1:
-                        belief = sum(col_res[i][:j]+col_res[i][j+1:])
-                        Lv[j, i] = belief
+        # update Lv
+        colvecs = get_column_vectors(Lc, len(r))
+        for j, col in enumerate(colvecs):
+            if r[j] == 0:
+                col_sum = sum(col.values())
+                for i, elem in col.items():
+                    lv[i].update({j: 0 if col_sum - col.get(i) == 0 else oo*(col_sum - col.get(i))})
 
-    print(f"MinSum runs := {runs, H*v_hat == 0}")
-    return v_hat, codeword
+    print(f"MinSum runs := {runs, H*vhat == 0}")
+    return vhat, codeword
 

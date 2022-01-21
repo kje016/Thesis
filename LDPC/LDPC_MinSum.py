@@ -73,7 +73,8 @@ def nz_min_fun(Lc, n_mins):
         mins.append(vector(RealField(10), minis))
     return mins
 
-def nz_com_ltot(NZMatrix, r):
+
+def nz_col_sum(NZMatrix, r):
     output = [0]*len(r)
     for index, row in enumerate(NZMatrix):
         for j, elem in row.items():
@@ -106,7 +107,7 @@ def minsum_SPA(H, r, N0, channel, sigma):
     while not codeword and runs < 30:
         min_vals = nz_min_fun(lv, 2)
         Lc = nz_sum_approx(lv, min_vals)
-        ltot = nz_com_ltot(Lc, Lj) + r
+        ltot = nz_col_sum(Lc, Lj) + r
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword
