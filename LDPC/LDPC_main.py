@@ -27,6 +27,7 @@ crc24b = x**24 + x**23 + x**6 + x**5 + x + x**0
 crc24c = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
 
 SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
+SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 # sage LDPC_main.py 20 1/2 bsc
 if __name__ == "__main__":
     A = int(sys.argv[1])
@@ -46,28 +47,26 @@ if __name__ == "__main__":
     BG = HF.get_base_matrix(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
 
-    runs, correct = 50, 0
+    runs, correct = 20, 0
     for i in range(runs):
         a = list(random_vector(GF(2), int(sys.argv[1])))
         # a = vector(GF(2), [1]*A)
-        print(f"a := {a}")
+        # print(f"a := {a}")
         b = CRC.main_CRC(a, crc24a)
         # print(f"Zc := {Zc}")
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
         # _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
         D = vector(GF(2), crk)
-
         X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb)
         e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
-        r = HF.channel_noise(e, channel, 0.1)
+        r = HF.channel_noise(e, channel, sigma[3])
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.1, H.ncols() - H.nrows(), channel)
-        # TODO: not send HRM, but the nonzero positions.
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, sigma[3], H.ncols() - H.nrows(), channel)
         if channel == 'BEC':
             aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
-            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.1)
+            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, sigma[3])
         print(f"H*v_hat := {is_codeword}")
         if is_codeword:
             correct += 1

@@ -63,7 +63,7 @@ def nz_sum_approx(Lv, min_vals):
 def nz_min_fun(Lc, n_mins):
     mins = []
     for i, row in enumerate(Lc):
-        vec = vector(RealField(10), (row.values()))
+        vec = vector(RealField(5), (row.values()))
         non_zeros = [abs(vec[a]) for a in vec.nonzero_positions()]
         minis = sorted(non_zeros[:n_mins])
         for j in range(n_mins, len(non_zeros)):

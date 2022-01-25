@@ -7,12 +7,14 @@ import BSC_SCL
 import HelperFunctions
 import PC_Code_Block_Segmentation
 import PC_CRC
+import PC_CRC
 import PC_Input_Bits_Interleaver
 import PC_Subchannel_Allocation
 import PC_Encoder
 import PC_Sub_Block_Interleaver
 import PC_Rate_Matching
 import PC_Channel_Interleaver
+import test_CRC
 
 """calling PC_main and its arguments 
 * a = sys.argv[1] length of the original information bits before they are treated in the polar code process
@@ -20,19 +22,21 @@ import PC_Channel_Interleaver
 """
 
 # sage PC_main.py 10001000000110100110101111100100 PDCCH BSC
-# sage PC_main.py 20 PDCCH BSC 500
+# sage PC_main.py 12 PDCCH BSC
 if __name__ == "__main__":
     cntr = 0
-    for p in range(int(sys.argv[4])):
+    runs = 20
+    for p in range(runs):
         G = 200  # TODO: have G to not be hard-coded
         physical_channel = sys.argv[2]  # PUCCH
         soft_channel = sys.argv[3]
         p_cross = 0.1  # TODO: for now, only BSC
-        a, A = [1, 1, 1], 3
-        a = a + [0]*(12-A)
-        A = len(a)
-        #a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
-        #print(f"a:= {a}")
+        # a = [1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1]
+        #a = [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0]
+        # a = a + [0]*(12-len(a))
+        #A = len(a)
+        a, A = list(random_vector(GF(2), int(sys.argv[1]))), int(sys.argv[1])
+        print(f"a:= {a, A}")
 
         " Mother polar code length and rate matching selection    "
         E = ceil(G/2)           # code length (after rate matching)
@@ -60,11 +64,13 @@ if __name__ == "__main__":
             ################################################################################
             """ adding CRC bits"""
             c, polynomial = PC_CRC.main_CRC(a_elem, physical_channel)
+            ctess, poltess = test_CRC.CRC(a, A)
+            print(f"CRC are equal := {c==ctess}")
             # TODO: polynomial set to 24 for interleaver testing
             """ Interleaving the CRC bits """
-            I_IL, c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(physical_channel, c)
-            # TODO: I_IL set to True for interleaver testing
+            I_IL, c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(physical_channel, c, A)
 
+            # TODO: I_IL set to True for interleaver testing
             """ Subchannel allocation """
             u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, channel=physical_channel)
 

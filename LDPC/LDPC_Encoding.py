@@ -29,7 +29,6 @@ def calc_pa(H, Pc, D, Zc, K):
 
 
 def Encoding(H, Zc, D, K, kb):
-
     # Pc (core parity): can be calculated from submatrices A & B
     lambdas = calc_lambdas(kb, H, Zc, D, K)
     pc1_shift = sum(lambdas)
@@ -39,13 +38,12 @@ def Encoding(H, Zc, D, K, kb):
     pc3 = lambdas[1] + pc2
     pc4 = lambdas[3] + pc1
 
-    I = D  # len of kb*Z
     Pc = vector(GF(2), list(pc1)+list(pc2)+list(pc3)+list(pc4))    # len of 4*Z
     Pa = calc_pa(H=H, Pc=Pc, D=D, Zc=Zc, K=K)     # len of (mb-4)*Z
 
     # x = [i pc pa]
-    X = vector(GF(2), list(I)+list(Pc)+list(Pa))
-    print(f"H*X ==0 := {H*X==0}")
+    X = vector(GF(2), list(D[:])+list(Pc)+list(Pa))
+    # print(f"H*X ==0 := {H*X==0}")
     # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")S
     return X
 
