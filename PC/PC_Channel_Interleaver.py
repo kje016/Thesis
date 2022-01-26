@@ -5,8 +5,8 @@ def r_fun(i, T):
     return (i*(2*T-i+1))/2
 
 
-def main_channel_interleaver(e, E, channel):
-    I_BIL = channel in ['PUCCH', 'PUSCH']
+def main_channel_interleaver(e, E, I_IL):
+    I_BIL = not I_IL
     if I_BIL:
         f = []
         T = ceil( (sqrt(8*E+1)-1)/2 )

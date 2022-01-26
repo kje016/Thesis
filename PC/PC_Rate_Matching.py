@@ -16,6 +16,9 @@ def matching_selection(E, N, K):
 
 def get_rm_set(U, matching_scheme, QN0):
     if matching_scheme == "repetition":
+        # TODO: implement repetition
+        # sikkert bare finne information_bits og så appende 'x' av de
+        print("Have not implemented Repetition")
         return None
     else:
         bit_len = len("{0:b}".format(len(QN0)-1))
@@ -42,23 +45,17 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross):
     if matching_scheme == "shortening":
         for a in range(N):
             if a in MS:
-                y.append(-oo)   # -oo since the llr1 will be negative
+                y.append(-oo*llr1)   # -oo since the llr1 will be negative
             else:
-                y.append(ee[counter])
+                y.append(ee[counter]*llr1)
                 counter += 1
     elif matching_scheme == "puncturing":
             for a in range(N):
                 if a in MS:
-                    y.append(0.5)  # 0.5 so the llr equals 0 in the lambda function below
+                    y.append(0)  # 0.5 so the llr equals 0 in the lambda function below
                 else:
-                    y.append(ee[counter])
+                    y.append(ee[counter]*llr1)
                     counter += 1
-    return vector(F, list(map(lambda x: x - 1, 2 * vector(F, y)))) * llr1
+    return vector(F, y)
+    # return vector(F, list(map(lambda x: x - 1, 2 * vector(F, y)))) * llr1
 
-
-# p_cross gjelder egt bare for BSC. evnt bytte til channel_metric/channel_characteristic
-def LLR_fun(e, channel, p_cross):
-    F = RealField(10)
-    if channel == 'BSC':
-        llr1 = log(p_cross/(1 - p_cross))
-        return vector(F, list(map(lambda x: x - 1, 2 * vector(F, e)))) * llr1

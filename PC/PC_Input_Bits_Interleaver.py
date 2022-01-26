@@ -1,7 +1,6 @@
 # cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
 import HelperFunctions
-######################################################################################
 import PC_CRC
 import test_CRC
 
@@ -62,7 +61,6 @@ def interleaver(flag_param, c_seq, A):
     return output
 
 
-def main_bit_interleaver(channel, c, A):
-    flag = True     # channel in ["PBCCH", "PDCCH"]    # interleaver is used in PBCH, PDCCH, bypassed for PUCCH & PUSCH
-    c_ap = interleaver(flag, c, A)
-    return flag, c_ap
+def main_bit_interleaver(I_IL, c, A):    # channel in ["PBCCH", "PDCCH"]    # interleaver is used in PBCH, PDCCH, bypassed for PUCCH & PUSCH
+    c_ap = interleaver(I_IL, c, A)
+    return c_ap

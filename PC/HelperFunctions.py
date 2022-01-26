@@ -2,6 +2,7 @@ from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
 
+
 def standard_to_list(input_text):
     with open(input_text) as f:
         temp = f.read()
@@ -54,20 +55,27 @@ def f_BPSK(alpha1, alpha2):
     return vector(RR, result)
 
 
+# 2 is representing the erasure symbol
+# returns the modulation of the codeword with added noise
 def channel_noise(s, channel, p):
+    F = RealField(10)
     if channel == 'BSC':
-        noise = [1 if abs(x) <= p else 0 for x in list(default_rng().normal(0, 1, len(s)))]
-        #noise = [1 if x >= p else 0 for x in list(default_rng().uniform(0, 1, len(s)))]
-        r = vector(GF(2), s) + vector(GF(2), noise)
-    else:
-        print("channel_noise () not fully implemented")
-        r = s
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        print(f"noise := {noise}")
+        r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
+    elif channel == 'AWGN':
+        noise = vector(F, list(default_rng().normal(0, p, len(s))))
+        r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+
+    else: # channel == 'BEC'
+        s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
+        r = vector(F, [2 if list(uniform(0, 1, size=len(s)))[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
     return r
 
 
 def g_BPSK(alpha1, alpha2, beta):
     result = []
-    for a1,a2,b in zip(alpha1, alpha2, beta):
+    for a1, a2, b in zip(alpha1, alpha2, beta):
         result.append( (a2 + (1-2*b)*a1) )
     return vector(RR, result)
 
@@ -80,6 +88,27 @@ class Decoder:
     def __repr__(self):
         pp = '('+ str(self.inf_bits) + ', ' + str(self.path_metric) + ')'
         return pp
+
+
+class Node:
+    def __init__(self, l_child, r_child, state):
+        self.l_child = l_child
+        self.r_child = r_child
+        self.beliefs = []
+        self.state = state
+
+    def __str__(self):
+        return f'beliefs:{str(self.beliefs)}, state:{self.state}, left_child: {str(self.l_child)}, right_child:{str(self.r_child)}'
+
+
+def init_tree(N, r):
+    tree, d, n = [], 0, 1
+    while n < N:
+        tree.extend([Node(i, i+1, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
+        d, n = d+1, n*2
+    tree.extend([Node(None, None, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
+    tree[0].beliefs = r
+    return tree
 
 
 # @arg input_decoders list of current decoders and their respective path_metric
@@ -98,11 +127,10 @@ def prune_decoders(input_decoders, decoder_size):
 # @input_decoders list of current decoders
 def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders):
     new_decoders = []
-    if not is_frozen_node:
-        penalty = sign_rev(belief)
-        #expand decoders list
+    if is_frozen_node:
+        new_decoders = [Decoder(decoder.inf_bits + "0", decoder.path_metric) for decoder in input_decoders]
+    else:
         new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
-    for decoder in input_decoders:
-        new_decoders.append(Decoder(decoder.inf_bits + "0", decoder.path_metric + (sign_rev(belief))*abs(llr)))
+        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + (sign_rev(belief))*abs(llr)) for decoder in input_decoders])
     new_decoders = prune_decoders(new_decoders, n_decoders)
     return new_decoders

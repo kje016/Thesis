@@ -3,7 +3,15 @@ from sage.all import *
 import HelperFunctions as HF
 
 
+class Node:
+    def __init__(self, l_child, r_child, state):
+        self.l_child = l_child
+        self.r_child = r_child
+        self.beliefs = []
+        self.state = state
 
+    def __str__(self):
+        return f'beliefs:{str(self.beliefs)}, state:{self.state}, left_child: {str(self.l_child)}, right_child:{str(self.r_child)}'
 
 
 # @arg float rv: real value digit
@@ -26,14 +34,6 @@ def gt(beliefs, beta):
     return vector(F, result)
 
 
-def init_tree(N, r):
-    tree, d, n = [], 0, 1
-    while n < N:
-        tree.extend([Node(i, i+1, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
-        d, n = d+1, n*2
-    tree.extend([Node(None, None, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
-    tree[0].beliefs = r
-    return tree
 
 
 def decoder(d, N, frozen_set, p_cross):

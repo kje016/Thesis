@@ -4,11 +4,11 @@ import HelperFunctions
 import PC_Rate_Matching as RM
 
 reliability_sequence = HelperFunctions.get_realiability_sequence()
-# TODO: Implement pc bits
 
-def get_n_pc_bits(channel, A, E):
+
+def get_n_pc_bits(A, E, I_IL):
     n_pc, n_wm_pc = 0, 0
-    if channel in ["PUCCH", "PUSCH"] and 12 <= A <=19:
+    if I_IL == 0 and 12 <= A <= 19:
         n_pc = 3
         if E-A > 175:
             n_wm_pc = 1
@@ -34,8 +34,9 @@ def freeze(N, K, E, npc):
     return QNF, QNI, MS, matching_scheme
 
 
-def main(N, c_ap, A, E, channel):
-    npc, n_wm_pc = get_n_pc_bits(channel, A, E)
+def main(N, c_ap, A, E, I_IL):
+    npc, n_wm_pc = get_n_pc_bits(A, E, I_IL)
+    npc, n_wm_pc = 0, 0     # TODO: Implement pc bits
     QNF, QNI, MS, matching_scheme = freeze(N, len(c_ap), E, npc)
 
     u, c_get = [], 0

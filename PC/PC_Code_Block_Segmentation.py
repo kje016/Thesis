@@ -1,8 +1,8 @@
 from sage.all import *
 
 
-def main_block_segmentation(channel, a, A, G):
-    I_seq = channel in ["PUCCH", "PUSCH"] and (A >= 1013 or A >= 360 or G >= 1088)
+def main_block_segmentation(I_IL, a, A, G):
+    I_seq = I_IL and (A >= 1013 or A >= 360 or G >= 1088)
     C = 2 if I_seq else 1
     a_ap = a[:]
     if C == 2:
