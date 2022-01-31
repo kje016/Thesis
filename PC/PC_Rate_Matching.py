@@ -46,7 +46,7 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel):
         for a in range(N):
             if a in MS:
                 if channel == 'BEC':
-                    y.append(-oo)
+                    y.append(oo)
                 else:
                     y.append(-oo*llr1)   # -oo since the llr1 will be negative
             else:

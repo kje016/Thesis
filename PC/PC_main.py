@@ -27,7 +27,6 @@ if __name__ == "__main__":
     R = R[0] / R[1]
 
     n_min, n_max = 5, 10 - I_IL  # n_max = 10 for uplink, 9 for downlink.
-
     " Mother polar code length and rate matching selection    "
     for p in range(runs):
         E = ceil(A / R)
@@ -68,10 +67,9 @@ if __name__ == "__main__":
 
             """ Rate de-Matching Circular Buffer    """
             yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel)
-
             """ SC Decoder  """
             if channel == 'BEC':
-                uu = BEC_SCL.decoder(d=ee, N=N, frozen_set=QNF, p_cross=p_cross)
+                uu = BEC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
             else:
                 uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
             for dec in uu:
