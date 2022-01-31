@@ -25,19 +25,19 @@ def get_Q_N0(N):
     return Q_N_0
 
 
-def freeze(N, K, E, npc):
+def freeze(N, K, E, npc, R):
     QN0 = get_Q_N0(N)
     matching_scheme = RM.matching_selection(E=E, N=N, K=K)
-    MS = RM.get_rm_set(U=N-E, matching_scheme=matching_scheme, QN0=QN0)
+    MS = RM.get_rm_set(U=floor((N-E)*R), matching_scheme=matching_scheme, QN0=QN0)
     QNI = set(list(set(QN0)-MS)[-(K+npc):])
     QNF = set(QN0) - QNI
     return QNF, QNI, MS, matching_scheme
 
 
-def main(N, c_ap, A, E, I_IL):
+def main(N, c_ap, A, E, I_IL, R):
     npc, n_wm_pc = get_n_pc_bits(A, E, I_IL)
     npc, n_wm_pc = 0, 0     # TODO: Implement pc bits
-    QNF, QNI, MS, matching_scheme = freeze(N, len(c_ap), E, npc)
+    QNF, QNI, MS, matching_scheme = freeze(N, len(c_ap), E, npc, R)
 
     u, c_get = [], 0
     for i in range(N):

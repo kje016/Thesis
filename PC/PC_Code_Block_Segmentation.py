@@ -14,9 +14,3 @@ def main_block_segmentation(I_IL, a, A, G):
         a_ap = [a_ap[i:A_ap] for i in range(0, A, A / 2)]
         return a_ap, C
     return [a_ap], C
-
-
-
-
-
-
