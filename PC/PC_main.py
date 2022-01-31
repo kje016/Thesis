@@ -3,6 +3,7 @@ from sage.all import *
 
 import sys
 
+import BEC_SCL
 import BSC_SCL
 import HelperFunctions as HF
 import PC_Code_Block_Segmentation
@@ -21,7 +22,7 @@ import test_CRC
 if __name__ == "__main__":
     cntr, runs = 0, 20
     A = int(sys.argv[1])
-    I_IL, channel, p_cross = int(sys.argv[2]), sys.argv[4].upper(), 0.1
+    I_IL, channel, p_cross = int(sys.argv[2]), sys.argv[4].upper(), 0.05
     R = [int(x) for x in sys.argv[3].split('/')]
     R = R[0] / R[1]
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     " Mother polar code length and rate matching selection    "
     for p in range(runs):
         E = ceil(A / R)
-        n = max(min(ceil(log(E, 2)), n_max), n_min)
+        n = min(ceil(log(E, 2)), n_max)
         print(f" n := {n}")
         N = 2 ** n
         G = N
@@ -48,6 +49,7 @@ if __name__ == "__main__":
             c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(I_IL, c, A)
             """ Subchannel allocation """
             u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, I_IL=I_IL)
+            print(f"c := {c}")
             print(matching_scheme)
             """ Polar Code Encoding """
             d = PC_Encoder.main_encoder(u=u, N=N, n_pc=n_pc, n_wm_pc=n_wm_pc)
@@ -58,18 +60,18 @@ if __name__ == "__main__":
             ################################################################################
             """                           Decoding                                       """
             ################################################################################
-            breakpoint()
             r = list(HF.channel_noise(s=e, channel=channel, p=p_cross))
             """Channel de-Interleaver"""
             # ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
-            ee = (vector(RealField(10), e)*2).apply_map(lambda a: a-1)
+            ee = (vector(RealField(10), d)*2).apply_map(lambda a: a-1)
+            ee = vector(RealField(10), [a*(-oo) for a in ee])
 
             """ Rate de-Matching Circular Buffer    """
-            yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross)
+            yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel)
 
             """ SC Decoder  """
             if channel == 'BEC':
-                pass
+                uu = BEC_SCL.decoder(d=ee, N=N, frozen_set=QNF, p_cross=p_cross)
             else:
                 uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
             for dec in uu:

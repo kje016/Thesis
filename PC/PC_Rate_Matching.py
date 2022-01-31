@@ -39,22 +39,31 @@ def circular_buffer(y, matching_set):
     return e
 
 
-def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross):
+def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel):
     y, counter = [], 0
     F, llr1 = RealField(10), log(p_cross / (1 - p_cross))
     if matching_scheme == "shortening":
         for a in range(N):
             if a in MS:
-                y.append(-oo*llr1)   # -oo since the llr1 will be negative
+                if channel == 'BEC':
+                    y.append(-oo)
+                else:
+                    y.append(-oo*llr1)   # -oo since the llr1 will be negative
             else:
-                y.append(ee[counter]*llr1)
+                if channel == 'BEC':
+                    y.append(2 if ee[counter] == 2 else ee[counter]*llr1*oo)
+                else:
+                    y.append(ee[counter]*llr1)
                 counter += 1
     elif matching_scheme == "puncturing":
             for a in range(N):
                 if a in MS:
                     y.append(0)  # 0.5 so the llr equals 0 in the lambda function below
                 else:
-                    y.append(ee[counter]*llr1)
+                    if channel == 'BEC':
+                        y.append(2 if ee[counter] == 2 else ee[counter] * -oo)
+                    else:
+                        y.append(ee[counter]*llr1)
                     counter += 1
     return vector(F, y)
     # return vector(F, list(map(lambda x: x - 1, 2 * vector(F, y)))) * llr1

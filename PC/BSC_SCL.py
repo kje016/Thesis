@@ -2,43 +2,13 @@
 from sage.all import *
 import HelperFunctions as HF
 
-
-
-
-
-# @arg float rv: real value digit
-def sign(rv):
-    return -1 if rv<0 else 1
-
-
-def ft(beliefs):
-    result = []
-    for a1, a2 in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)]):
-        result.append((sign(a1)*sign(a2))*min(abs(a1), abs(a2)))
-    return vector(F, result)
-
-
-
-def gt(beliefs, beta):
-    result = []
-    for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
-        result.append(a2 + a1*(1-2*b))
-    return vector(F, result)
-
-
-def init_tree(N, r):
-    tree, d, n = [], 0, 1
-    while n < N:
-        tree.extend([Node(i, i+1, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
-        d, n = d+1, n*2
-    tree.extend([Node(None, None, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
-    tree[0].beliefs = r
-    return tree
+node_states = ['l', 'r', 'u']
+F = RealField(10)
 
 
 def decoder(d, N, frozen_set, p_cross):
     llr = log(p_cross / (1 - p_cross))
-    tree = init_tree(N, d)
+    tree = HF.init_tree(N, d)
     """SCL initialization"""
     L = 8   # TODO: list size of L = 8. From "The Development and Operations of...
     list_decoders = [HF.Decoder("", 0)]
@@ -54,11 +24,11 @@ def decoder(d, N, frozen_set, p_cross):
                 done = True
             node, depth = tree[floor(abs((tree.index(node)-1))/2)], depth-1
         elif node.state == "":  # step L
-            tree[node.l_child].beliefs = ft(node.beliefs)
+            tree[node.l_child].beliefs = HF.ft(node.beliefs)
             node.state = node_states[0]
             node, depth = tree[node.l_child], depth+1
         elif node.state == node_states[0]:  # step R
-            tree[node.r_child].beliefs = gt(node.beliefs, tree[node.l_child].beliefs)
+            tree[node.r_child].beliefs = HF.gt(node.beliefs, tree[node.l_child].beliefs)
             node.state = node_states[1]
             node, depth = tree[node.r_child], depth+1
         else:   # step U
@@ -73,11 +43,3 @@ def decoder(d, N, frozen_set, p_cross):
 
     # TODO: not always the case that the most likely codeword was the sent symbol
     return list_decoders
-
-
-
-node_states = ['l', 'r', 'u']
-F = RealField(10)
-#message = list(BPSK_decoder(vector(F, [1, 0, 1, 0, 0, 1, 0, 1]), 8, [0, 1, 2, 4], 0.2))
-#print(f"llr_r:={message}")
-

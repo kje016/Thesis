@@ -33,9 +33,28 @@ def get_inf_pos(K):
             return output
     return output
 
+
+# 2 is representing the erasure symbol
+# returns the modulation of the codeword with added noise
+def channel_noise(s, channel, p):
+    F = RealField(10)
+    if channel == 'BSC':
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
+
+    elif channel == 'AWGN':
+        noise = vector(F, list(default_rng().normal(0, p, len(s))))
+        r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+
+    else: # channel == 'BEC'
+        s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
+        r = vector(F, [2 if list(uniform(0, 1, size=len(s)))[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
+    return r
+
+
 # @arg float rv: real value digit
 def sign(rv):
-    return -1 if rv < 0 else 1
+    return -1 if rv<0 else 1
 
 
 # @arg float rv: real value digit
@@ -48,36 +67,70 @@ def BPSK(codeword):
     return [(-1)**x for x in codeword]
 
 
-def f_BPSK(alpha1, alpha2):
-    result = []
-    for x, y in zip(alpha1, alpha2):
-        result.append((sign(x)*sign(y))*min(abs(x), abs(y)))
-    return vector(RR, result)
-
-
-# 2 is representing the erasure symbol
-# returns the modulation of the codeword with added noise
-def channel_noise(s, channel, p):
+def ft(beliefs):
     F = RealField(10)
-    if channel == 'BSC':
-        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
-        print(f"noise := {noise}")
-        r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
-    elif channel == 'AWGN':
-        noise = vector(F, list(default_rng().normal(0, p, len(s))))
-        r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+    result = []
+    for a1, a2 in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)]):
+        result.append((sign(a1)*sign(a2))*min(abs(a1), abs(a2)))
+    return vector(F, result)
 
-    else: # channel == 'BEC'
-        s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
-        r = vector(F, [2 if list(uniform(0, 1, size=len(s)))[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
-    return r
+
+def gt(beliefs, beta):
+    F = RealField(10)
+    result = []
+    for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
+        result.append(a2 + a1*(1-2*b))
+    return vector(F, result)
+
+
+def bec_xor(a1, a2):
+    if 2 in [a1, a2]:
+        return 2
+    else:
+        return ((sign_rev(a1)^sign_rev(a2))*2-1)*-oo
+
+
+def uhat(belief, frozen):
+    if frozen:
+        return vector(RealField(10), [oo])
+    else:
+        return vector(RealField(10), [belief[0]])
+
+    # return vector(RealField(10), list(map(lambda a: a*-oo * (1-frozen), belief)))
+
+
+def f_bec(beliefs):
+    F = RealField(10)
+    result = []
+    for x, y in zip(beliefs[0:len(beliefs)//2], beliefs[len(beliefs)//2: len(beliefs)]):
+        result.append(bec_xor(x, y))
+    return vector(F, result)
+
+
+def lor(a1, a2):
+    if a1 == 2:
+        return a2
+    elif a2 == 2:
+        return a1
+        return max(a1, a2)
+    else:
+        return ((sign_rev(a1) or sign_rev(a2))*2-1)*-oo
+
+
+def g_bec(beliefs, beta):
+    F = RealField(10)
+    result = []
+    for a1, a2, b in zip(beliefs[0:len(beliefs)//2], beliefs[len(beliefs)//2: len(beliefs)], beta):
+        result.append(lor(a2, bec_xor(a1, b)))
+    return vector(F, result)
 
 
 def g_BPSK(alpha1, alpha2, beta):
+    F= RealField(10)
     result = []
     for a1, a2, b in zip(alpha1, alpha2, beta):
         result.append( (a2 + (1-2*b)*a1) )
-    return vector(RR, result)
+    return vector(F, result)
 
 
 class Decoder:
@@ -109,6 +162,7 @@ def init_tree(N, r):
     tree.extend([Node(None, None, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
     tree[0].beliefs = r
     return tree
+
 
 
 # @arg input_decoders list of current decoders and their respective path_metric
