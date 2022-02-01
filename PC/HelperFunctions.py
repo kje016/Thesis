@@ -54,7 +54,7 @@ def channel_noise(s, channel, p):
 
 # @arg float rv: real value digit
 def sign(rv):
-    return -1 if rv<0 else 1
+    return -1 if rv<=0 else 1
 
 
 # @arg float rv: real value digit

@@ -24,12 +24,18 @@ from scipy.stats import norm
 # sage PC_main.py '#information bits' 'Bool: Bit interleaver' 'Rate' 'Channel'
 # sage PC_main.py 12 0 1/2 BSC
 
+SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
+
 if __name__ == "__main__":
     cntr, runs = 0, 30
     A = int(sys.argv[1])
     I_IL, channel, p_cross = int(sys.argv[2]), sys.argv[4].upper(), 0.1
     R = [int(x) for x in sys.argv[3].split('/')]
     R = R[0] / R[1]
+
+    sigi = 0
+    sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
+    N0 = 2 * sigma[sigi] ** 2
 
     n_min, n_max = 5, 10 - I_IL  # n_max = 10 for uplink, 9 for downlink.
     " Mother polar code length and rate matching selection    "
@@ -57,29 +63,29 @@ if __name__ == "__main__":
             """ Subchannel allocation """
             u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, A=A, E=E, I_IL=I_IL, R=R)
             # print(f"c := {c}")
-            #print(matching_scheme)
+            print(matching_scheme)
             """ Polar Code Encoding """
             d = PC_Encoder.main_encoder(u=u, N=N, n_pc=n_pc, n_wm_pc=n_wm_pc)
-
+            #print(f"ms-bits = {[d[a] for a in MS]}")
             """ Rate Matching by Circular Buffer    """
-            e = PC_Rate_Matching.circular_buffer(y=d, matching_set=MS)
+            e = PC_Rate_Matching.circular_buffer(y=d, matching_set=MS, matching_scheme=matching_scheme)
 
             ################################################################################
             """                           Decoding                                       """
             ################################################################################
-            r = list(HF.channel_noise(s=e, channel=channel, p=p_cross))
+            r = list(HF.channel_noise(s=e, channel=channel, p=sigma[sigi]))
             """Channel de-Interleaver"""
             # ee = PC_Channel_Interleaver.inv_channel_interleaver(f=f, E=E, I_BIL=I_BIL)
             ee = (vector(RealField(10), d)*2).apply_map(lambda a: a-1)
-            ee = vector(RealField(10), [a*(-oo) for a in ee])
+            ee = vector(RealField(10), [a*(-1) for a in ee])
 
             """ Rate de-Matching Circular Buffer    """
-            yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel)
+            yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=sigma[sigi], channel=channel)
             """ SC Decoder  """
             if channel == 'BEC':
                 uu = BEC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
             else:
-                uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
+                uu = BSC_SCL.decoder(d=ee, N=N, frozen_set=QNF, p_cross=sigma[sigi])
             for dec in uu:
                 if dec.inf_bits == c:
                     print(f"CRC_check := {vector(GF(2), PC_CRC.bit_long_division(list(dec.inf_bits), pol)) == 0, matching_scheme}")
