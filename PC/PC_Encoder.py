@@ -16,7 +16,6 @@ def main_encoder(u, N, n_pc, n_wm_pc):
     # Basic polarization kernel: G2
     MS = MatrixSpace(GF(2), 2)
     G2 = MS.matrix([1, 0, 1, 1])
-
     # Channel transformation Matrix: GN
     GN = Kronecker_Product(G2, G2)
     for i in range(1, log(N, 2)-1):

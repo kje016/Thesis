@@ -6,7 +6,7 @@ node_states = ['l', 'r', 'u']
 F = RealField(10)
 
 
-def decoder(d, N, frozen_set, p_cross):
+def decoder(d, N, frozen_set, p_cross, MS):
     llr = log(p_cross / (1 - p_cross))
     tree = HF.init_tree(N, d)
     """SCL initialization"""

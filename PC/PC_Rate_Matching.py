@@ -18,17 +18,18 @@ def matching_selection(E, N, K):
 # br = ("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1]
 def get_rm_set(U, matching_scheme, QN0):
     bit_len = len("{0:b}".format(len(QN0)-1))
-    # bnm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
-    #for a in QN0:
-        #bnm.append(int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2))
     bnm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in QN0]
+    bm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
     if matching_scheme == "puncturing":
-        matching_set = set(bnm[:U])
+        ms = set([bm.index(a) for a in QN0[:U]])
+        # matching_set = set(bnm[:U])
     elif matching_scheme == "shortening":
-        matching_set = set(bnm[-U:])
+        ms = set([bm.index(a) for a in QN0[-U:]])
+        #matching_set = set(bnm[-U:])
     else: # matching_scheme == 'repetition'
-        matching_set = set(bnm[:abs(U)])
-    return matching_set
+        ms = set([QN0.index(a) for a in bm[:abs(U)]])
+        #matching_set = set(bnm[:abs(U)])
+    return ms
 
 
 def circular_buffer(y, matching_set, matching_scheme):
@@ -100,11 +101,17 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel):
         getter = 0
         for a in range(N):
             if a in MS:
-                y.append( (ee[N+getter]*llr1 + ee[counter]*llr1))
+                if channel == 'AWGN':
+                    y.append((ee[N+getter]*-1 + ee[counter]*-1))
+                else:
+                    y.append( (ee[N+getter]*llr1 + ee[counter]*llr1))
                 print(ee[N+getter], ee[counter], a, getter)
                 getter += 1
             else:
-                y.append(ee[counter]*llr1)
+                if channel == 'AWGN':
+                    y.append(ee[counter] * -1)
+                else:
+                    y.append(ee[counter]*llr1)
                 counter += 1
 
     return vector(F, y)
