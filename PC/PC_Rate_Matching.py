@@ -52,14 +52,14 @@ def bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross):
                 y.append(oo)
             else:
                 y.append(2 if ee[counter] == 2 else ee[counter]*llr1*oo)
-            counter += 1
+                counter += 1
     elif matching_scheme == "puncturing":
         for a in range(N):
             if a in MS:
-                y.append(2 if ee[counter] == 2 else ee[counter] * -oo)
+                y.append(0)
             else:
-                y.append(ee[counter]*llr1)
-            counter += 1
+                y.append(2 if ee[counter] == 2 else ee[counter] * -oo)
+                counter += 1
     elif matching_scheme == 'repetition':
         getter = 0
         for a in range(N):
@@ -68,7 +68,7 @@ def bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross):
                 getter += 1
             else:
                 y.append(ee[counter]*llr1)
-            counter += 1
+                counter += 1
     return vector(F, y)
 
 
@@ -105,7 +105,7 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel):
                     y.append((ee[N+getter]*-1 + ee[counter]*-1))
                 else:
                     y.append( (ee[N+getter]*llr1 + ee[counter]*llr1))
-                print(ee[N+getter], ee[counter], a, getter)
+                # print(ee[N+getter], ee[counter], a, getter)
                 getter += 1
             else:
                 if channel == 'AWGN':

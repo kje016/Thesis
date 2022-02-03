@@ -24,19 +24,19 @@ def get_pol(A, I_IL):
 
 
 def bit_long_division(a, pol):
-    pad = [0] * pol.degree()
+    pad = [0] * (pol.degree()+1)
     atemp = a + pad
     A = len(atemp)
     remainder, divisor = atemp[:], pol.list()[::-1]
-    pos = remainder.index(1)
-    while pos < A-pol.degree():
+    pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    while pos < len(a):
         calc = [b+c for b, c in zip(remainder[pos:], divisor)]
         remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
         try:
             pos = remainder.index(1)
         except:
-            pos = A
-    return remainder[A-pol.degree():]
+            pos = len(a)
+    return remainder[len(a):]
 
 
 # bit_long_division returns the remainder, so that in CRC_calc() the message.extend
@@ -44,12 +44,7 @@ def bit_long_division(a, pol):
 def CRC_calc(message, polynomial):
     if polynomial is None:
         return message
-    message.extend(bit_long_division(message, polynomial))
-    return message
-
-
-def main_CRC(a, polynomial):
-    output = CRC_calc(a, polynomial)
+    output = message + bit_long_division(message, polynomial)
     return vector(GF(2), output)
 
 
