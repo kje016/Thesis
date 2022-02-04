@@ -180,7 +180,6 @@ def prune_decoders(input_decoders, decoder_size):
 # @belief the belief for the current node
 # @input_decoders list of current decoders
 def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders):
-    new_decoders = []
     if is_frozen_node:
         new_decoders = [Decoder(decoder.inf_bits + "0", decoder.path_metric) for decoder in input_decoders]
     else:

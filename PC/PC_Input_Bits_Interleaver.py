@@ -43,20 +43,8 @@ def interleaver(flag_param, c_seq, A):
     TK = [PI.index(a) for a in PI if a >= A]
     TKB = [output[a] for a in TK]
 
-    print(f"{PC_CRC.bit_long_division(output[:5], crc24)}")
-    print(f"{test_CRC.CRC_check(output[:5], 5)}")
-    print()
-    print(f"{PC_CRC.bit_long_division(output[:10], crc24)}")
-    print(f"{test_CRC.CRC_check(output[:10], 10)}")
-    print()
-    print(f"{PC_CRC.bit_long_division(output[:13], crc24)}")
-    print(f"{test_CRC.CRC_check(output[:13], 13)}")
-    print()
-    print(f"{PC_CRC.bit_long_division(output[:15], crc24)}")
-    print(f"{test_CRC.CRC_check(output[:15], 15)}")
-    # tess = crc_check(output, PI.index(A+1), crc24)
-    print(f"codeword crc check = {test_CRC.CRC_check(output, len(output))}")
-    print(f"c_seq CRC := {test_CRC.CRC_check(c_seq, len(c_seq))}")
+    for a in range(3):
+        print(sum(PC_CRC.bit_long_division(output[:TK[a]], crc24)), TKB[a])
     breakpoint()
     return output
 

@@ -36,8 +36,38 @@ def bit_long_division(a, pol):
             pos = remainder.index(1)
         except:
             pos = len(a)
-    return remainder[len(a):]
+    return remainder[len(a):-1]
 
+
+def CRC_checksum(c, pol):
+    atemp = c[:-pol.degree()+1]
+    remainder, divisor = c[:], pol.list()[::-1]
+    pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    while pos < len(c[:-pol.degree()+1]):
+        calc = [b+c for b, c in zip(remainder[pos:], divisor)]
+        remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
+        try:
+            pos = remainder.index(1)
+        except:
+            pos = len(atemp)
+    return remainder
+
+
+
+def interleave_check(a, pol):
+    pad = [0] * (pol.degree()+1)
+    atemp = a + pad
+    A = len(atemp)
+    remainder, divisor = atemp[:], pol.list()[::-1]
+    pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    while pos < len(a):
+        calc = [b+c for b, c in zip(remainder[pos:], divisor)]
+        remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
+        try:
+            pos = remainder.index(1)
+        except:
+            pos = len(a)
+    return remainder[len(a)+1:-1]
 
 # bit_long_division returns the remainder, so that in CRC_calc() the message.extend
 # acts as the hardware interleave r

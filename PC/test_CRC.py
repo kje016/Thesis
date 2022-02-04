@@ -6,9 +6,9 @@ R.inject_variables()
 
 
 def CRC(a, A, pol):
-    P = pol.degree()+1
+    P = pol.degree()
     C = zero_matrix(GF(2), A, P)
-    C[-1] = vector(GF(2), pol.list()[::-1])
+    C[-1] = vector(GF(2), pol.list()[::-1][1:])
     t = A-1
     while t >= 0:
         for j in range(1, P):

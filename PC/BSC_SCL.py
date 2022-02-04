@@ -36,10 +36,9 @@ def decoder(d, N, frozen_set, p_cross, MS):
             node.state = node_states[2]
             node, depth = tree[floor((tree.index(node)-1)/2)], depth-1
 
+    QNI = [a for a in range(N) if a not in frozen_set]
     for dec in list_decoders:
-        bits = set(list(range(0, N))) - set(frozen_set)
-        bits = [dec.inf_bits[a] for a in bits]
-        dec.inf_bits = vector(GF(2), [str(a) for a in bits]) #''.join(a for a in bits)
+        dec.inf_bits = vector(GF(2), [dec.inf_bits[a] for a in QNI]) #''.join(a for a in bits)
 
     # TODO: not always the case that the most likely codeword was the sent symbol
     return list_decoders

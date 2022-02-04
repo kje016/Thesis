@@ -28,8 +28,11 @@ def get_Q_N0(N):
 def freeze(N, K, E, npc, R):
     QN0 = get_Q_N0(N)
     matching_scheme = RM.matching_selection(E=E, N=N, K=K)
-    MS = RM.get_rm_set(U=floor((N-E)/2), matching_scheme=matching_scheme, QN0=QN0)
-    if matching_scheme == 'repetition':
+    MS = RM.get_rm_set(U=N-E, matching_scheme=matching_scheme, QN0=QN0)
+    if len(MS) == 0:
+        QNI = set(QN0[-K:])
+        QNF = set(QN0)-QNI
+    elif matching_scheme == 'repetition':
         QNI = set(QN0[-K:])
         QNF = set(QN0) - QNI
     else:
@@ -46,9 +49,9 @@ def main(N, c_ap, K, E, I_IL, R):
 
     u, c_get = [], 0
     for i in range(N):
-        if i in QNF:
-            u.append(0)
-        else:
+        if i in QNI:
             u.append(c_ap[c_get])
             c_get += 1
+        else:
+            u.append(0)
     return u, npc, n_wm_pc, QNF, QNI, MS, matching_scheme

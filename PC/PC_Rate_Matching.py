@@ -18,11 +18,11 @@ def matching_selection(E, N, K):
 # br = ("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1]
 def get_rm_set(U, matching_scheme, QN0):
     bit_len = len("{0:b}".format(len(QN0)-1))
-    bnm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in QN0]
+    #bnm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in QN0]
     bm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
     if matching_scheme == "puncturing":
         ms = set([bm.index(a) for a in QN0[:U]])
-        # matching_set = set(bnm[:U])
+        #matching_set = set(bnm[:U])
     elif matching_scheme == "shortening":
         ms = set([bm.index(a) for a in QN0[-U:]])
         #matching_set = set(bnm[-U:])
@@ -72,18 +72,20 @@ def bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross):
     return vector(F, y)
 
 
-def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel):
+def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
     if channel == 'BEC':
         return bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross)
     y, counter = [], 0
     F, llr1 = RealField(10), log(p_cross / (1 - p_cross))
+    if channel == 'AWGN':
+        llr1 = (4/N0)
     if matching_scheme == "shortening":
         for a in range(N):
             if a in MS:
                 y.append(oo)
             else:
                 if channel == 'AWGN':
-                    y.append(ee[counter]*-1)
+                    y.append(llr1*ee[counter]*-1)     # (4*sqrt(Ec)/N0)*r[j]
                 else:
                     y.append(ee[counter]*llr1)
                 counter += 1
@@ -93,7 +95,7 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel):
                 y.append(0)  # 0.5 so the llr equals 0 in the lambda function below
             else:
                 if channel == 'AWGN':
-                    y.append(ee[counter] * -1)
+                    y.append(llr1*ee[counter]*-1)
                 else:
                     y.append(ee[counter]*llr1)
                 counter += 1
