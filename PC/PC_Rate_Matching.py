@@ -78,14 +78,14 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
     y, counter = [], 0
     F, llr1 = RealField(10), log(p_cross / (1 - p_cross))
     if channel == 'AWGN':
-        llr1 = (4/N0)
+        llr1 = -(4/N0)
     if matching_scheme == "shortening":
         for a in range(N):
             if a in MS:
                 y.append(oo)
             else:
                 if channel == 'AWGN':
-                    y.append(llr1*ee[counter]*-1)     # (4*sqrt(Ec)/N0)*r[j]
+                    y.append(llr1*ee[counter])     # (4*sqrt(Ec)/N0)*r[j]
                 else:
                     y.append(ee[counter]*llr1)
                 counter += 1
@@ -95,7 +95,7 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
                 y.append(0)  # 0.5 so the llr equals 0 in the lambda function below
             else:
                 if channel == 'AWGN':
-                    y.append(llr1*ee[counter]*-1)
+                    y.append(llr1*ee[counter])
                 else:
                     y.append(ee[counter]*llr1)
                 counter += 1
@@ -104,14 +104,14 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
         for a in range(N):
             if a in MS:
                 if channel == 'AWGN':
-                    y.append((ee[N+getter]*-1 + ee[counter]*-1))
+                    y.append((ee[N+getter] + ee[counter]))
                 else:
                     y.append( (ee[N+getter]*llr1 + ee[counter]*llr1))
                 # print(ee[N+getter], ee[counter], a, getter)
                 getter += 1
             else:
                 if channel == 'AWGN':
-                    y.append(ee[counter] * -1)
+                    y.append(ee[counter])
                 else:
                     y.append(ee[counter]*llr1)
                 counter += 1

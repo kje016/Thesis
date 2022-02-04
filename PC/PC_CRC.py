@@ -15,7 +15,9 @@ def get_pol(A, I_IL):
     if I_IL == 1:
         return crc24
     else:
-        if 12 <= A <= 19:
+        if A < 12:
+            return x**0
+        elif 12 <= A <= 19:
             return crc6
         elif 20 <= A <= 1706:
             return crc11
@@ -28,7 +30,11 @@ def bit_long_division(a, pol):
     atemp = a + pad
     A = len(atemp)
     remainder, divisor = atemp[:], pol.list()[::-1]
-    pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    try:
+        pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    except:
+        [0]*pol.degree()
+
     while pos < len(a):
         calc = [b+c for b, c in zip(remainder[pos:], divisor)]
         remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
@@ -42,7 +48,10 @@ def bit_long_division(a, pol):
 def CRC_checksum(c, pol):
     atemp = c[:-pol.degree()+1]
     remainder, divisor = c[:], pol.list()[::-1]
-    pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    try:
+        pos = remainder.index(1)    # TODO: crashes in 0 codeword
+    except:
+        [0]*len(remainder)
     while pos < len(c[:-pol.degree()+1]):
         calc = [b+c for b, c in zip(remainder[pos:], divisor)]
         remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]

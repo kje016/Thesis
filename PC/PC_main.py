@@ -27,17 +27,19 @@ from scipy.stats import norm
 SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 
 if __name__ == "__main__":
-    cntr, runs = 0, 100
+    cntr, runs = 0, 50
     A = int(sys.argv[1])
     I_IL, channel = int(sys.argv[2]), sys.argv[4].upper()
     R = [int(x) for x in sys.argv[3].split('/')]
     R = R[0] / R[1]
 
-    sigi = 3
+    sigi = 10
     sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
     N0 = 2 * sigma[sigi] ** 2
+    breakpoint()
     p_cross = sigma[sigi]
-
+    if channel == 'BSC':
+        p_cross = 0.1
     n_min, n_max = 5, 10 - I_IL  # n_max = 10 for uplink, 9 for downlink.
     " Mother polar code length and rate matching selection    "
     for p in range(runs):
@@ -74,7 +76,7 @@ if __name__ == "__main__":
             yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel, N0=N0)
 
             ee = (vector(RealField(10), e) * 2).apply_map(lambda a: a - 1)
-            ee = vector(RealField(10), [a * (-1) for a in ee])
+            # ee = vector(RealField(10), [a * (-1) for a in ee])
             ty = PC_Rate_Matching.inv_circular_buffer(N=N, ee=ee, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel, N0=N0)
             dd = vector(RealField(10), [1 if a == 0 else -1 for a in d])
             """ SC Decoder  """
@@ -83,11 +85,11 @@ if __name__ == "__main__":
             else:
                 uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross, MS=MS) # TODO: testing for rate-matched non-noise
             for dec in uu:
-                if dec.inf_bits == vector(GF(2), c):
-                    #print(f"CRC_check := {vector(GF(2), PC_CRC.bit_long_division(list(dec.inf_bits), pol)) == 0, matching_scheme}")
-                    print("!!!!     check       !!!!")
+                if vector(GF(2), PC_CRC.bit_long_division(list(dec.inf_bits), pol)) == 0:
+                    #print("!!!!     check       !!!!")
                     cntr += 1
                     break
+    print(f"len QNF := {len(QNF)}")
     print(f" N-E = {N-E}, {matching_scheme}")
-    print(f"correct := {(cntr/runs)*100}%")
+    print(f"successful decodings := {(cntr/runs)*100}%")
 
