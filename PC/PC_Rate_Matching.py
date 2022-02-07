@@ -35,11 +35,10 @@ def get_rm_set(U, matching_scheme, QN0):
 def circular_buffer(y, matching_set, matching_scheme):
     if matching_scheme == 'repetition':
         return y[:] + [y[a] for a in matching_set]
-    e, counter = [], 0
+    e = []
     for a in range(len(y)):
         if a not in matching_set:
-            e.append(y[counter])
-        counter += 1
+            e.append(y[a])
     return e
 
 
@@ -92,7 +91,7 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
     elif matching_scheme == "puncturing":
         for a in range(N):
             if a in MS:
-                y.append(0)  # 0.5 so the llr equals 0 in the lambda function below
+                y.append(0)
             else:
                 if channel == 'AWGN':
                     y.append(llr1*ee[counter])

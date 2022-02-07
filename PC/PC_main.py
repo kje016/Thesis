@@ -33,10 +33,9 @@ if __name__ == "__main__":
     R = [int(x) for x in sys.argv[3].split('/')]
     R = R[0] / R[1]
 
-    sigi = 10
+    sigi = 1
     sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
     N0 = 2 * sigma[sigi] ** 2
-    breakpoint()
     p_cross = sigma[sigi]
     if channel == 'BSC':
         p_cross = 0.1
@@ -80,10 +79,11 @@ if __name__ == "__main__":
             ty = PC_Rate_Matching.inv_circular_buffer(N=N, ee=ee, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel, N0=N0)
             dd = vector(RealField(10), [1 if a == 0 else -1 for a in d])
             """ SC Decoder  """
+            # print(f"MS := {MS}")
             if channel == 'BEC':
                 uu = BEC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
             else:
-                uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross, MS=MS) # TODO: testing for rate-matched non-noise
+                uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross) # TODO: testing for rate-matched non-noise
             for dec in uu:
                 if vector(GF(2), PC_CRC.bit_long_division(list(dec.inf_bits), pol)) == 0:
                     #print("!!!!     check       !!!!")

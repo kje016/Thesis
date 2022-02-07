@@ -33,8 +33,7 @@ def bit_long_division(a, pol):
     try:
         pos = remainder.index(1)    # TODO: crashes in 0 codeword
     except:
-        [0]*pol.degree()
-
+        return [0]*pol.degree()
     while pos < len(a):
         calc = [b+c for b, c in zip(remainder[pos:], divisor)]
         remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
@@ -51,7 +50,7 @@ def CRC_checksum(c, pol):
     try:
         pos = remainder.index(1)    # TODO: crashes in 0 codeword
     except:
-        [0]*len(remainder)
+        return c
     while pos < len(c[:-pol.degree()+1]):
         calc = [b+c for b, c in zip(remainder[pos:], divisor)]
         remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
