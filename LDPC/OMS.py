@@ -29,7 +29,7 @@ def fun1(gamma, beta, alphas, pos):
     temp = alphas.copy()
     for i, row in enumerate(alphas):
         for k, v in row.items():
-            temp[i].update({k: gamma[k] - beta[k].get(i + pos)})
+            temp[i].update({k: gamma[k] - beta[k].get(pos)})
     return temp
 
 
@@ -47,10 +47,11 @@ def fun2(alpha, l, R, min_vals):
 
 
 def nz_update_row(row, min_vals, signs, offset):
+    offset = False # TODO: for testing
     output, min_get = [0] * len(row), len(min_vals)
     for i, elem in enumerate(row):
         if min_vals[-min_get] == abs(elem):
-            output[i] = signs[i] * max(min_vals[min_get-1]-(1*offset), 0)
+            output[i] = signs[i] * max(min_vals[0]-(1*offset), 0)
         else:
             output[i] = signs[i] * max(min_vals[-min_get]-(1*offset), 0)
     return output
@@ -64,11 +65,19 @@ def saturation_fun(alpha, Q):
     return temp
 
 
-def OMS(BG, Zc, H, r, channel, sigma):
+def transpose_nzMatrix(matrix, len):
+    output = [{} for i in range(len)]
+    for index, row in enumerate(matrix):
+        for k, v in row.items():
+            output[k].update({index: v})
+    return output
+
+
+def OMS( Zc, H, r):
     M, N = H.nrows(), H.ncols()
     R, C = M//Zc, N//Zc
     L = R
-    gamma = list(r)
+    gamma = list(r) #quantization_map(r, mu, list(range(0, Q+1)))
     """ Non-zero matrix"""
     alphas = []
     for i in range(H.nrows()):
@@ -76,45 +85,38 @@ def OMS(BG, Zc, H, r, channel, sigma):
         for j in H.row(i).nonzero_positions():
             temp.update({j: gamma[j]})
         alphas.append(temp)
+
     beta = []
     for i in range(H.ncols()):
         temp = {}
         for j in H.column(i).nonzero_positions():
             temp.update({j : 0})
         beta.append(temp)
-    next_beta = beta.copy()
 
-    """Initialization"""
-    q, qtilde = 4, 6
-    Q, Qtilde = 2**(q-1)-1, 2**(qtilde-1)-1
-    A, Atilde = list(range(-Q, Q+1)), list(range(-Qtilde, Qtilde+1))
-    mu = 3.8
-    gamma = list(r) #quantization_map(r, mu, list(range(0, Q+1)))
+    next_beta = alphas.copy()
 
     runs = 0
-    breakpoint()
     while runs < 30:
         for l in range(L):
             # Ml = list(range(l*(M/L)+1, (l+1)*(M/L)))
             min_vals = LDPC_MinSum.nz_min_fun(alphas[l*Zc:(l+1)*Zc], 2)
-            alpha = fun1(gamma, beta, alphas[l*Zc: (l+1)*Zc], l*Zc)
-            alphas[l*Zc: (l+1)*Zc] = alpha
+            alphas[l * Zc: (l + 1) * Zc] = fun1(gamma, beta, alphas[l*Zc: (l+1)*Zc], l*Zc)
 
-            # tess1 = saturation_fun(tess, Q)
-            next_beta[l*Zc: (l+1)*Zc] = fun2(alpha, l, R, min_vals)
-        next_beta = LDPC_MinSum.get_column_vectors(next_beta, len(r))
+            next_beta[l*Zc: (l+1)*Zc] = fun2(alphas[l * Zc: (l + 1) * Zc], l, R, min_vals)
+        next_beta = transpose_nzMatrix(next_beta, N)
         for l in range(L):
-            colvecs = [list(a.values()) for a in beta[l*Zc: (l+1)*Zc]]
+            colvecs = [list(a.values()) for a in next_beta[l*Zc: (l+1)*Zc]]
             for j, col in enumerate(colvecs):
-                gamma[j] = sum(colvecs[j]) + gamma[j+(l*Zc)]
+                gamma[j] = sum(col) + gamma[j+(l*Zc)]
                     #alphas[i].update({j: col_sum - col.get(i) + gamma[j]})
         vhat = vector(GF(2), [0 if elem<= 0 else 1 for elem in gamma])
         runs += 1
+        print(vhat)
         print(H*vhat)
         if H*vhat == 0:
             print(f"MinSum runs := {runs}")
             return vhat, True
         beta = next_beta.copy()
     print(f"failed")
-    breakpoint()
     return vhat, False
+

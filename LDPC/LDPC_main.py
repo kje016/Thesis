@@ -9,8 +9,6 @@ import LDPC_HelperFunctions as HF
 import minsum_BEC
 import OMS
 
-from scipy.stats import norm
-
 from sage.all import *
 
 lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
@@ -63,13 +61,11 @@ if __name__ == "__main__":
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.1, H.ncols() - H.nrows(), channel)
-        #tess = OMS.OMS(BG=BG, Zc=Zc, H=HRM, r=llr_r, channel=channel, sigma=sigma)
-        #breakpoint()
+        tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
         if channel == 'BEC':
             aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
             aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.1, 4*Zc)
-        #print(f"H*v_hat := {is_codeword}")
         if is_codeword:
             correct += 1
             print(f"correct := {correct}")
