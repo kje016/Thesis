@@ -7,6 +7,8 @@ import LDPC_Encoding
 import LDPC_Rate_Matching
 import LDPC_HelperFunctions as HF
 import minsum_BEC
+import OMS
+
 from scipy.stats import norm
 
 from sage.all import *
@@ -47,32 +49,29 @@ if __name__ == "__main__":
     BG = HF.get_base_matrix(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
 
-    runs, correct = 20, 0
+    runs, correct = 50, 0
     for i in range(runs):
         a = list(random_vector(GF(2), int(sys.argv[1])))
-        # a = vector(GF(2), [1]*A)
-        # print(f"a := {a}")
         b = CRC.main_CRC(a, crc24a)
-        # print(f"Zc := {Zc}")
+        # crk := padding the codeword
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
-        # _, D = PF.get_d_c(Zc=Zc, K=K, C=crk)
         D = vector(GF(2), crk)
         X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb)
         e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
-        r = HF.channel_noise(e, channel, sigma[3])
+
+        r = HF.channel_noise(e, channel, 0.1)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, sigma[3], H.ncols() - H.nrows(), channel)
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.1, H.ncols() - H.nrows(), channel)
+        #tess = OMS.OMS(BG=BG, Zc=Zc, H=HRM, r=llr_r, channel=channel, sigma=sigma)
+        #breakpoint()
         if channel == 'BEC':
             aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
-            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, sigma[3])
-        print(f"H*v_hat := {is_codeword}")
+            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.1, 4*Zc)
+        #print(f"H*v_hat := {is_codeword}")
         if is_codeword:
             correct += 1
             print(f"correct := {correct}")
             crc_check = CRC.CRC_check(aa[:B], crc24a)
-            #print(f"crc_check := {vector(GF(2), crc_check) == 0}")
-            #print(f" aa = {aa[:A]}")
-        # print(f"RUNS:= {i} \n \n")
     print(f"Pe := {(correct/runs)*100} %")

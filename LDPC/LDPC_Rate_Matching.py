@@ -18,18 +18,16 @@ def fill_w_llr(r, Zc, K, K_ap, p, Kb, channel):
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
     llr = log((1-p)/p)
+    punct_inf = [0] * (2 * Zc)
     if channel == 'AWGN':
-        punct_inf = [0]*(2*Zc)
         inf_bits = r[:A]
         short_bits = [-1]*floor((K-K_ap)//Zc) * Zc
         p_bits = r[A:]
     elif channel == 'BSC':
-        punct_inf = [0]*(2*Zc)
         inf_bits = map(lambda y: y*llr, r[:A])
         short_bits = [-llr]*floor((K-K_ap)//Zc) * Zc
         p_bits = map(lambda y: y*llr, r[A:]) #LLR_fun(r[A:], 'BSC', 0.1)
     else:   # channel = BEC
-        punct_inf = [0] * (2 * Zc)
         inf_bits = map(lambda y: 0 if y == 2 else y*oo, r[:A])
         short_bits = [-oo] * (floor((K - K_ap) // Zc) * Zc)
         p_bits = map(lambda y: 0 if y == 2 else y*oo, r[A:])

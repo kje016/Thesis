@@ -27,14 +27,15 @@ from scipy.stats import norm
 SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 
 if __name__ == "__main__":
-    cntr, runs = 0, 50
+    cntr, runs = 0, 250
     A = int(sys.argv[1])
     I_IL, channel = int(sys.argv[2]), sys.argv[4].upper()
     R = [int(x) for x in sys.argv[3].split('/')]
     R = R[0] / R[1]
 
-    sigi = 1
+    sigi = 4
     sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
+
     N0 = 2 * sigma[sigi] ** 2
     p_cross = sigma[sigi]
     if channel == 'BSC':
@@ -49,7 +50,13 @@ if __name__ == "__main__":
             pol = PC_CRC.get_pol(A, I_IL)
             c = PC_CRC.CRC_calc(a_elem, pol)
             cc = PC_CRC.CRC_checksum(list(c), pol)
+
+            ct = test_CRC.CRC(a, A, pol)
+            tc = test_CRC.CRC_check(ct, len(ct), pol)
+            print(c == ct)
+
             K = len(c)
+            #print(f" K := {K}")
             E = ceil(K / R)
             n = min(ceil(log(E, 2)), n_max)
             N = 2 ** n

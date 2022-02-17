@@ -1,14 +1,16 @@
 # cd Desktop/INF244/Exercises/MA3
 from sage.all import *
 
+import LDPC_main
 
 def min_update_row(row, min_vals, signs, H_row):
     output, min_get = [0]*len(row), len(min_vals)
+    scale, offset = 1, 0.4
     for i, elem in enumerate(H_row.nonzero_positions()):
         if min_vals[-min_get] == abs(row[elem]):
-            output[elem] = min_vals[min_get-1]*signs[i]
+            output[elem] = signs[i] * max(scale*min_vals[min_get-1]+offset, 0)
         else:
-            output[elem] = min_vals[-min_get]*signs[i]
+            output[elem] = signs[i] * max(scale*min_vals[-min_get]+offset, 0)
     return output
 
 
@@ -37,17 +39,7 @@ def min_fun(Lc, n_mins):
     return mins
 
 
-def nz_update_row(row, min_vals, signs):
-    output, min_get = [0] * len(row), len(min_vals)
-    for i, elem in enumerate(row):
-        if min_vals[-min_get] == abs(elem):
-            output[i] = min_vals[min_get-1]*signs[i]
-        else:
-            output[i] = min_vals[-min_get]*signs[i]
-    return output
-
-
-def nz_sum_approx(Lv, min_vals):
+def nz_sum_approx(Lv, min_vals, rcore):
     output = []
     for i, row in enumerate(Lv):
         vec = vector(RealField(10), (row.values()))
@@ -55,15 +47,25 @@ def nz_sum_approx(Lv, min_vals):
         signs = [-1 if vec[j] < 0 else 1 for j in range(len(vec))]
         P = product(signs)
         Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
-        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs)
+        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs, i < rcore)
         output.append({k:v for k,v in zip(row.keys(), Lvi)})
+    return output
+
+
+def nz_update_row(row, min_vals, signs, offset):
+    output, min_get = [0] * len(row), len(min_vals)
+    for i, elem in enumerate(row):
+        if min_vals[-min_get] == abs(elem):
+            output[i] = signs[i] * max(min_vals[min_get - 1] - (1 * offset), 0)
+        else:
+            output[i] = signs[i] * max(min_vals[-min_get] - (1 * offset), 0)
     return output
 
 
 def nz_min_fun(Lc, n_mins):
     mins = []
     for i, row in enumerate(Lc):
-        vec = vector(RealField(5), (row.values()))
+        vec = vector(RealField(10), (row.values()))
         non_zeros = [abs(vec[a]) for a in vec.nonzero_positions()]
         minis = sorted(non_zeros[:n_mins])
         for j in range(n_mins, len(non_zeros)):
@@ -91,7 +93,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, r, N0, channel, sigma):
+def minsum_SPA(H, r, N0, channel, sigma, rcore):
     if channel == 'AWGN':
         Lj = [(2/sigma)*rj for rj in r]
     else:
@@ -102,15 +104,16 @@ def minsum_SPA(H, r, N0, channel, sigma):
         for j in H.row(i).nonzero_positions():
             temp.update({j: Lj[j]})
         lv.append(temp)
-
     codeword, runs = False, 0
+    #breakpoint()
     while not codeword and runs < 30:
         min_vals = nz_min_fun(lv, 2)
-        Lc = nz_sum_approx(lv, min_vals)
+        Lc = nz_sum_approx(lv, min_vals, rcore)
         ltot = nz_col_sum(Lc, Lj) + r
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword
+        print(H*vhat)
         if H * vhat == 0:
             print(f"MinSum runs := {runs}")
             return vhat, True
@@ -119,7 +122,8 @@ def minsum_SPA(H, r, N0, channel, sigma):
         colvecs = get_column_vectors(Lc, len(r))
         for j, col in enumerate(colvecs):
             col_sum = sum(col.values())
+
             for i, elem in col.items():
                 lv[i].update({j: col_sum - col.get(i) + Lj[j]})
-
+    print(f"FAILED")
     return vhat, codeword

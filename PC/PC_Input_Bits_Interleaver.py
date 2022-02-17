@@ -34,18 +34,23 @@ def get_pi(K):
 
 
 def interleaver(flag_param, c_seq, A):
+    #print(f"c := \n {c_seq}")
     if not flag_param:
         return c_seq
     PI = get_pi(len(c_seq))
     output = [c_seq[value] for value in PI]
-    print(f"PI:={PI}")
 
     TK = [PI.index(a) for a in PI if a >= A]
-    TKB = [output[a] for a in TK]
+    TKB = [output[a] for a in TK][:3]
 
-    for a in range(3):
-        print(sum(PC_CRC.bit_long_division(output[:TK[a]], crc24)), TKB[a])
+    print(TKB)
+    #breakpoint()
+    # print(test_CRC.CRC_check(c_seq, len(c_seq), crc24))
+    print(test_CRC.ICRC_check(output[:TK[0]+1], TK[0]+1, crc24))
+    print()
     breakpoint()
+    #print(test_CRC.CRC_check(output[:TK[1]], TK[1], crc24))
+    #breakpoint()
     return output
 
 

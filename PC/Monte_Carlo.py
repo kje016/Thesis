@@ -14,12 +14,12 @@ from scipy.stats import norm
 
 import sys
 
-# sage Monte_Carlo.py 12 0 AWGN 1/2
+# sage Monte_Carlo.py 12 0 AWGN
 R = [1/2, 1/3, 1/4]    # Rate of the code
 A_min = 12
 # runs = 5
-lim = 100  # number or errors to be reached before moving to the next SNR value
-SNR = np.array([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6])
+lim = 200  # number or errors to be reached before moving to the next SNR value
+SNR = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]) #,  5, 5.5, 6])
 A = int(sys.argv[1])
 I_IL, channel = int(sys.argv[2]), sys.argv[3].upper()
 #plist = list(map(lambda rate: sqrt(1 / (2 * rate * 10 ** (SNR[10] / 10))), R))
@@ -30,6 +30,7 @@ for i, snr in enumerate(SNR):
     #sigma = sqrt(1 / (2 * R * 10 ** (snr / 10)))  # TODO: SNR[] hard-coded
     BE = np.zeros(3)
     runs = 0
+    print(f"snr := {snr}")
     while np.min(BE) < lim:
         runs += 1
         a = random_vector(GF(2), A)
@@ -56,7 +57,7 @@ for i, snr in enumerate(SNR):
         sclout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=ms, MS=MS,
                                          p_cross=sigma, channel=channel, pol=pol)
         BE[2] = BE[2] + (a + sclout[0]).hamming_weight()
-        if runs > 2000:
+        if runs > 500:
             break
     for j in range(3):
         BEgraph[j, i] = BE[j]/(runs*A)
@@ -67,7 +68,7 @@ for i, snr in enumerate(SNR):
     plt.legend(['1/2', '1/3', '1/4'])
     plt.xlabel('SNR (dB)')
     plt.ylabel('Pb')
-plt.savefig(f'test_chart.png')
+plt.savefig(f'20_chart.png')
 
 
 
