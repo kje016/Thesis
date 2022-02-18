@@ -1,7 +1,5 @@
 from sage.all import *
 
-import PC_CRC
-
 var('x')
 R = PolynomialRing(GF(2), x)
 R.inject_variables()
@@ -17,9 +15,9 @@ def CRC(a, A, pol):
             C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
             C[k, P-1] = C[k+1, 0] * pol[0]
         k = k-1
-    res = vector(Matrix(GF(2), a)*C).list()
-    CRC = vector(GF(2), list(a) + res)
-    return CRC
+    res = (vector(GF(2), a)*C).list()
+    CRC = vector(GF(2), a + res)
+    return CRC, C
 
 
 def Chun_mat(a, A, pol):
@@ -75,6 +73,24 @@ def ICRC_check(a, A, pol):
 
 
 """
-    From "Interleaved CRC for Polar Codes"
+    testing for G matrix
 """
+def as_pol(list):
+    return sum([c*x**(e) for e,c in enumerate(list[::-1])])
 
+
+def G_crc(a, pol):
+    cc = identity_matrix(GF(2), pol.degree()+len(a))
+    I, C = identity_matrix(pol.degree()), Matrix(pol.degree(), pol.degree())
+    C[-1] = pol.list()[::-1][1:]
+
+    j = pol.degree()-2
+    while j >= 0:
+        pol_list = (x * as_pol(C[j+1])).mod(pol).list()[::-1]
+        C[j] = [0]*(pol.degree()-len(pol_list)) + pol_list
+        j = j-1
+    genmat = block_matrix([[I, C]])
+    HI = identity_matrix(GF(2), genmat.ncols()-genmat.nrows())
+    H = block_matrix([[C.transpose(), HI]])
+    breakpoint()
+    return vector(GF(2), Matrix(GF(2), a)* genmat), genmat

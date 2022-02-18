@@ -33,7 +33,7 @@ def get_pi(K):
     return PI
 
 
-def interleaver(flag_param, c_seq, A):
+def interleaver(flag_param, c_seq, A, C):
     #print(f"c := \n {c_seq}")
     if not flag_param:
         return c_seq
@@ -42,18 +42,20 @@ def interleaver(flag_param, c_seq, A):
 
     TK = [PI.index(a) for a in PI if a >= A]
     TKB = [output[a] for a in TK][:3]
+    Cperm = [a for a in PI if a < A]
+    Cperm = Matrix([C[a] for a in Cperm])
 
-    print(TKB)
-    #breakpoint()
-    # print(test_CRC.CRC_check(c_seq, len(c_seq), crc24))
-    print(test_CRC.ICRC_check(output[:TK[0]+1], TK[0]+1, crc24))
-    print()
-    breakpoint()
-    #print(test_CRC.CRC_check(output[:TK[1]], TK[1], crc24))
+    #print(TKB)
+    #print(list(vector(GF(2), output[:TK[0]]) * Cperm[:TK[0]])[:3])
+    o1 = output[:TK[0]]+output[TK[0]+1:TK[1]]
+    #print(list(vector(GF(2), o1) * Cperm[:TK[1]-1])[:3])
+    o2 = o1 + output[TK[1]+1:TK[2]]
+    to2 = list(vector(GF(2), o2) * Cperm[:TK[2]-2])[:3]
+    print(vector(GF(2), to2) + vector(GF(2), TKB))
     #breakpoint()
     return output
 
 
-def main_bit_interleaver(I_IL, c, A):    # channel in ["PBCCH", "PDCCH"]    # interleaver is used in PBCH, PDCCH, bypassed for PUCCH & PUSCH
-    c_ap = interleaver(I_IL, c, A)
+def main_bit_interleaver(I_IL, c, A, C):    # channel in ["PBCCH", "PDCCH"]    # interleaver is used in PBCH, PDCCH, bypassed for PUCCH & PUSCH
+    c_ap = interleaver(I_IL, c, A, C)
     return c_ap

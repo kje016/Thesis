@@ -51,10 +51,10 @@ if __name__ == "__main__":
             c = PC_CRC.CRC_calc(a_elem, pol)
             cc = PC_CRC.CRC_checksum(list(c), pol)
 
-            ct = test_CRC.CRC(a, A, pol)
+            ct, C = test_CRC.CRC(a, A, pol)
             tc = test_CRC.CRC_check(ct, len(ct), pol)
-            print(c == ct)
-
+            #print(f"C = {c}")
+            #tc = test_CRC.G_crc(a_elem, pol)
             K = len(c)
             #print(f" K := {K}")
             E = ceil(K / R)
@@ -64,7 +64,7 @@ if __name__ == "__main__":
             """                           Encoding                                      """
             ################################################################################
             """ Interleaving the CRC bits """
-            c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(I_IL, c, A)   # TODO: ctess
+            c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(I_IL, c, A, C)   # TODO: ctess
             """ Subchannel allocation """
             u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, K=K, E=E, I_IL=I_IL, R=R)
 
