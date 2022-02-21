@@ -2,6 +2,8 @@ from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
 
+import test_CRC
+
 
 def standard_to_list(input_text):
     with open(input_text) as f:
@@ -112,7 +114,6 @@ def lor(a1, a2):
         return a2
     elif a2 == 2:
         return a1
-        return max(a1, a2)
     else:
         return ((sign_rev(a1) or sign_rev(a2))*2-1)*-oo
 
@@ -164,7 +165,6 @@ def init_tree(N, r):
     return tree
 
 
-
 # @arg input_decoders list of current decoders and their respective path_metric
 # @arg decoder_size the amount of decoders to keep after pruning
 # @return returns a pruned list of decoders
@@ -179,11 +179,21 @@ def prune_decoders(input_decoders, decoder_size):
 # @arg is_frozen_node Boolean of the current node is a frozen node
 # @belief the belief for the current node
 # @input_decoders list of current decoders
-def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders):
+def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders, C_perm, crcbit):
     if is_frozen_node:
-        new_decoders = [Decoder(decoder.inf_bits + "0", decoder.path_metric) for decoder in input_decoders]
+        new_decoders = [Decoder(decoder.inf_bits, decoder.path_metric) for decoder in input_decoders]
     else:
-        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
-        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + (sign_rev(belief))*abs(llr)) for decoder in input_decoders])
+        if len(input_decoders[0].inf_bits) in crcbit:
+            new_decoders = []
+            for decoder in input_decoders:
+                iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
+                cword = list(vector(GF(2), decoder.inf_bits))
+                list(map(lambda x: cword.pop(x), iPI))
+                check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
+                if check == sign_rev(belief):
+                    new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
+        else:
+            new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
+            new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + (sign_rev(belief))*abs(llr)) for decoder in input_decoders])
     new_decoders = prune_decoders(new_decoders, n_decoders)
     return new_decoders

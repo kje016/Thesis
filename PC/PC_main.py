@@ -4,7 +4,7 @@ from sage.all import *
 
 import sys
 import BEC_SCL
-import BSC_SCL
+import LLR_SCL
 import HelperFunctions as HF
 import PC_Code_Block_Segmentation
 import PC_CRC
@@ -23,6 +23,8 @@ from scipy.stats import norm
 # sage PC_main.py 10001000000110100110101111100100 PDCCH BSC
 # sage PC_main.py '#information bits' 'Bool: Bit interleaver' 'Rate' 'Channel'
 # sage PC_main.py 12 0 1/2 awgn
+
+# sage PC_main.py 12 1 1/2 awgn
 
 SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 
@@ -48,15 +50,12 @@ if __name__ == "__main__":
         # a_ap, C = PC_Code_Block_Segmentation.main_block_segmentation(I_IL, a, A, G) # TODO: repeats bits?
         for a_elem in [a]:
             pol = PC_CRC.get_pol(A, I_IL)
-            c = PC_CRC.CRC_calc(a_elem, pol)
-            cc = PC_CRC.CRC_checksum(list(c), pol)
-
-            ct, C = test_CRC.CRC(a, A, pol)
-            tc = test_CRC.CRC_check(ct, len(ct), pol)
-            #print(f"C = {c}")
-            #tc = test_CRC.G_crc(a_elem, pol)
+            #c = PC_CRC.CRC_calc(a_elem, pol)
+            #cc = PC_CRC.CRC_checksum(list(c), pol)
+            c, C = test_CRC.CRC(a, A, pol)
+            #print(f"c := {c}")
+            tc = test_CRC.CRC_check(c, len(c), pol)
             K = len(c)
-            #print(f" K := {K}")
             E = ceil(K / R)
             n = min(ceil(log(E, 2)), n_max)
             N = 2 ** n
@@ -64,7 +63,7 @@ if __name__ == "__main__":
             """                           Encoding                                      """
             ################################################################################
             """ Interleaving the CRC bits """
-            c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(I_IL, c, A, C)   # TODO: ctess
+            c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL, c, A, C)   # TODO: ctess
             """ Subchannel allocation """
             u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, K=K, E=E, I_IL=I_IL, R=R)
 
@@ -77,12 +76,10 @@ if __name__ == "__main__":
             ################################################################################
             r = list(HF.channel_noise(s=e, channel=channel, p=p_cross))
 
-            """Channel de-Interleaver"""
             """ Rate de-Matching Circular Buffer    """
             yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel, N0=N0)
 
             ee = (vector(RealField(10), e) * 2).apply_map(lambda a: a - 1)
-            # ee = vector(RealField(10), [a * (-1) for a in ee])
             ty = PC_Rate_Matching.inv_circular_buffer(N=N, ee=ee, matching_scheme=matching_scheme, MS=MS, p_cross=p_cross, channel=channel, N0=N0)
             dd = vector(RealField(10), [1 if a == 0 else -1 for a in d])
             """ SC Decoder  """
@@ -90,12 +87,15 @@ if __name__ == "__main__":
             if channel == 'BEC':
                 uu = BEC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
             else:
-                uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross) # TODO: testing for rate-matched non-noise
-            for dec in uu:
-                if vector(GF(2), PC_CRC.bit_long_division(list(dec.inf_bits), pol)) == 0:
-                    #print("!!!!     check       !!!!")
+                uu = LLR_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross, I_IL=I_IL, PI=PI, pol=pol, C=C) # TODO: testing for rate-matched non-noise
+            if I_IL:
+                if vector(GF(2), a) == uu[0].inf_bits:
                     cntr += 1
-                    break
+            else:
+                for dec in uu:
+                    if dec*C == 0:
+                        cntr += 1
+                        break
     print(f"len QNF := {len(QNF)}")
     print(f" N-E = {N-E}, {matching_scheme}")
     print(f"successful decodings := {(cntr/runs)*100}%")

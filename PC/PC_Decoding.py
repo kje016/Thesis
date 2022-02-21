@@ -2,7 +2,7 @@ from sage.all import *
 
 import PC_Rate_Matching
 import BEC_SCL
-import BSC_SCL
+import LLR_SCL
 import PC_CRC
 
 
@@ -13,7 +13,7 @@ def PC_Decoding(r, QNF, ms, N, MS, p_cross, channel, N0, pol):
     if channel == 'BEC':
         uu = BEC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
     else:
-        uu = BSC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
+        uu = LLR_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross)
 
     for dec in uu:
         if vector(GF(2), PC_CRC.bit_long_division(list(dec.inf_bits), pol)) == 0:

@@ -18,7 +18,7 @@ def PC_Encoding(a, A, R, I_IL):
         n = min(ceil(log(E, 2)), n_max)
         N = 2 ** n
         """ Interleaving the CRC bits """
-        c_ap = PC_Input_Bits_Interleaver.main_bit_interleaver(I_IL, c, A)  # TODO: ctess
+        c_ap = PC_Input_Bits_Interleaver.interleaver(I_IL, c, A)  # TODO: ctess
         """ Subchannel allocation """
         u, n_pc, n_wm_pc, QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.main(N=N, c_ap=c_ap, K=K, E=E,
                                                                                         I_IL=I_IL, R=R)
