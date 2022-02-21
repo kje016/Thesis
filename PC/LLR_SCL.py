@@ -7,8 +7,11 @@ F = RealField(10)
 
 
 def decoder(d, N, frozen_set, p_cross, I_IL, PI, C, pol):
-    C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
-    CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
+    if I_IL:
+        C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
+        CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
+    else:
+        C_perm, CRCpos = [], []
     llr = log(p_cross / (1 - p_cross))
     tree = HF.init_tree(N, d)
     """SCL initialization"""
@@ -19,7 +22,7 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C, pol):
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set
-            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos)
+            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos, I_IL)
             if not list_decoders:
                 return [HF.Decoder('', +oo)]
             node.beliefs = vector(F, [HF.sign_rev(node.beliefs)*(not is_frozen)])

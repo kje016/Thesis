@@ -93,7 +93,7 @@ if __name__ == "__main__":
                     cntr += 1
             else:
                 for dec in uu:
-                    if dec*C == 0:
+                    if test_CRC.CRC_check(dec.inf_bits, len(dec.inf_bits), pol) == 0:
                         cntr += 1
                         break
     print(f"len QNF := {len(QNF)}")
