@@ -69,16 +69,14 @@ def BPSK(codeword):
     return [(-1)**x for x in codeword]
 
 
-def ft(beliefs):
-    F = RealField(10)
+def ft(beliefs, F):
     result = []
     for a1, a2 in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)]):
         result.append((sign(a1)*sign(a2))*min(abs(a1), abs(a2)))
     return vector(F, result)
 
 
-def gt(beliefs, beta):
-    F = RealField(10)
+def gt(beliefs, beta, F):
     result = []
     for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
         result.append(a2 + a1*(1-2*b))
@@ -92,11 +90,18 @@ def bec_xor(a1, a2):
         return ((sign_rev(a1)^sign_rev(a2))*2-1)*-oo
 
 
-def uhat(belief, frozen):
+def bec_uhat(belief, frozen):
     if frozen:
         return vector(RealField(10), [oo])
     else:
         return vector(RealField(10), [belief[0]])
+
+
+def uhat(belief, frozen, F):
+    if frozen:
+        return vector(F, [0])
+    else:
+        return vector(F, [sign_rev(belief[0])])
 
     # return vector(RealField(10), list(map(lambda a: a*-oo * (1-frozen), belief)))
 

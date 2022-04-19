@@ -54,7 +54,7 @@ if __name__ == "__main__":
         # crk := padding the codeword
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
         D = vector(GF(2), crk)
-        X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb)
+        X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
         e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
 
         r = HF.channel_noise(e, channel, 0.1)

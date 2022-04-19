@@ -72,6 +72,8 @@ def bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross):
 
 
 def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
+    if not matching_scheme:
+        return ee
     if channel == 'BEC':
         return bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross)
     y, counter = [], 0

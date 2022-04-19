@@ -12,6 +12,16 @@ def Kronecker_Product(base_matrix, current_matrix):
     return result_matrix
 
 
+def gen_G(n):
+    MS = MatrixSpace(GF(2), 2)
+    G2 = MS.matrix([1, 0, 1, 1])
+    # Channel transformation Matrix: GN
+    GN = Kronecker_Product(G2, G2)
+    for i in range(n - 2):
+        GN = Kronecker_Product(G2, GN)
+    return GN
+
+
 def main_encoder(u, n, n_pc, n_wm_pc):
     # Basic polarization kernel: G2
     MS = MatrixSpace(GF(2), 2)

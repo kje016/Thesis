@@ -38,10 +38,10 @@ def interleaver(flag_param, c_seq, A, C):
     PI = get_pi(len(c_seq))
     output = [c_seq[value] for value in PI]
 
-    TK = [PI.index(a) for a in PI if a >= A]
-    TKB = [output[a] for a in TK][:3]
-    Cperm = [a for a in PI if a < A]
-    Cperm = Matrix([C[a] for a in Cperm])
+    #TK = [PI.index(a) for a in PI if a >= A]
+    #TKB = [output[a] for a in TK][:3]
+    #Cperm = [a for a in PI if a < A]
+    #Cperm = Matrix([C[a] for a in Cperm])
     """
     print(f"TKB := {TKB}")
     print(f"c1 := {list(vector(GF(2), output[:TK[0]]) * Cperm[:TK[0]])[:3]}")

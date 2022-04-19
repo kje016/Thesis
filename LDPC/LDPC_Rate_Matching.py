@@ -15,6 +15,7 @@ def RM_main(D, Zc, H, K, K_ap, R):
 # punctured bits are unknown
 # shortened filler bits are known to be 0
 def fill_w_llr(r, Zc, K, K_ap, p, Kb, channel):
+    # TODO: hard-coded to be 2??
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
     llr = log((1-p)/p)

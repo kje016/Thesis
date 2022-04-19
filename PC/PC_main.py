@@ -50,11 +50,9 @@ if __name__ == "__main__":
         # a_ap, C = PC_Code_Block_Segmentation.main_block_segmentation(I_IL, a, A, G) # TODO: repeats bits?
         for a_elem in [a]:
             pol = PC_CRC.get_pol(A, I_IL)
-            #c = PC_CRC.CRC_calc(a_elem, pol)
-            #cc = PC_CRC.CRC_checksum(list(c), pol)
             c, C = test_CRC.CRC(a, A, pol)
-            #print(f"c := {c}")
             tc = test_CRC.CRC_check(c, len(c), pol)
+
             K = len(c)
             E = ceil(K / R)
             n = min(ceil(log(E, 2)), n_max)

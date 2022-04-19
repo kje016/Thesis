@@ -55,3 +55,14 @@ def main(N, c_ap, K, E, I_IL, R):
         else:
             u.append(0)
     return u, npc, n_wm_pc, QNF, QNI, MS, matching_scheme
+
+
+def calc_u(N, QNI, c_ap):
+    u, c_get = [], 0
+    for i in range(N):
+        if i in QNI:
+            u.append(c_ap[c_get])
+            c_get += 1
+        else:
+            u.append(0)
+    return u

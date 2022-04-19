@@ -15,7 +15,8 @@ from scipy.stats import norm
 import sys
 
 # sage Monte_Carlo.py 12 0 AWGN
-R = [1/2, 1/3, 1/4]    # Rate of the code
+# R = [1/2, 1/3, 1/4]    # Rate of the code
+R = [1/2, 2/5, 1/3, 1/4, 1/5]   # Rate of the code
 A_min = 12
 # runs = 5
 lim = 200  # number or errors to be reached before moving to the next SNR value
