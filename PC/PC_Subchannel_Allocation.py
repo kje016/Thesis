@@ -26,36 +26,21 @@ def get_Q_N0(N):
     return Q_N_0
 
 
-def freeze(N, K, E):
+def freeze(N, K, E, npc):
     QN0 = get_Q_N0(N)
     matching_scheme = RM.matching_selection(E=E, N=N, K=K)
     MS = RM.get_rm_set(U=N-E, matching_scheme=matching_scheme, QN0=QN0)
     if len(MS) == 0:
-        QNI = set(QN0[-K:])
+        QNI = set(QN0[-(K+npc):])
         QNF = set(QN0)-QNI
     elif matching_scheme == 'repetition':
-        QNI = set(QN0[-K:])
+        QNI = set(QN0[-(K):])
         QNF = set(QN0) - QNI
     else:
         R = [a for a in QN0 if a not in MS]
-        QNF = set(R[:N-K-len(MS)]).union(MS)
+        QNF = set(R[:N-(K+len(MS)+npc)]).union(MS)
         QNI = set(QN0) - QNF
     return QNF, QNI, MS, matching_scheme
-
-
-def main(N, c_ap, K, E, I_IL, R):
-    npc, n_wm_pc = get_n_pc_bits(K, E, I_IL)
-    QNF, QNI, MS, matching_scheme = freeze(N, K, E)
-    QNPC = QNI[-(npc-n_wm_pc):]
-
-    u, c_get = [], 0
-    for i in range(N):
-        if i in QNI:
-            u.append(c_ap[c_get])
-            c_get += 1
-        else:
-            u.append(0)
-    return u, npc, n_wm_pc, QNF, QNI, MS, matching_scheme
 
 
 def get_n_wm_pc(GN, n_wm_pc, QNI, npc):
