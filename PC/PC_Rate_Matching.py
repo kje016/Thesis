@@ -1,6 +1,5 @@
 # cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
-import HelperFunctions as HF
 
 
 def matching_selection(E, N, K):
@@ -17,6 +16,7 @@ def matching_selection(E, N, K):
 # bit = "0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a)
 # br = ("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1]
 def get_rm_set(U, matching_scheme, QN0):
+    U = U
     bit_len = len("{0:b}".format(len(QN0)-1))
     #bnm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in QN0]
     bm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
@@ -85,30 +85,21 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
             if a in MS:
                 y.append(oo)
             else:
-                if channel == 'AWGN':
-                    y.append(llr1*ee[counter])     # (4*sqrt(Ec)/N0)*r[j]
-                else:
-                    y.append(ee[counter]*llr1)
+                y.append(ee[counter]*llr1)
                 counter += 1
     elif matching_scheme == "puncturing":
         for a in range(N):
             if a in MS:
                 y.append(0)
             else:
-                if channel == 'AWGN':
-                    y.append(llr1*ee[counter])
-                else:
-                    y.append(ee[counter]*llr1)
+                y.append(ee[counter]*llr1)
                 counter += 1
     elif matching_scheme == 'repetition':
         getter = 0
+        y = list(map(lambda a: a*llr1, ee))
         for a in range(N):
             if a in MS:
-                if channel == 'AWGN':
-                    y.append((ee[N+getter] + ee[counter]))
-                else:
-                    y.append( (ee[N+getter]*llr1 + ee[counter]*llr1))
-                # print(ee[N+getter], ee[counter], a, getter)
+                y.append( (ee[N+getter] + ee[counter]))
                 getter += 1
             else:
                 if channel == 'AWGN':
@@ -119,4 +110,3 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
 
     return vector(F, y)
     # return vector(F, list(map(lambda x: x - 1, 2 * vector(F, y)))) * llr1
-

@@ -4,39 +4,42 @@ import sys
 import csv
 import datetime
 import gc
-from scipy.stats import norm
 
 import PC_Decoding
 import PC_Encoder
+import PC_Rate_Matching
 import PC_Subchannel_Allocation
 import HelperFunctions as HF
 import PC_CRC
+import test_CRC
+
+# sage MC.py 12 0 BSC SC
 
 
-R = [1/2] #[1/2, 2/5, 1/3, 1/4]    # , 1/5]   # Rate of the code
+R = [1/3] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
 A_min = 12
 runs = 10000
-SNR = [0.0001, 0.3, 0.2, 0.1]   # really p_cross
+SNR = [0.01, 0.3, 0.2, 0.1]   # really p_cross
 # SNR = [0.5, 1, 2, 3, 4]
 A = int(sys.argv[1])
 I_IL = int(sys.argv[2])
 channel = sys.argv[3].upper()
 decoder = sys.argv[4].upper()
-
+pol = PC_CRC.get_pol(A, I_IL)
+K = A + pol.degree()
 n_min, n_max = 5, 10 - I_IL  # n_max = 10 for uplink, 9 for downlink.
-# SNR = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5])
 
-
+breakpoint()
 for rate in R:
-    E = ceil(A / rate)
-    n = min(ceil(log(E, 2)), n_max)
+    E = ceil(K / rate)
+    n = min(ceil(log(E, 2)), n_max)     # TODO: hvordan velges egt 'n'?
     N = 2 ** n
     QN0 = PC_Subchannel_Allocation.get_Q_N0(N)
-    QNF = set(QN0[:N - A])
-    QNI = set(QN0) - QNF
+    npc, n_wm_pc = PC_Subchannel_Allocation.get_n_pc_bits(K, E, I_IL)
+    QNI = QN0[-(K+npc):]
+    QNF = QN0[:N-(K+npc)]
     GN = PC_Encoder.gen_G(n)
-    del QN0
-    gc.collect()
+    QNPC = PC_Subchannel_Allocation.get_n_wm_pc(GN, n_wm_pc, QNI, npc)
 
     for i, snr in enumerate(SNR):
         # sigma = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
@@ -48,24 +51,23 @@ for rate in R:
             if iteration % 100 == 0:
                 print(iteration)
             a = random_vector(GF(2), A)
-            a = vector(GF(2), [1, 0, 0, 1])
-            u = PC_Subchannel_Allocation.calc_u(N, QNI, a)
+            c, C = test_CRC.CRC(a, A, pol)
+            print(f"c := {c}")
+            u = PC_Subchannel_Allocation.calc_u(N, QNI, c, QNPC)
             d = vector(GF(2), u) * GN
-            # breakpoint()
-            # p = 1 - norm.cdf(1 / sigma)  # error probability, from proposition 2.9
-            r = list(HF.channel_noise(s=d, channel=channel, p=snr)) # returns the modulated codeword with added noise
-            breakpoint()
-            # where 0 -> -1, 1 -> 1
-            llr = log(snr / (1 - snr))
-            #llr = -(4 / N0)
-            # y = vector(RealField(10), [2 if elem== 2 else elem*llr*oo for elem in r])
-            # y = vector(RealField(10), [elem*llr for elem in r])
-            y = vector(RealField(10), [llr*elem for elem in r])
-            scout = PC_Decoding.PC_Decoding(r=y, N=N, N0=None, QNF=QNF, ms=None, MS=None,
-                                             p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL)
+            matching_scheme = PC_Rate_Matching.matching_selection(E, N, K)
+            MS = PC_Rate_Matching.get_rm_set(N-E, matching_scheme, QN0)
+            e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
 
-            BER = BER + (a + scout[0].inf_bits).hamming_weight()
-            BLER = BLER + 1 * sign((a + scout[0].inf_bits).hamming_weight())
+            # p = 1 - norm.cdf(1 / sigma)  # error probability, from proposition 2.9
+            r = list(HF.channel_noise(s=e, channel=channel, p=snr)) # returns the modulated codeword with added noise
+            # y = vector(RealField(10), [2 if elem== 2 else elem*llr*oo for elem in r])
+            # y = vector(RealField(10), [llr*elem for elem in r])
+            scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=None, QNF=QNF, ms=matching_scheme, MS=MS,
+                                             p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL)
+            breakpoint()
+            BER = BER + (a + scout[:A]).hamming_weight()
+            BLER = BLER + sign(test_CRC.CRC_check(c, K, pol).hamming_weight())
 
             if decoder == 'SCL':
                 if 1 * sign((a+scout[0].inf_bits).hamming_weight()):

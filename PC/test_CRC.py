@@ -16,7 +16,7 @@ def CRC(a, A, pol):
             C[k, P-1] = C[k+1, 0] * pol[0]
         k = k-1
     res = (vector(GF(2), a)*C).list()
-    CRC = vector(GF(2), a + res)
+    CRC = vector(GF(2), list(a) + res)
     return CRC, C
 
 

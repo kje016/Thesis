@@ -36,7 +36,6 @@ def decoder(d, N, frozen_set):
                 tree[node.r_child].beliefs))
             node.state = node_states[2]
             node, depth = tree[floor((tree.index(node)-1)/2)], depth-1
-    breakpoint()
     del tree
     gc.collect()
     return vector(GF(2), vhat)

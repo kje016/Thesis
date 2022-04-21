@@ -29,7 +29,7 @@ def fun1(gamma, beta, alphas, pos):
     temp = alphas.copy()
     for i, row in enumerate(alphas):
         for k, v in row.items():
-            temp[i].update({k: gamma[k] - beta[k].get(pos)})
+            temp[i].update({k: gamma[k] - beta[k].get(pos+i)})
     return temp
 
 
@@ -47,9 +47,13 @@ def fun2(alpha, l, R, min_vals):
 
 
 def nz_update_row(row, min_vals, signs, offset):
-    offset = False # TODO: for testing
+    # offset = False # TODO: for testing
     output, min_get = [0] * len(row), len(min_vals)
     for i, elem in enumerate(row):
+        try:
+            min_vals[-min_get] == abs(elem)
+        except:
+            breakpoint()
         if min_vals[-min_get] == abs(elem):
             output[i] = signs[i] * max(min_vals[0]-(1*offset), 0)
         else:
@@ -73,7 +77,7 @@ def transpose_nzMatrix(matrix, len):
     return output
 
 
-def OMS( Zc, H, r):
+def OMS(Zc, H, r):
     M, N = H.nrows(), H.ncols()
     R, C = M//Zc, N//Zc
     L = R
@@ -96,13 +100,14 @@ def OMS( Zc, H, r):
     next_beta = alphas.copy()
 
     runs = 0
+    breakpoint()
     while runs < 30:
-        for l in range(L):
+        for l in range(1, L):
             # Ml = list(range(l*(M/L)+1, (l+1)*(M/L)))
-            min_vals = LDPC_MinSum.nz_min_fun(alphas[l*Zc:(l+1)*Zc], 2)
-            alphas[l * Zc: (l + 1) * Zc] = fun1(gamma, beta, alphas[l*Zc: (l+1)*Zc], l*Zc)
+            min_vals = LDPC_MinSum.nz_min_fun(alphas[(l-1)*Zc:l*Zc], 2)
+            alphas[(l-1) * Zc: l*Zc] = fun1(gamma, beta, alphas[(l-1)*Zc: l*Zc], (l-1)*Zc)
 
-            next_beta[l*Zc: (l+1)*Zc] = fun2(alphas[l * Zc: (l + 1) * Zc], l, R, min_vals)
+            next_beta[(l-1)*Zc: l*Zc] = fun2(alphas[(l-1) * Zc: l * Zc], l-1, R, min_vals)
         next_beta = transpose_nzMatrix(next_beta, N)
         for l in range(L):
             colvecs = [list(a.values()) for a in next_beta[l*Zc: (l+1)*Zc]]

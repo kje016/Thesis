@@ -103,8 +103,6 @@ def uhat(belief, frozen, F):
     else:
         return vector(F, [sign_rev(belief[0])])
 
-    # return vector(RealField(10), list(map(lambda a: a*-oo * (1-frozen), belief)))
-
 
 def f_bec(beliefs):
     F = RealField(10)

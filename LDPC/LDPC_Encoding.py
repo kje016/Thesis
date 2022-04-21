@@ -34,7 +34,6 @@ def Encoding(H, Zc, D, K, kb, BG):
 
     if BG == 1:
         pc1 = sum(lambdas)
-        #pc1_shift = vector(GF(2), [pc1[-1]] + list(pc1)[:len(pc1) - 1])
         pc1_shift = vector(GF(2),  list(pc1)[1:] + [pc1[0]])
         pc2 = lambdas[0] + pc1_shift
         pc4 = lambdas[3] + pc1_shift

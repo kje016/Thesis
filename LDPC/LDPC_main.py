@@ -57,15 +57,15 @@ if __name__ == "__main__":
         X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
         e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
 
-        r = HF.channel_noise(e, channel, 0.1)
+        r = HF.channel_noise(e, channel, 0.05)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.1, H.ncols() - H.nrows(), channel)
-        tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.05, H.ncols() - H.nrows(), channel)
+        # tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
         if channel == 'BEC':
             aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
-            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.1, 4*Zc)
+            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.05, 4*Zc)
         if is_codeword:
             correct += 1
             print(f"correct := {correct}")
