@@ -6,7 +6,7 @@ node_states = ['l', 'r', 'u']
 F = RealField(10)
 
 
-def decoder(d, N, frozen_set, p_cross, I_IL, PI, C, pol):
+def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
     C_perm, CRCpos = [], []
     if I_IL:
         C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])

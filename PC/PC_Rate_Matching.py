@@ -13,22 +13,15 @@ def matching_selection(E, N, K):
     return rate_matching
 
 
-# bit = "0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a)
-# br = ("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1]
 def get_rm_set(U, matching_scheme, QN0):
-    U = U
     bit_len = len("{0:b}".format(len(QN0)-1))
-    #bnm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in QN0]
     bm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
     if matching_scheme == "puncturing":
         ms = set([bm.index(a) for a in QN0[:U]])
-        #matching_set = set(bnm[:U])
     elif matching_scheme == "shortening":
         ms = set([bm.index(a) for a in QN0[-U:]])
-        #matching_set = set(bnm[-U:])
     else: # matching_scheme == 'repetition'
         ms = set([QN0.index(a) for a in bm[:abs(U)]])
-        #matching_set = set(bnm[:abs(U)])
     return ms
 
 
@@ -42,71 +35,38 @@ def circular_buffer(y, matching_set, matching_scheme):
     return e
 
 
-def bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross):
+def bec_inv_circbuf(N, ee, matching_scheme, MS):
     y, counter = [], 0
-    F, llr1 = RealField(10), log(p_cross / (1 - p_cross))
-    if matching_scheme == "shortening":
-        for a in range(N):
-            if a in MS:
-                y.append(oo)
-            else:
-                y.append(2 if ee[counter] == 2 else ee[counter]*llr1*oo)
-                counter += 1
-    elif matching_scheme == "puncturing":
-        for a in range(N):
-            if a in MS:
-                y.append(0)
-            else:
-                y.append(2 if ee[counter] == 2 else ee[counter] * -oo)
-                counter += 1
-    elif matching_scheme == 'repetition':
-        getter = 0
-        for a in range(N):
-            if a in MS:
-                y.append( (ee[N+getter] if ee[counter] == 2 else ee[counter])*llr1 )
-                getter += 1
-            else:
-                y.append(ee[counter]*llr1)
-                counter += 1
-    return vector(F, y)
+    ms_operand = oo if matching_scheme == 'shortening' else 0
+
+    for a in range(N):
+        if a in MS:
+            yi = (ee[N+counter] if ee[counter] == 2 else ee[counter])*-oo if matching_scheme == 'repetition' else\
+                ms_operand
+            y.append(yi)
+        else:
+            y.append(2 if ee[counter] == 2 else ee[counter]*-oo)
+            counter += 1
+    return vector(RealField(10), y)
 
 
 def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
+    channel = channel.split('_')[0]
     if not matching_scheme:
         return ee
     if channel == 'BEC':
-        return bec_inv_circbuf(N, ee, matching_scheme, MS, p_cross)
+        return bec_inv_circbuf(N, ee, matching_scheme, MS)
     y, counter = [], 0
-    F, llr1 = RealField(10), log(p_cross / (1 - p_cross))
-    if channel == 'AWGN':
-        llr1 = -(4/N0)
-    if matching_scheme == "shortening":
-        for a in range(N):
-            if a in MS:
-                y.append(oo)
-            else:
-                y.append(ee[counter]*llr1)
-                counter += 1
-    elif matching_scheme == "puncturing":
-        for a in range(N):
-            if a in MS:
-                y.append(0)
-            else:
-                y.append(ee[counter]*llr1)
-                counter += 1
-    elif matching_scheme == 'repetition':
-        getter = 0
-        y = list(map(lambda a: a*llr1, ee))
-        for a in range(N):
-            if a in MS:
-                y.append( (ee[N+getter] + ee[counter]))
-                getter += 1
-            else:
-                if channel == 'AWGN':
-                    y.append(ee[counter])
-                else:
-                    y.append(ee[counter]*llr1)
-                counter += 1
+    llr = -(4/N0) if channel == 'AWGN' else log(p_cross / (1 - p_cross))
+    ms_operand = oo if matching_scheme=='shortening' else 0
 
-    return vector(F, y)
-    # return vector(F, list(map(lambda x: x - 1, 2 * vector(F, y)))) * llr1
+    for a in range(N):
+        if a in MS:
+            yi = ee[N+counter]*llr + ee[counter]*llr if matching_scheme == 'repetition' else\
+                ms_operand
+            y.append(yi)
+        else:
+            y.append(ee[counter]*llr)
+            counter += 1
+
+    return vector(RealField(10), y)
