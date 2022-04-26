@@ -12,13 +12,4 @@ def main_sub_block_interleaver(d, N):
 
 
 def inv_sub_block_interleaver(y, N):
-    #d = []
-    #breakpoint()
-    #for n in range(N):
-    #    i = floor((32*n)/N)
-    #    jn = P.index(i)*(N//32) + Integer(mod(n, N//32))
-    #    d.append(y[jn])
-    #return d
     return [y[P.index(floor((32*n)/N))*(N//32) + Integer(mod(n, N//32))] for n in range(N)]
-
-# TODO: må sikkert ha en for-løkke for hele blokken

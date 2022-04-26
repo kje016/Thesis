@@ -1,6 +1,9 @@
 # cd Desktop/Thesis/PySageMath/PC
+import gc
+
 from sage.all import *
 import HelperFunctions as HF
+import test_CRC
 
 node_states = ['l', 'r', 'u']
 F = RealField(10)
@@ -23,8 +26,8 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set
-            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos, I_IL)
-            if not list_decoders:   # TODO: ?
+            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos)
+            if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             node.beliefs = vector(F, [HF.sign_rev(node.beliefs)*(not is_frozen)])
 
@@ -52,5 +55,6 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
     else:
         for dec in list_decoders:
             dec.inf_bits = vector(GF(2), dec.inf_bits)
-
+    del tree
+    gc.collect()
     return list_decoders

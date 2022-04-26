@@ -1,8 +1,7 @@
 from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
-
-import test_CRC
+from scipy.stats import foldnorm
 
 
 def standard_to_list(input_text):
@@ -25,17 +24,6 @@ def get_realiability_sequence():
     return reliability_sequence
 
 
-def get_inf_pos(K):
-    output = []
-    R = get_realiability_sequence()
-    for i in R:
-        if i <= K:
-            output.append(i)
-        if len(output) >= K:
-            return output
-    return output
-
-
 # 2 is representing the erasure symbol
 # returns the modulation of the codeword with added noise
 def channel_noise(s, channel, p):
@@ -49,8 +37,9 @@ def channel_noise(s, channel, p):
         r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
 
     else: # channel == 'BEC'
+        noise = list(uniform(0, 1, size=len(s)))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
-        r = vector(F, [2 if list(uniform(0, 1, size=len(s)))[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
+        r = vector(F, [2 if noise[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
     return r
 
 
@@ -63,10 +52,6 @@ def sign(rv):
 # reverse of sign(rv)
 def sign_rev(rv):
     return 0 if rv >= 0 else 1
-
-
-def BPSK(codeword):
-    return [(-1)**x for x in codeword]
 
 
 def ft(beliefs, F):
@@ -182,21 +167,42 @@ def prune_decoders(input_decoders, decoder_size):
 # @arg is_frozen_node Boolean of the current node is a frozen node
 # @belief the belief for the current node
 # @input_decoders list of current decoders
-def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders, C_perm, crcbit, I_IL):
+def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders, C_perm, crcbit):
     if is_frozen_node:
-        new_decoders = [Decoder(decoder.inf_bits, decoder.path_metric) for decoder in input_decoders]
+        return [Decoder(decoder.inf_bits, decoder.path_metric) for decoder in input_decoders]
+
+    if len(input_decoders[0].inf_bits) in crcbit:
+        new_decoders = []
+        for decoder in input_decoders:
+            iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
+            cword = list(vector(GF(2), decoder.inf_bits))
+            list(map(lambda x: cword.pop(x), iPI))
+            check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
+            if check == sign_rev(belief):
+                new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
     else:
-        if len(input_decoders[0].inf_bits) in crcbit:
-            new_decoders = []
-            for decoder in input_decoders:
-                iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
-                cword = list(vector(GF(2), decoder.inf_bits))
-                list(map(lambda x: cword.pop(x), iPI))
-                check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
-                if check == sign_rev(belief):
-                    new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
-        else:
-            new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
-            new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + (sign_rev(belief))*abs(llr)) for decoder in input_decoders])
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(belief)) for decoder in input_decoders]
+        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + (sign_rev(belief))*abs(belief)) for decoder in input_decoders])
     new_decoders = prune_decoders(new_decoders, n_decoders)
     return new_decoders
+
+
+def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm, crcbit):
+    if is_frozen_node:
+        return input_decoders
+
+    if len(input_decoders[0].inf_bits) in crcbit:
+        new_decoders = []
+        for decoder in input_decoders:
+            iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
+            cword = list(vector(GF(2), decoder.inf_bits))
+            list(map(lambda x: cword.pop(x), iPI))
+            check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
+            if check == bec_uhat(belief, is_frozen_node):
+                new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
+    if abs(belief) == oo:
+        new_decoders = [Decoder(decoder.inf_bits+str(sign_rev(belief)), decoder.path_metric) for decoder in input_decoders]
+    else:
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + abs(llr)) for decoder in input_decoders]
+        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + abs(llr)) for decoder in input_decoders])
+    return prune_decoders(new_decoders, L)

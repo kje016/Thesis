@@ -21,7 +21,6 @@ pattern = "0 2 4 7 9 14 19 20 24 25 26 28 31 34 42 45 49 50 51 53 54 56 58 59 61
           "38 144 39 145 40 146 41 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163"
 
 interleaver_pattern = [int(x) for x in list(pattern.split(' '))]
-#int_test = HelperFunctions.standard_to_list('Interleaving_pattern.txt')
 
 
 def get_pi(K):
@@ -32,8 +31,8 @@ def get_pi(K):
     return PI
 
 
-def interleaver(flag_param, c_seq, A, C):
-    if not flag_param:
+def interleaver(I_IL, c_seq):
+    if not I_IL:
         return c_seq, None
     PI = get_pi(len(c_seq))
     output = [c_seq[value] for value in PI]

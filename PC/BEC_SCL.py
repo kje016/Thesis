@@ -6,7 +6,11 @@ node_states = ['l', 'r', 'u']
 F = RealField(10)
 
 
-def decoder(d, N, frozen_set, p_cross):
+def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
+    C_perm, CRCpos = [], []
+    if I_IL:
+        C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
+        CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
     llr = -p_cross
     tree = HF.init_tree(N, d)
     """SCL initialization"""
@@ -17,8 +21,9 @@ def decoder(d, N, frozen_set, p_cross):
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set # alternatively var name,
-            node.beliefs = HF.uhat(node.beliefs, is_frozen)
-            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L)
+            node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
+            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos)
+
             if tree.index(node) == len(tree)-1:
                 done = True
             node, depth = tree[floor(abs((tree.index(node)-1))/2)], depth-1
@@ -31,14 +36,20 @@ def decoder(d, N, frozen_set, p_cross):
             node.state = node_states[1]
             node, depth = tree[node.r_child], depth+1
         else:   # step U
-            node.beliefs = vector(F, list(map(lambda x: HF.bec_xor(x[0], x[1]), zip(tree[node.l_child].beliefs, tree[node.r_child].beliefs))) + list(tree[node.r_child].beliefs))
+            node.beliefs = vector(F, list(map(lambda x: HF.bec_xor(x[0], x[1]), zip(tree[node.l_child].beliefs,
+                                                    tree[node.r_child].beliefs))) + list(tree[node.r_child].beliefs))
             node.state = node_states[2]
             node, depth = tree[floor((tree.index(node)-1)/2)], depth-1
 
-    for dec in list_decoders:
-        bits = set(list(range(0, N))) - set(frozen_set)
-        bits = [dec.inf_bits[a] for a in bits]
-        dec.inf_bits = vector(GF(2), [str(a) for a in bits]) #''.join(a for a in bits)
+    if PI:
+        for dec in list_decoders:
+            deinterleave = [0]*len(dec.inf_bits)
+            for i, elem in enumerate(PI):
+                deinterleave[elem] = dec.inf_bits[i]
+            dec.inf_bits = vector(GF(2), deinterleave[:C.nrows()])
+    else:
+        for dec in list_decoders:
+            dec.inf_bits = vector(GF(2), dec.inf_bits)
 
     return list_decoders
 
