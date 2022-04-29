@@ -9,13 +9,12 @@ node_states = ['l', 'r', 'u']
 F = RealField(10)
 
 
-def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
+def decoder(d, N, frozen_set, p_cross, I_IL, PI, C, channel):
     C_perm, CRCpos = [], []
     if I_IL:
         C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
         CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
-
-    llr = log(p_cross / (1 - p_cross))
+    llr = -(4/p_cross) if channel == 'AWGN' else log(p_cross / (1 - p_cross))
     tree = HF.init_tree(N, d)
     F = RealField(7)
     """SCL initialization"""
@@ -43,7 +42,8 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
             node.state = node_states[1]
             node, depth = tree[node.r_child], depth+1
         else:   # step U
-            node.beliefs = vector(F, list(map(lambda x: mod(x[0]+ x[1],2), zip(tree[node.l_child].beliefs, tree[node.r_child].beliefs))) + list(tree[node.r_child].beliefs))
+            node.beliefs = vector(F, list(map(lambda x: mod(x[0]+ x[1],2), zip(tree[node.l_child].beliefs,
+                                                    tree[node.r_child].beliefs))) + list(tree[node.r_child].beliefs))
             node.state = node_states[2]
             node, depth = tree[floor((tree.index(node)-1)/2)], depth-1
     if PI:

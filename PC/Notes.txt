@@ -1,0 +1,4 @@
+PC av AWGN SC og BSC SCL har path_metric av beliefs ikke llr. 27.04 kl: 10:32.
+Endrer det nå.
+
+

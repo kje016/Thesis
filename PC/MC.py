@@ -16,11 +16,11 @@ import PC_CRC
 import test_CRC
 
 # sage MC.py 12 0 BSC SC
-R = [1/2] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
+R = [1/4] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
 A_min = 12
 runs = 5000
-# SNR = [0.3, 0.2, 0.1]   # really p_cross
-SNR = [1, 2, 3, 4, 5] #, 6]      # this is SNR
+SNR = [0.3, 0.2, 0.1]   # really p_cross
+#SNR = [1, 2, 3, 4, 5] #, 6]      # this is SNR
 # SNR = [0.5, 1, 2, 3, 4]
 A = int(sys.argv[1])
 I_IL = int(sys.argv[2])
@@ -52,6 +52,7 @@ for rate in R:
                 print(iteration)
             a = random_vector(GF(2), A)
             c, C = test_CRC.CRC(a, A, pol)
+            print(f"c := \n{c}")
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
             d = vector(GF(2), u) * GN
@@ -69,9 +70,9 @@ for rate in R:
                         break
                 if not crc_pass:
                     scout = vector(GF(2), scout[0].inf_bits)
-
             BER = BER + (a + scout[:A]).hamming_weight()
             BLER = BLER + sign(test_CRC.CRC_check(scout, K, pol).hamming_weight())
+            breakpoint()
 
         file_getter = channel + '_' + decoder
         with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',

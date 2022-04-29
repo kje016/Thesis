@@ -16,7 +16,6 @@ def matching_selection(E, N, K):
 def get_rm_set(U, matching_scheme, QN0):
     bit_len = len("{0:b}".format(len(QN0)-1))
     bm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
-    breakpoint()
     if matching_scheme == "puncturing":
         ms = set([bm.index(a) for a in QN0[:U]])
     elif matching_scheme == "shortening":
@@ -39,7 +38,6 @@ def circular_buffer(y, matching_set, matching_scheme):
 def bec_inv_circbuf(N, ee, matching_scheme, MS):
     y, counter = [], 0
     ms_operand = oo if matching_scheme == 'shortening' else 0
-
     for a in range(N):
         if a in MS:
             yi = (ee[N+counter] if ee[counter] == 2 else ee[counter])*-oo if matching_scheme == 'repetition' else\

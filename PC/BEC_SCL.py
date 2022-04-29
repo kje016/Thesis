@@ -21,9 +21,9 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set # alternatively var name,
-            node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
-            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos)
 
+            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos)
+            node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
             if tree.index(node) == len(tree)-1:
                 done = True
             node, depth = tree[floor(abs((tree.index(node)-1))/2)], depth-1
@@ -52,4 +52,3 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
             dec.inf_bits = vector(GF(2), dec.inf_bits)
 
     return list_decoders
-

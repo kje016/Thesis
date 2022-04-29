@@ -37,9 +37,10 @@ def channel_noise(s, channel, p):
         r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
 
     else: # channel == 'BEC'
-        noise = list(uniform(0, 1, size=len(s)))
+        # noise = list(uniform(0, 1, size=len(s)))
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
-        r = vector(F, [2 if noise[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
+        r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])
     return r
 
 
@@ -181,13 +182,15 @@ def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders, C_
             if check == sign_rev(belief):
                 new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
     else:
-        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(belief)) for decoder in input_decoders]
-        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + (sign_rev(belief))*abs(belief)) for decoder in input_decoders])
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
+        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(llr)) for decoder in input_decoders])
     new_decoders = prune_decoders(new_decoders, n_decoders)
     return new_decoders
 
 
 def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm, crcbit):
+    if abs(belief) != oo and is_frozen_node == False:
+        breakpoint()
     if is_frozen_node:
         return input_decoders
 
@@ -200,9 +203,7 @@ def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm,
             check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
             if check == bec_uhat(belief, is_frozen_node):
                 new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
-    if abs(belief) == oo:
-        new_decoders = [Decoder(decoder.inf_bits+str(sign_rev(belief)), decoder.path_metric) for decoder in input_decoders]
     else:
-        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + abs(llr)) for decoder in input_decoders]
-        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + abs(llr)) for decoder in input_decoders])
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
+        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(llr)) for decoder in input_decoders])
     return prune_decoders(new_decoders, L)

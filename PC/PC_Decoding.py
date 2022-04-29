@@ -16,5 +16,6 @@ def PC_Decoding(r, QNF, ms, N, MS, p_cross, channel, N0, I_IL, PI, C):
             LLR_SC.decoder(d=yy, N=N, frozen_set=QNF)
     else:
         uu = BEC_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross, I_IL=I_IL, PI=PI, C=C) if channel[:3]== 'BEC'\
-            else LLR_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=p_cross, I_IL=I_IL, PI=PI, C=C)
+    else LLR_SCL.decoder(d=yy, N=N, frozen_set=QNF, p_cross=N0 if channel[:4] == 'AWGN' else p_cross, I_IL=I_IL,
+                                 PI=PI, C=C, channel=channel.split('_')[0])
     return uu
