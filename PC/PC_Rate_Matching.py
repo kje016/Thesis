@@ -27,7 +27,7 @@ def get_rm_set(U, matching_scheme, QN0):
 
 def circular_buffer(y, matching_set, matching_scheme):
     if matching_scheme == 'repetition':
-        return y[:] + [y[a] for a in matching_set]
+        return vector(GF(2), list(y) + [y[a] for a in matching_set])
     e = []
     for a in range(len(y)):
         if a not in matching_set:

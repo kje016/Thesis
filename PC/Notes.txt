@@ -1,4 +1,5 @@
 PC av AWGN SC og BSC SCL har path_metric av beliefs ikke llr. 27.04 kl: 10:32.
 Endrer det nå.
 
-
+29.04 kl 13:38
+    Jeg har tatt feil av utregning av PM. det er ikke abs på channel llr, det er abs på incoming belief

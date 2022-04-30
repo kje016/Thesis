@@ -1,7 +1,6 @@
 from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
-from scipy.stats import foldnorm
 
 
 def standard_to_list(input_text):
@@ -30,6 +29,7 @@ def channel_noise(s, channel, p):
     F = RealField(10)
     if channel == 'BSC':
         noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        #print(noise.hamming_weight() / len(s))
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
 
     elif channel == 'AWGN':
@@ -39,6 +39,7 @@ def channel_noise(s, channel, p):
     else: # channel == 'BEC'
         # noise = list(uniform(0, 1, size=len(s)))
         noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        print(noise.hamming_weight()/len(s))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
         r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])
     return r
@@ -99,6 +100,7 @@ def f_bec(beliefs):
 
 
 def lor(a1, a2):
+    breakpoint()
     if a1 == 2:
         return a2
     elif a2 == 2:
@@ -168,9 +170,9 @@ def prune_decoders(input_decoders, decoder_size):
 # @arg is_frozen_node Boolean of the current node is a frozen node
 # @belief the belief for the current node
 # @input_decoders list of current decoders
-def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders, C_perm, crcbit):
+def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, crcbit):
     if is_frozen_node:
-        return [Decoder(decoder.inf_bits, decoder.path_metric) for decoder in input_decoders]
+        return input_decoders
 
     if len(input_decoders[0].inf_bits) in crcbit:
         new_decoders = []
@@ -182,15 +184,13 @@ def update_decoders(is_frozen_node, belief, llr,  input_decoders, n_decoders, C_
             if check == sign_rev(belief):
                 new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
     else:
-        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
-        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(llr)) for decoder in input_decoders])
+        new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(belief)) for decoder in input_decoders]
+        new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(belief)) for decoder in input_decoders])
     new_decoders = prune_decoders(new_decoders, n_decoders)
     return new_decoders
 
 
 def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm, crcbit):
-    if abs(belief) != oo and is_frozen_node == False:
-        breakpoint()
     if is_frozen_node:
         return input_decoders
 
