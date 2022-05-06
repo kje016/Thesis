@@ -13,7 +13,7 @@ def CRC(a, A, pol):
     while k >= 0:
         for i in range(P-1):
             C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
-            C[k, P-1] = C[k+1, 0] * pol[0]
+        C[k, P-1] = C[k+1, 0] * pol[0]
         k = k-1
     res = (vector(GF(2), a)*C).list()
     CRC = vector(GF(2), list(a) + res)
@@ -35,6 +35,7 @@ def CRC_check(a, A, pol):
 
 
 def ICRC_check(a, A, iPI):
+    breakpoint()
     map(lambda x: a.append(a.pop(x)), iPI)
     pol = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
     P = pol.degree()

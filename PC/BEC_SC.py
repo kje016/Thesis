@@ -10,7 +10,7 @@ def decoder(d, N, frozen_set):
     tree = HF.init_tree(N, d)
     depth, done, node = 0, False, tree[0]
     vhat = []
-
+    breakpoint()
     while not done:
         if depth == log(N, 2):
             node.state = node_states[2]

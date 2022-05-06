@@ -175,6 +175,7 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, 
         return input_decoders
 
     if len(input_decoders[0].inf_bits) in crcbit:
+        breakpoint()
         new_decoders = []
         for decoder in input_decoders:
             iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]

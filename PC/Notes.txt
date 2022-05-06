@@ -3,3 +3,6 @@ Endrer det nå.
 
 29.04 kl 13:38
     Jeg har tatt feil av utregning av PM. det er ikke abs på channel llr, det er abs på incoming belief
+
+05.05 kl 11:50
+    fjerner MS for å se om det er det som påvirker BSC SCL

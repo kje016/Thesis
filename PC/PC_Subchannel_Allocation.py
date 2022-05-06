@@ -26,10 +26,10 @@ def get_Q_N0(N):
     return Q_N_0
 
 
-def freeze(N, K, E, npc):
-    QN0 = get_Q_N0(N)
+def freeze(N, K, E, npc, QN0):
     matching_scheme = RM.matching_selection(E=E, N=N, K=K)
     MS = RM.get_rm_set(U=N-E, matching_scheme=matching_scheme, QN0=QN0)
+    #MS = set()  # TODO: remove this line
     if len(MS) == 0:
         QNI = set(QN0[-(K+npc):])
         QNF = set(QN0)-QNI
