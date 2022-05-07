@@ -7,6 +7,7 @@ F = RealField(10)
 
 
 def decoder(d, N, frozen_set):
+    breakpoint()
     tree = HF.init_tree(N, d)
     depth, done, node = 0, False, tree[0]
     vhat = []

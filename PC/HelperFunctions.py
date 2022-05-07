@@ -26,9 +26,13 @@ def get_realiability_sequence():
 # 2 is representing the erasure symbol
 # returns the modulation of the codeword with added noise
 def channel_noise(s, channel, p):
-    F = RealField(10)
+    F = RealField(7)
     if channel == 'BSC':
-        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        noisepos = sample(range(0, len(s)), floor(len(s)*p))
+        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
+        #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
+        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        #print(noise.hamming_weight())
         #print(noise.hamming_weight() / len(s))
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
 
@@ -79,9 +83,9 @@ def bec_xor(a1, a2):
 
 def bec_uhat(belief, frozen):
     if frozen:
-        return vector(RealField(10), [oo])
+        return vector(RealField(7), [oo])
     else:
-        return vector(RealField(10), [belief[0]])
+        return vector(RealField(7), [belief[0]])
 
 
 def uhat(belief, frozen, F):
@@ -92,7 +96,7 @@ def uhat(belief, frozen, F):
 
 
 def f_bec(beliefs):
-    F = RealField(10)
+    F = RealField(7)
     result = []
     for x, y in zip(beliefs[0:len(beliefs)//2], beliefs[len(beliefs)//2: len(beliefs)]):
         result.append(bec_xor(x, y))
@@ -110,7 +114,7 @@ def lor(a1, a2):
 
 
 def g_bec(beliefs, beta):
-    F = RealField(10)
+    F = RealField(7)
     result = []
     for a1, a2, b in zip(beliefs[0:len(beliefs)//2], beliefs[len(beliefs)//2: len(beliefs)], beta):
         result.append(lor(a2, bec_xor(a1, b)))
@@ -118,7 +122,7 @@ def g_bec(beliefs, beta):
 
 
 def g_BPSK(alpha1, alpha2, beta):
-    F= RealField(10)
+    F = RealField(7)
     result = []
     for a1, a2, b in zip(alpha1, alpha2, beta):
         result.append( (a2 + (1-2*b)*a1) )
@@ -136,22 +140,19 @@ class Decoder:
 
 
 class Node:
-    def __init__(self, l_child, r_child, state):
-        self.l_child = l_child
-        self.r_child = r_child
+    def __init__(self, state):
         self.beliefs = []
         self.state = state
 
     def __str__(self):
-        return f'beliefs:{str(self.beliefs)}, state:{self.state}, left_child: {str(self.l_child)}, right_child:{str(self.r_child)}'
+        return f'beliefs:{str(self.beliefs)}, state:{self.state}'
 
 
 def init_tree(N, r):
     tree, d, n = [], 0, 1
-    while n < N:
-        tree.extend([Node(i, i+1, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
+    while d <= log(N, 2):
+        tree.extend([Node('') for i in range(n)])
         d, n = d+1, n*2
-    tree.extend([Node(None, None, '') for i in range(2*(n-1)+1, 2*(n-1)+1+(n*2), 2)])
     tree[0].beliefs = r
     return tree
 

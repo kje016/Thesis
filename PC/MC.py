@@ -4,6 +4,7 @@ import sys
 import csv
 import datetime
 import time
+from random import sample
 from sys import getsizeof
 import gc
 from scipy.stats import norm
@@ -18,10 +19,10 @@ import PC_CRC
 import test_CRC
 
 # sage MC.py 12 0 BSC SCL
-R = [1/3] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
+R = [1/2] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
 A_min = 12
-runs = 1000
-SNR = [0.15] #[0.01, 0.3, 0.2]   # really p_cross
+runs = 5000
+SNR = [0.1] #[0.01, 0.3, 0.2]   # really p_cross
 #SNR = [1, 2, 3, 4, 5] #, 6]      # this is SNR
 # SNR = [0.5, 1, 2, 3, 4]
 A = int(sys.argv[1])
@@ -41,6 +42,7 @@ for rate in R:
     QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.freeze(N, K, E, npc, QN0)
     GN = PC_Encoder.gen_G(n)
     QNPC = PC_Subchannel_Allocation.get_n_wm_pc(GN, n_wm_pc, QNI, npc)
+    del QN0; gc.collect()
     for i, snr in enumerate(SNR):
         if channel == 'AWGN':
             sigma = sqrt(1 / (2 * rate * 10 ** (snr/ 10)))
@@ -51,6 +53,7 @@ for rate in R:
         for iteration in range(runs):
             if iteration % 100 == 0:
                 print(iteration)
+            startime = time.time()
             a = random_vector(GF(2), A)
             c, G = test_CRC.CRC(a, A, pol)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
@@ -58,6 +61,7 @@ for rate in R:
             d = vector(GF(2), u) * GN
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
             r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
+
             scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
                                              p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
             if decoder == 'SCL':
