@@ -43,7 +43,7 @@ def channel_noise(s, channel, p):
     else: # channel == 'BEC'
         # noise = list(uniform(0, 1, size=len(s)))
         noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
-        print(noise.hamming_weight()/len(s))
+        #print(noise.hamming_weight()/len(s))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
         r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])
     return r
@@ -104,7 +104,6 @@ def f_bec(beliefs):
 
 
 def lor(a1, a2):
-    breakpoint()
     if a1 == 2:
         return a2
     elif a2 == 2:
@@ -176,7 +175,6 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, 
         return input_decoders
 
     if len(input_decoders[0].inf_bits) in crcbit:
-        breakpoint()
         new_decoders = []
         for decoder in input_decoders:
             iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
@@ -205,6 +203,7 @@ def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm,
             check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
             if check == bec_uhat(belief, is_frozen_node):
                 new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
+            breakpoint()
     else:
         new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
         new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(llr)) for decoder in input_decoders])
