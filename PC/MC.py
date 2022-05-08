@@ -22,7 +22,7 @@ import test_CRC
 R = [1/2] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
 A_min = 12
 runs = 1000
-SNR = [0.45] #[0.01, 0.3, 0.2]   # really p_cross
+SNR = [0.6] #[0.01, 0.3, 0.2]   # really p_cross
 #SNR = [1, 2, 3, 4, 5] #, 6]      # this is SNR
 # SNR = [0.5, 1, 2, 3, 4]
 A = int(sys.argv[1])
@@ -56,18 +56,15 @@ for rate in R:
             a = random_vector(GF(2), A)
             c, G = test_CRC.CRC(a, A, pol)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
-            #print(c)
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
             d = vector(GF(2), u) * GN
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
             r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
-
             scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
                                              p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
             if decoder == 'SCL':
                 if I_IL:
                     scout = scout[0].inf_bits
-                    breakpoint()
                     if scout == '':
                         scout = a + vector(GF(2), [1]*A)
                 else:

@@ -6,3 +6,6 @@ Endrer det nå.
 
 05.05 kl 11:50
     fjerner MS for å se om det er det som påvirker BSC SCL
+
+i BEC SCL: er MED MS!!
+500,0.5,511,1024,1000,236824,996,0,0.45,0,2022-05-08 11:41:01.864036

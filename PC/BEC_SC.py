@@ -5,7 +5,7 @@ import HelperFunctions as HF
 node_states = ['l', 'r', 'u']
 F = RealField(10)
 
-
+# fat = [a.beliefs for a in tree]; fat
 def decoder(d, N, frozen_set):
     tree = HF.init_tree(N, d)
     depth, done, node = 0, False, tree[0]
@@ -16,7 +16,7 @@ def decoder(d, N, frozen_set):
             is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set
             node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
             if not is_frozen:
-                vhat.append(HF.sign_rev(node.beliefs))
+                vhat.append(0 if node.beliefs[0] > 0 else 1)
             if tree.index(node) == len(tree)-1:
                 done = True
             node.state = node_states[2]

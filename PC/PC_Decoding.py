@@ -11,6 +11,8 @@ def PC_Decoding(r, QNF, ms, N, MS, p_cross, channel, N0, I_IL, PI, C):
     """Channel de-Interleaver"""
     yy = PC_Rate_Matching.inv_circular_buffer(N=N, ee=r, matching_scheme=ms, MS=MS, p_cross=p_cross,
                                               channel=channel, N0=N0)
+    #tess = BEC_SCL.decoder(vector(RealField(10), [2.0, +oo, 2.0, +oo, 2.0, -oo, +oo, -oo]), 8, {0, 1, 2, 4}, 0.5,
+                           #None, None, None)
     if channel[-2:] == 'SC':
         uu = BEC_SC.decoder(d=yy, N=N, frozen_set=QNF) if channel[:3]=='BEC' else\
             LLR_SC.decoder(d=yy, N=N, frozen_set=QNF)
