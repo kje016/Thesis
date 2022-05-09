@@ -43,6 +43,7 @@ def channel_noise(s, channel, p):
     else: # channel == 'BEC'
         # noise = list(uniform(0, 1, size=len(s)))
         noisepos = sample(range(0, len(s)), floor(len(s) * p))
+
         noise = vector(GF(2), [1 if a in noisepos else 0 for a in range(len(s))])
         #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
         #print(noise.hamming_weight()/len(s))
@@ -97,6 +98,14 @@ def uhat(belief, frozen, F):
         return vector(F, [sign_rev(belief[0])])
 
 
+def f_bsc(beliefs):
+    F = RealField(7)
+    result = []
+    for a1, a2 in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)]):
+        result.append((sign(a1)*sign(a2))*min(abs(a1), abs(a2)))
+    return vector(F, result)
+
+
 def f_bec(beliefs):
     F = RealField(7)
     result = []
@@ -122,11 +131,12 @@ def g_bec(beliefs, beta):
     return vector(F, result)
 
 
-def g_BPSK(alpha1, alpha2, beta):
+def g_bsc(beliefs, beta):
     F = RealField(7)
     result = []
-    for a1, a2, b in zip(alpha1, alpha2, beta):
-        result.append( (a2 + (1-2*b)*a1) )
+    for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
+        result.append(a2 + a1*(1-2*b))
+        #result.append(sign_rev(a2) or mod(sign_rev(a1) + b, 2))
     return vector(F, result)
 
 

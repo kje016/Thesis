@@ -21,9 +21,9 @@ import test_CRC
 # sage MC.py 12 0 BSC SCL
 R = [1/2] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
 A_min = 12
-runs = 1000
-SNR = [0.6] #[0.01, 0.3, 0.2]   # really p_cross
-#SNR = [1, 2, 3, 4, 5] #, 6]      # this is SNR
+runs = 500
+#SNR = [0.1] #[0.01, 0.3, 0.2]   # really p_cross
+SNR = [2]#, 3, 4, 5] #, 6]      # this is SNR
 # SNR = [0.5, 1, 2, 3, 4]
 A = int(sys.argv[1])
 I_IL = int(sys.argv[2])
@@ -33,6 +33,22 @@ K = A + pol.degree()
 n_min, n_max = 5, 10 - I_IL  # n_max = 10 for uplink, 9 for downlink.
 N0 = None
 
+def get_it(N, rate):
+    K = floor(N*rate)
+    A = K - 11
+    print(f"A= {A},  K={K},  N={N}")
+
+
+def test_rate(A, rate):
+    po = PC_CRC.get_pol(A, 0)
+    K = A+po.degree()
+    E = ceil(K/rate)
+    n = min(ceil(log(E, 2)), n_max)  # TODO: hvordan velges egt 'n'?
+    N = 2 ** n
+    print(f"K= {K}:  E={E}:  N={N}")
+    print((K/N).n())
+
+breakpoint()
 for rate in R:
     E = ceil(K / rate)
     n = min(ceil(log(E, 2)), n_max)     # TODO: hvordan velges egt 'n'?
@@ -56,6 +72,7 @@ for rate in R:
             a = random_vector(GF(2), A)
             c, G = test_CRC.CRC(a, A, pol)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
+            #print(c_ap)
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
             d = vector(GF(2), u) * GN
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)

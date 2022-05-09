@@ -60,4 +60,5 @@ def decoder(d, N, frozen_set, I_IL, PI, C):
             dec.inf_bits = vector(GF(2), dec.inf_bits)
     del tree
     gc.collect()
+    list_decoders.sort(key=lambda dec: dec.path_metric)
     return list_decoders

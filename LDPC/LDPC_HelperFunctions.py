@@ -6,17 +6,28 @@ from numpy.random import default_rng
 # 2 is representing the erasure symbol
 # returns the modulation of the codeword with added noise
 def channel_noise(s, channel, p):
-    F = RealField(10)
+    F = RealField(7)
     if channel == 'BSC':
-        noise = vector(F, [1 if x <= p else 0 for x in list(numpy.random.uniform(0, 1, size=len(s)))])
-        r = vector(F, list(map(lambda y: (2 * y) - 1, (s+noise)%2)))
+        noisepos = sample(range(0, len(s)), floor(len(s)*p))
+        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
+        #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
+        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        #print(noise.hamming_weight())
+        #print(noise.hamming_weight() / len(s))
+        r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
+
     elif channel == 'AWGN':
         noise = vector(F, list(default_rng().normal(0, p, len(s))))
         r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
 
     else: # channel == 'BEC'
+        # noise = list(uniform(0, 1, size=len(s)))
+        noisepos = sample(range(0, len(s)), floor(len(s) * p))
+        noise = vector(GF(2), [1 if a in noisepos else 0 for a in range(len(s))])
+        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        #print(noise.hamming_weight()/len(s))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
-        r = vector(F, [2 if list(numpy.random.uniform(0, 1, size=len(s)))[i] <= p else s_mod[i] for i, e in enumerate(s_mod)])
+        r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])
     return r
 
 

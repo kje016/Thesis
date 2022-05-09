@@ -1,5 +1,9 @@
 # cd Desktop/Thesis/PySageMath/LDPC
+import gc
 import sys
+import csv
+import datetime
+
 import CRC
 import LDPC_MinSum
 import Parameter_Functions as PF
@@ -8,6 +12,7 @@ import LDPC_Rate_Matching
 import LDPC_HelperFunctions as HF
 import minsum_BEC
 import OMS
+
 
 from sage.all import *
 
@@ -19,24 +24,20 @@ var('x')
 R = PolynomialRing(GF(2), x)
 R.inject_variables()
 
-crc6 = x**6 + x**5 + x**0
-crc11 = x**11 + x**10 + x**9 + x**5 + x**0
-crc16 = x**16 + x**12 + x**5 + x**0
-crc24a = x**24 + x**23 + x**18 + x**17 + x**14 + x**11 + x**10 + x**7 + x**6 + x**5 + x**4 + x**3 + x + x**0
-crc24b = x**24 + x**23 + x**6 + x**5 + x + x**0
-crc24c = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
 
 SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
+R = [1/2] # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
+runs = 100
 # sage LDPC_main.py 20 1/2 bsc
 if __name__ == "__main__":
     A = int(sys.argv[1])
-    R = [int(x) for x in sys.argv[2].split('/')]
-    R = R[0] / R[1]
-    channel = sys.argv[3].upper()
+    channel = sys.argv[2].upper()
+    pol = CRC.get_pol(A)
+    B = A + pol.degree()
 
-    sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
-    N0 = 2 * sigma[0] ** 2
+    #sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
+    #N0 = 2 * sigma[0] ** 2
 
     bg = PF.det_BG(A, R)
     B = A + crc24a.degree()
@@ -46,28 +47,43 @@ if __name__ == "__main__":
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
     BG = HF.get_base_matrix(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
+    del BG; gc.collect()
 
-    runs, correct = 50, 0
-    for i in range(runs):
-        a = list(random_vector(GF(2), int(sys.argv[1])))
-        b = CRC.main_CRC(a, crc24a)
-        # crk := padding the codeword
-        crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
-        D = vector(GF(2), crk)
-        X = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(D=X, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
+    for snr in SNR:
+        if channel == 'AWNG':
+            sigma = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
+            p = 1 - norm.cdf(1 / sigma)  # error probability, from proposition 2.9
+            N0 = 2 * sigma ** 2
+        BLER, BER = 0, 0
 
-        r = HF.channel_noise(e, channel, 0.05)
-        # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
-        # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, 0.05, H.ncols() - H.nrows(), channel)
-        # tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
-        if channel == 'BEC':
-            aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
-        else:
-            aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, 0.05, 4*Zc)
-        if is_codeword:
-            correct += 1
-            print(f"correct := {correct}")
-            crc_check = CRC.CRC_check(aa[:B], crc24a)
-    print(f"Pe := {(correct/runs)*100} %")
+        for iteration in range(runs):
+            if iteration % 100 == 0:
+                print(iteration)
+
+            a = list(random_vector(GF(2), int(sys.argv[1])))
+            c, G = CRC.CRC(a, A, pol)
+            # crk := padding the codeword
+            crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=b)   # TODO: testing for C > 1 & need to split crk
+            D = vector(GF(2), crk)
+            u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+            e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
+
+            r = HF.channel_noise(e, channel, snr)
+            # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
+            # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
+            llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, snr, H.ncols() - H.nrows(), channel)
+            # tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
+            if channel == 'BEC':
+                aa, is_codeword = minsum_BEC.minsum_BEC(HRM, llr_r)
+            else:
+                aa, is_codeword = LDPC_MinSum.minsum_SPA(HRM, llr_r, N0, channel, snr, 4*Zc)
+            if is_codeword:
+                crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
+
+        file_getter = channel + '_' + decoder
+        with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
+                  newline='') as file:
+            result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            result_writer.writerow(
+                [A, R, K, H.ncols(), runs, BER, BLER, snr, datetime.datetime.now()])
+            gc.collect()

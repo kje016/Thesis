@@ -13,39 +13,38 @@ crc24b = x**24 + x**23 + x**6 + x**5 + x + x**0
 crc24c = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
 
 
-def bit_long_division(a, pol):
-    A = len(a)
-    remainder, divisor = a[:], pol.list()[::-1]
-    while 1 in remainder[:A-pol.degree()]:
-        pos = remainder.index(1)
-        calc = [b+c for b, c in zip(remainder[pos:pos+(pol.degree()+1)], divisor)]
-
-        remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
-    return remainder[A-pol.degree():]
+def get_pol(A):
+    if A <= 3824:
+        return crc16
+    else:
+        return crc24a
 
 
-# bit_long_division returns the remainder, so that in CRC_calc() the message.extend
-# acts as the hardware interleave r
-def CRC_calc(message, polynomial):
-    if polynomial is None:
-        return message
-    pad = [0]*polynomial.degree()
-    message.extend(bit_long_division(message+pad, polynomial))
-    return message
+def CRC(a, A, pol):
+    if len(a) < 12:
+        return a, None
+    P = pol.degree()
+    C = zero_matrix(GF(2), A, P)
+    C[-1] = vector(GF(2), pol.list()[::-1][1:])
+    k = A-2
+    while k >= 0:
+        for i in range(P-1):
+            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
+        C[k, P-1] = C[k+1, 0] * pol[0]
+        k = k-1
+    res = (vector(GF(2), a)*C).list()
+    CRC = vector(GF(2), list(a) + res)
+    return CRC, C
 
-
-def main_CRC(a, polynomial):
-    a = list(a)
-    output = CRC_calc(a, polynomial)
-    return output
-
-
-def CRC_check(a, pol):
-    A = len(a)
-    remainder, divisor = list(a[:]), pol.list()[::-1]
-    while 1 in remainder[:A-pol.degree()]:
-        pos = remainder.index(1)
-        calc = [b+c for b, c in zip(remainder[pos:pos+(pol.degree()+1)], divisor)]
-
-        remainder = remainder[0:pos] + calc + remainder[pos+pol.degree()+1:]
-    return remainder
+def CRC_check(a, A, pol):
+    P = pol.degree()
+    C = zero_matrix(GF(2), A, P)
+    C[-1] = vector(GF(2), pol.list()[::-1][1:])
+    k = A-2
+    while k >= 0:
+        for i in range(P-1):
+            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
+            C[k, P-1] = C[k+1, 0] * pol[0]
+        k = k-1
+    res = vector(Matrix(GF(2), a)*C)
+    return res

@@ -16,7 +16,6 @@ def decoder(d, N, frozen_set):
     while not done:
         if depth == log(N, 2):
             is_frozen = node_i-(N-1) in frozen_set
-            # is_frozen = tree.index(node)-(2**log(N, 2)-1) in frozen_set
             node.beliefs = HF.uhat(node.beliefs, is_frozen, F)
             if not is_frozen:
                 vhat.append(node.beliefs[0])
