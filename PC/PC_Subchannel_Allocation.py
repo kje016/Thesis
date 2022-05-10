@@ -18,6 +18,9 @@ def get_n_pc_bits(A, E, I_IL):
 
 def get_Q_N0(N):
     Q_N_0 = []
+    #breakpoint()
+    #textfile = open("REL_SEQ", "r")
+    #really = HelperFunctions.standard_to_list(textfile)
     for elem in reliability_sequence:
         if elem < N:
             Q_N_0.append(elem)

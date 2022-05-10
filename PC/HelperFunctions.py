@@ -4,14 +4,14 @@ from numpy.random import uniform
 
 
 def standard_to_list(input_text):
-    with open(input_text) as f:
-        temp = f.read()
+    temp = input_text.read()
     temp = temp.replace('\n', ' ')
     temp = temp.split(' ')
     rel = {}
     for i in range(0, len(temp), 2):
         rel.update({int(temp[i]): int(temp[i+1])})
-    return [rel.get(i) for i in range(len(rel))]
+    rel = [rel.get(i) for i in range(len(rel))]
+    return rel
 
 
 # return the reliability sequence as [ints] 1 indexed
@@ -28,10 +28,10 @@ def get_realiability_sequence():
 def channel_noise(s, channel, p):
     F = RealField(7)
     if channel == 'BSC':
-        noisepos = sample(range(0, len(s)), floor(len(s)*p))
-        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
+        #noisepos = sample(range(0, len(s)), floor(len(s)*p)-1)
+        #noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
         #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
-        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
         #print(noise.hamming_weight())
         #print(noise.hamming_weight() / len(s))
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
