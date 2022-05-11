@@ -19,7 +19,7 @@ import PC_Subchannel_Allocation
 import HelperFunctions as HF
 import PC_CRC
 import test_CRC
-
+"""
 run_vals_bsc = [
     [1/2, 0.1, 21, 'BSC'], [1/2, 0.1, 245, 'BSC'], [1/2, 0.1, 501, 'BSC'],
     [1/3, 0.15, 15, 'BSC'], [1/3, 0.15, 74, 'BSC'], [1/3, 0.15, 330, 'BSC'],
@@ -65,20 +65,10 @@ run_vals_bsc = [
     [1 / 4, 2, 21, 'AWGN'], [1 / 4, 2, 117, 'AWGN'], [1 / 4, 2, 245, 'AWGN'],
     [1 / 4, 3, 21, 'AWGN'], [1 / 4, 3, 117, 'AWGN'], [1 / 4, 3, 245, 'AWGN'],
 ]
-run_val = [ [1/2, 0.1, 501, 'BSC'], [1/2, 0.09, 501, 'BSC'], [1/2, 0.08, 501, 'BSC'],
-            [1/2, 0.5, 501, 'BEC'], [1/2, 0.4, 501, 'BEC'], [1/2, 0.3, 501, 'BEC'],
-            [1/2, 1, 501, 'AWGN'], [1/2, 2, 501, 'AWGN'], [1/2, 3, 501, 'AWGN'],
-
-            [1/3, 0.15, 330, 'BSC'], [1/3, 0.13, 330,  'BSC'], [1/3, 0.12, 330, 'BSC'],
-            [1/3, 0.65, 330, 'BEC'], [1/3, 0.6, 330, 'BEC'], [1/3, 0.775, 330, 'BEC'],
-            [1/3, 1, 330, 'AWGN'], [1/3, 2, 330, 'AWGN'], [1/3, 3, 330, 'AWGN'],
-
-            [1/4, 0.2, 245, 'BSC'], [1/4, 0.18, 245, 'BSC'], [1/4, 0.15, 245, 'BSC'],
-            [1/4, 0.75, 245, 'BEC'], [1/4, 0.7, 245, 'BEC'], [1/3, 0.65, 245, 'BEC'],
-            [1/4, 1, 245, 'AWGN'], [1/4, 2, 245, 'AWGN'], [1/4, 3, 245, 'AWGN']
-           ]
+"""
+run_val = [[1/3, 1, 330, 'AWGN'], [1/3, 2, 330, 'AWGN'], [1/3, 3, 330, 'AWGN']]
 I_IL = 0
-runs = 3000
+runs = 5000
 decoder = 'SC'
 for elem in run_val:
     rate = elem[0]
@@ -110,7 +100,7 @@ for elem in run_val:
     print(elem)
     start_time = time.time()
     for iteration in range(runs):
-        if iteration % 100 == 0:
+        if iteration % 1000 == 0:
             print(time.time()-start_time)
             start_time = time.time()
             print(f"{BER}, {BLER}")
