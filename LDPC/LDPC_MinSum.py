@@ -93,7 +93,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, r, N0, channel, sigma, rcore):
+def minsum_SPA(H, r, channel, sigma, rcore):
     if channel == 'AWGN':
         Lj = [(2/sigma)*rj for rj in r]
     else:
@@ -115,7 +115,7 @@ def minsum_SPA(H, r, N0, channel, sigma, rcore):
         # check if v_hat is a valid codeword
         if H * vhat == 0:
             print(f"MinSum runs := {runs}")
-            return vhat, True
+            return vhat, True, runs
 
         # update Lv
         colvecs = get_column_vectors(Lc, len(r))
@@ -124,6 +124,5 @@ def minsum_SPA(H, r, N0, channel, sigma, rcore):
 
             for i, elem in col.items():
                 lv[i].update({j: col_sum - col.get(i) + Lj[j]})
-    print(f"FAILED")
-    return vhat, codeword
+    return vhat, False, runs
 

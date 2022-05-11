@@ -69,7 +69,7 @@ def minsum_BEC(H, r):
         lv.append(temp)
 
     codeword, runs = False, 0
-    while not codeword and runs < 20:
+    while not codeword and runs < 30:
         Lc = nz_sum_approx(lv)
         ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
@@ -77,8 +77,8 @@ def minsum_BEC(H, r):
 
         # check if v_hat is a valid codeword
         if H * vhat == 0:
-            print(f"MinSum runs := {runs, H*vhat == 0}")
-            return vhat, True
+            #print(f"MinSum runs := {runs, H*vhat == 0}")
+            return vhat, True, runs
 
         # update Lv
         colvecs = get_column_vectors(Lc, len(r))
@@ -88,6 +88,6 @@ def minsum_BEC(H, r):
                 for i, elem in col.items():
                     lv[i].update({j: 0 if col_sum - col.get(i) == 0 else oo*(col_sum - col.get(i))})
 
-    print(f"MinSum runs := {runs, H*vhat == 0}")
-    return vhat, codeword
+    #print(f"MinSum runs := {runs, H*vhat == 0}")
+    return vhat, codeword, runs
 

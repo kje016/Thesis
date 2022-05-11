@@ -61,7 +61,7 @@ def det_Z(bg, kb, lifting_set, K_ap):
 def calc_crk(C, K_ap, K, L, b_bits):
     s, output = 0, []
     for r in range(C):
-        tess = b_bits[r*(K_ap-L): (r+1)*(K_ap-L)]
+        tess = list(b_bits[r*(K_ap-L): (r+1)*(K_ap-L)])
         if C > 1:
             tess.extend(CRC.main_CRC(tess, CRC.crc24b))
         tess.extend([0]*(K-K_ap))
