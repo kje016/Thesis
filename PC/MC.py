@@ -100,7 +100,7 @@ for elem in run_val:
     print(elem)
     start_time = time.time()
     for iteration in range(runs):
-        if iteration % 1000 == 0:
+        if iteration % 100 == 0 or iteration == runs-1:
             print(time.time()-start_time)
             start_time = time.time()
             print(f"{BER}, {BLER}")
@@ -134,12 +134,14 @@ for elem in run_val:
         BLER = BLER + sign((a + scout[:A]).hamming_weight())
 
     file_getter = channel + '_' + decoder
-    with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
-              newline='') as file:
+    #with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
+              #newline='') as file:
+    with open(f'Users\\kristian\\PycharmProjects\\Thesis\\PC\\Tests\\{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, 'proper distribution', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, '', snr, I_IL, datetime.datetime.now()])
         gc.collect()
+
 
 
 """
