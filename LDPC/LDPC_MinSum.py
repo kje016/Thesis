@@ -1,8 +1,6 @@
 # cd Desktop/INF244/Exercises/MA3
 from sage.all import *
 
-import LDPC_main
-
 def min_update_row(row, min_vals, signs, H_row):
     output, min_get = [0]*len(row), len(min_vals)
     scale, offset = 1, 0.4

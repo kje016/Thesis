@@ -4,6 +4,7 @@ from sage.all import *
 import gc
 import csv
 import datetime
+import sys
 
 import CRC
 import Parameter_Functions as PF
@@ -65,7 +66,6 @@ for elem in runs_vals:
 
     bg = PF.det_BG(A, R)
 
-    B = A + pol.degree()
     L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
@@ -77,9 +77,9 @@ for elem in runs_vals:
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
         N0 = 2 * sig ** 2
-    BLER, BER = 0, 0
+    BLER, BER, FAR = 0, 0, 0
     for iteration in range(runs):
-        if iteration % 1000 == 0 or iteration == runs-1:
+        if iteration % 100 == 0 or iteration == runs-1:
             print(f"BLER:{BLER}, BER:{BER}")
             print(iteration)
 
@@ -102,11 +102,14 @@ for elem in runs_vals:
         else:
             import LDPC_MinSum
             aa, is_codeword, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
-        if is_codeword:
-            crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
-    with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
+        crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
+        breakpoint()
+        BER += (aa + a[:A]).hamming_weight()
+        BLER += (crc_check).hamming_weight()
+        FAR += sign(aa+a[:A]) and not crc_check.hamming_weight()
+    with open(f'Users\\kristian\\PycharmProjects\\Thesis\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, R, K, H.ncols(), runs, BER, BLER, snr, iter, is_codeword, datetime.datetime.now()])
+            [A, R, K, H.ncols(), runs, BER, BLER, snr, iter, is_codeword, FAR, datetime.datetime.now()])
         gc.collect()

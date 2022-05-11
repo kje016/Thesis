@@ -1,30 +1,31 @@
 import numpy.random
 from sage.all import *
 from numpy.random import default_rng
-
+from numpy.random import uniform
+import os
 
 # 2 is representing the erasure symbol
 # returns the modulation of the codeword with added noise
 def channel_noise(s, channel, p):
     F = RealField(7)
     if channel == 'BSC':
-        noisepos = sample(range(0, len(s)), floor(len(s)*p))
-        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
+        #noisepos = sample(range(0, len(s)), floor(len(s)*p))
+        #noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
         #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
-        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
         #print(noise.hamming_weight())
         #print(noise.hamming_weight() / len(s))
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
 
     elif channel == 'AWGN':
         noise = vector(F, list(default_rng().normal(0, p, len(s))))
-        r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+        r = 2 * vector(F, s) - vector(F, [1] * len(s)) + noise
 
     else: # channel == 'BEC'
         # noise = list(uniform(0, 1, size=len(s)))
-        noisepos = sample(range(0, len(s)), floor(len(s) * p))
-        noise = vector(GF(2), [1 if a in noisepos else 0 for a in range(len(s))])
-        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        #noisepos = sample(range(0, len(s)), floor(len(s) * p))
+        #noise = vector(GF(2), [1 if a in noisepos else 0 for a in range(len(s))])
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, len(s)))])
         #print(noise.hamming_weight()/len(s))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
         r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])
@@ -55,7 +56,9 @@ def Protograph(base_matrix, z):
 
 def get_base_matrix(bg, ils, zc):
     matrix = []
-    f = open("base_matrices\\" + f"NR_{bg}_{ils}_{zc}.txt", "r")
+    file = os.path.expanduser(f"base_matrices/" + f"NR_{bg}_{ils}_{zc}.txt")
+    #file = open(f"base_matrices/" + f"NR_{bg}_{ils}_{zc}.txt")
+    f = open(file)
     txt_m = f.read().split('\n')
     for row in txt_m:
         row = list(map(int, [c for c in row.split(' ') if c!= '']))
