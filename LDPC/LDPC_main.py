@@ -1,9 +1,12 @@
 # cd Desktop/Thesis/PySageMath/LDPC
+import time
+
 from sage.all import *
 
 import gc
 import csv
 import datetime
+from scipy.stats import norm
 
 import CRC
 import Parameter_Functions as PF
@@ -24,31 +27,20 @@ R.inject_variables()
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 R = 1/2 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 10
+runs = 500
 iter = 0
 
-
-runs_vals = [
-    [20, 0.1, 1/2, 'BSC'], [20, 0.9, 1/2, 'BSC'], [20, 0.8, 1/2, 'BSC'],
-    [20, 0.5, 1/2,'BEC'], [20, 0.45, 1/2,'BEC'], [20, 0.45, 1/2, 'BEC'],
-    [20, 1, 1/2,'AWGN'], [20, 2, 1/2, 'AWGN'], [20, 3, 1/2, 'AWGN'],
-
-    [20, 0.1, 1/2, 'BSC'], [20, 0.9, 1/2, 'BSC'], [20, 0.8, 1/2, 'BSC'],
-    [20, 0.5, 1/2,'BEC'], [20, 0.45, 1/2,'BEC'], [20, 0.45, 1/2, 'BEC'],
-    [20, 1, 1/2, 'AWGN'], [20, 2,1/2, 'AWGN'], [20, 3, 1/2, 'AWGN'],
-
-    [20, 0.1, 1 / 2, 'BSC'], [20, 0.9, 1 / 2, 'BSC'], [20, 0.8, 1 / 2, 'BSC'],
-    [20, 0.5, 1 / 2, 'BEC'], [20, 0.45, 1 / 2, 'BEC'], [20, 0.45, 1 / 2, 'BEC'],
-    [20, 1, 1 / 2, 'AWGN'], [20, 2, 1 / 2, 'AWGN'], [20, 3, 1 / 2, 'AWGN'],
-
-    [20, 0.1, 1 / 2, 'BSC'], [20, 0.9, 1 / 2, 'BSC'], [20, 0.8, 1 / 2, 'BSC'],
-    [20, 0.5, 1 / 2, 'BEC'], [20, 0.45, 1 / 2, 'BEC'], [20, 0.45, 1 / 2, 'BEC'],
-    [20, 1, 1 / 2, 'AWGN'], [20, 2, 1 / 2, 'AWGN'], [20, 3, 1 / 2, 'AWGN'],
-
-    [20, 0.1, 1 / 2, 'BSC'], [20, 0.9, 1 / 2, 'BSC'], [20, 0.8, 1 / 2, 'BSC'],
-    [20, 0.5, 1 / 2, 'BEC'], [20, 0.45, 1 / 2, 'BEC'], [20, 0.45, 1 / 2, 'BEC'],
-    [20, 1, 1 / 2, 'AWGN'], [20, 2, 1 / 2, 'AWGN'], [20, 3, 1 / 2, 'AWGN']
-
+runs_vals = [ [20, 0.001, 1/2, 'BSC'],
+              [20, 10, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
 ]
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
@@ -64,8 +56,6 @@ for elem in runs_vals:
     #N0 = 2 * sigma[0] ** 2
 
     bg = PF.det_BG(A, R)
-
-    B = A + pol.degree()
     L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
@@ -77,19 +67,23 @@ for elem in runs_vals:
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
         N0 = 2 * sig ** 2
-    BLER, BER = 0, 0
+    BLER, BER, FAR = 0, 0, 0
+    start_time = time.time()
+    print(elem)
+    print(len(runs_vals))
     for iteration in range(runs):
-        if iteration % 1000 == 0 or iteration == runs-1:
+        if iteration % 50 == 0 or iteration == runs-1:
+            print(time.time() - start_time)
+            start_time = time.time()
             print(f"BLER:{BLER}, BER:{BER}")
             print(iteration)
-
-        a = list(random_vector(GF(2), A))
+        a = random_vector(GF(2), A)
         c, G = CRC.CRC(a, A, pol)
         # crk := padding the codeword
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # TODO: testing for C > 1 & need to split crk
         D = vector(GF(2), crk)
         u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R)
+        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R, B=B)
 
         r = HF.channel_noise(e, channel, snr)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
@@ -102,8 +96,11 @@ for elem in runs_vals:
         else:
             import LDPC_MinSum
             aa, is_codeword, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
-        if is_codeword:
-            crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
+        crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
+        BER += (aa[:A]+a).hamming_weight()
+        BLER += sign(crc_check.hamming_weight())
+        FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
+        breakpoint()
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)

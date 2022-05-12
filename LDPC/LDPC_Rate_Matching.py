@@ -1,13 +1,15 @@
 from sage.all import *
 
 
-def RM_main(u, Zc, H, K, K_ap, R):
-    Kb, punct, short = H.ncols() - H.nrows(), 2 * Zc, floor((K - K_ap) // Zc) * Zc
-    A = Kb - short - punct  # A is the amount of information bits after removing 2 cols and padding
-    E = ceil((Kb/R)/Zc) * Zc
-    pbits = u[Kb: Kb + (E-A)]   # getting the parity bits and
-    e = list(u[2*Zc: A + 2*Zc]) + list(pbits)
-    Hm = H.matrix_from_rows_and_columns(list(range(E-A)), list(range(Kb + (E-A))))
+def RM_main(u, Zc, H, K, K_ap, R, B):
+    Kb, colpunct, punct = H.ncols() - H.nrows(), 2 * Zc, floor((K - K_ap) // Zc) * Zc
+    A_ap = K - colpunct - punct   # A is the amount of crc bits after removing 2 cols and padding
+    E = ceil((B/R)/Zc) * Zc
+    pbits = u[K: K + (E-A_ap)]   # getting the parity bits and
+    e = list(u[colpunct: B]) + list(pbits)
+
+    te = vector(GF(2), list(u[:colpunct]) + list(e[:A_ap]) + [0]*(K-K_ap) + list(pbits))
+    Hm = H.matrix_from_rows_and_columns(list(range(K-A_ap)), list(range(K + (E-A_ap))))
     return vector(ZZ, e), Hm
 
 

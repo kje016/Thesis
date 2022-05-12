@@ -1,8 +1,6 @@
 # cd Desktop/INF244/Exercises/MA3
 from sage.all import *
 
-import LDPC_main
-
 def min_update_row(row, min_vals, signs, H_row):
     output, min_get = [0]*len(row), len(min_vals)
     scale, offset = 1, 0.4
@@ -114,7 +112,7 @@ def minsum_SPA(H, r, channel, sigma, rcore):
         runs += 1
         # check if v_hat is a valid codeword
         if H * vhat == 0:
-            print(f"MinSum runs := {runs}")
+            #print(f"MinSum runs := {runs}")
             return vhat, True, runs
 
         # update Lv
