@@ -10,7 +10,6 @@ def RM_main(u, Zc, H, K, K_ap, R, B):
 
     te = vector(GF(2), list(u[:colpunct]) + list(e[:A_ap]) + [0]*(punct) + list(pbits))
     Hm = H.matrix_from_rows_and_columns(list(range(K-A_ap)), list(range(K + (E-A_ap))))
-    breakpoint()
     return vector(ZZ, e), Hm
 
 
@@ -20,11 +19,11 @@ def fill_w_llr(r, Zc, K, K_ap, p, Kb, channel):
     # TODO: hard-coded to be 2??
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
-    llr = log((1-p)/p)
+    llr = 4/p if channel== 'AWGN' else log((1-p)/p)
     punct_inf = [0] * (2 * Zc)
     if channel == 'AWGN':
         inf_bits = r[:A]
-        short_bits = [-1]*floor((K-K_ap)//Zc) * Zc
+        short_bits = [-p]*floor((K-K_ap)//Zc) * Zc
         p_bits = r[A:]
     elif channel == 'BSC':
         inf_bits =  r[:A]*llr

@@ -3,7 +3,6 @@ import CRC
 
 "From standard 6.2.2"
 def det_BG(A, R):
-    breakpoint()
     if A <= 292 or (A <= 3824 and R <= 0.67) or R <= 0.25:
         return 2
     else:

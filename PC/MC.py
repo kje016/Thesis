@@ -66,7 +66,7 @@ run_vals_bsc = [
     [1 / 4, 3, 21, 'AWGN'], [1 / 4, 3, 117, 'AWGN'], [1 / 4, 3, 245, 'AWGN'],
 ]
 """
-run_val = [[1/3, 1, 330, 'AWGN'], [1/3, 2, 330, 'AWGN'], [1/3, 3, 330, 'AWGN']]
+run_val = [[1/2, 1, 330, 'AWGN'], [1/3, 2, 330, 'AWGN'], [1/3, 3, 330, 'AWGN']]
 I_IL = 0
 runs = 5000
 decoder = 'SC'
@@ -111,6 +111,7 @@ for elem in run_val:
         u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
         d = vector(GF(2), u) * GN
         e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
+        breakpoint()
         r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
         #start_time = time.time()
         scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
