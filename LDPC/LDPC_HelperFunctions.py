@@ -60,7 +60,8 @@ def get_base_matrix(bg, ils, zc):
     for row in txt_m:
         row = list(map(int, [c for c in row.split(' ') if c!= '']))
         matrix.append(row)
-    matrix.pop(-1)          # matrix contains an empty list at the end
+    if matrix[-1] == []:
+        matrix.pop(-1)          # matrix contains an empty list at the end
     return Matrix(matrix)
 
 

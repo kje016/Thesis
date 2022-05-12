@@ -21,8 +21,6 @@ def get_pol(A):
 
 
 def CRC(a, A, pol):
-    if len(a) < 12:
-        return a, None
     P = pol.degree()
     C = zero_matrix(GF(2), A, P)
     C[-1] = vector(GF(2), pol.list()[::-1][1:])

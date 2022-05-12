@@ -27,20 +27,13 @@ R.inject_variables()
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 R = 1/2 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 500
+runs = 100
 iter = 0
-
-runs_vals = [ [20, 0.001, 1/2, 'BSC'],
-              [20, 10, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
-              [20, 1.5, 1/2, 'AWGN'], [20, 2.5, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN'],
+""""[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
+              [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
+              [20, 0.02, 1/2, 'BSC'], 
+"""
+runs_vals = [ [21, 0.05, 1/2, 'BSC']
 ]
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
@@ -54,23 +47,24 @@ for elem in runs_vals:
 
     #sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
     #N0 = 2 * sigma[0] ** 2
-
     bg = PF.det_BG(A, R)
     L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
     BG = HF.get_base_matrix(bg, iLS, Zc)
+    BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
+    print(bg, iLS, Zc)
+    print(BGB)
     H = HF.Protograph(BG, Zc)
     del BG; gc.collect()
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
         N0 = 2 * sig ** 2
-    BLER, BER, FAR = 0, 0, 0
+    BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
     print(elem)
-    print(len(runs_vals))
     for iteration in range(runs):
         if iteration % 50 == 0 or iteration == runs-1:
             print(time.time() - start_time)
@@ -100,7 +94,7 @@ for elem in runs_vals:
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign(crc_check.hamming_weight())
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
-        breakpoint()
+        AVGit += iter
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)

@@ -8,8 +8,9 @@ def RM_main(u, Zc, H, K, K_ap, R, B):
     pbits = u[K: K + (E-A_ap)]   # getting the parity bits and
     e = list(u[colpunct: B]) + list(pbits)
 
-    te = vector(GF(2), list(u[:colpunct]) + list(e[:A_ap]) + [0]*(K-K_ap) + list(pbits))
+    te = vector(GF(2), list(u[:colpunct]) + list(e[:A_ap]) + [0]*(punct) + list(pbits))
     Hm = H.matrix_from_rows_and_columns(list(range(K-A_ap)), list(range(K + (E-A_ap))))
+    breakpoint()
     return vector(ZZ, e), Hm
 
 
@@ -26,11 +27,13 @@ def fill_w_llr(r, Zc, K, K_ap, p, Kb, channel):
         short_bits = [-1]*floor((K-K_ap)//Zc) * Zc
         p_bits = r[A:]
     elif channel == 'BSC':
-        inf_bits = map(lambda y: y*llr, r[:A])
+        inf_bits =  r[:A]*llr
         short_bits = [-llr]*floor((K-K_ap)//Zc) * Zc
-        p_bits = map(lambda y: y*llr, r[A:]) #LLR_fun(r[A:], 'BSC', 0.1)
+        p_bits = r[A:]*llr
     else:   # channel = BEC
         inf_bits = map(lambda y: 0 if y == 2 else y*oo, r[:A])
         short_bits = [-oo] * (floor((K - K_ap) // Zc) * Zc)
         p_bits = map(lambda y: 0 if y == 2 else y*oo, r[A:])
+    te = vector(RealField(10), punct_inf + list(inf_bits) + list(short_bits) + list(p_bits))
+    breakpoint()
     return vector(RealField(10), punct_inf + list(inf_bits) + list(short_bits) + list(p_bits))

@@ -12,7 +12,7 @@ def mul_sh(a, vec):
 
 
 def calc_lambdas(kb, H, Z, D, K):
-    result, A = [], H.matrix_from_rows_and_columns(list(range(4 * Z)), list(range(K)))
+    result, A = [], H.matrix_from_rows_and_columns(list(range(4 * Z)), list(range(kb*Z)))
     for j in range(4):
         lam_j = vector(GF(2), Z)
         for l in range(kb):
@@ -52,6 +52,8 @@ def Encoding(H, Zc, D, K, kb, BG):
     X = vector(GF(2), list(D[:])+list(Pc)+list(Pa))
     # print(f"H*X ==0 := {H*X==0}")
     # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")S
+    if (H*X).hamming_weight() != 0:
+        breakpoint()
     return X
 
 
