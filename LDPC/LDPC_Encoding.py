@@ -54,7 +54,6 @@ def Encoding(H, Zc, D, K, kb, BG):
     # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")S
     if (H*X).hamming_weight() != 0:
         breakpoint()
-    print(f"H*u={(H*X).hamming_weight()}")
     return X
 
 

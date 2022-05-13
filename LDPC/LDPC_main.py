@@ -27,13 +27,15 @@ R.inject_variables()
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 R = 1/2 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 100
+runs = 500
 iter = 0
 """"[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
               [20, 0.02, 1/2, 'BSC'], 
 """
-runs_vals = [ [21, 2, 1/2, 'AWGN']
+runs_vals = [ [200, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
+              [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
+              [20, 0.02, 1/2, 'BSC'],
 ]
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
@@ -56,7 +58,7 @@ for elem in runs_vals:
     BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
     print(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
-    del BG; gc.collect()
+
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
@@ -77,7 +79,7 @@ for elem in runs_vals:
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # TODO: testing for C > 1 & need to split crk
         D = vector(GF(2), crk)
         u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R, B=B)
+        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B, BG=BG)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
