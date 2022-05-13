@@ -2,6 +2,8 @@ import numpy.random
 from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
+
+from numpy.random import uniform
 import os
 
 # 2 is representing the erasure symbol
@@ -9,24 +11,20 @@ import os
 def channel_noise(s, channel, p):
     F = RealField(7)
     if channel == 'BSC':
-        #noisepos = sample(range(0, len(s)), floor(len(s)*p))
-        #noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
-        #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
-        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
-        #print(noise.hamming_weight())
-        #print(noise.hamming_weight() / len(s))
+        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        noisepos = sample(range(0, len(s)), floor(len(s) * p))
+        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
-
     elif channel == 'AWGN':
         noise = vector(F, list(default_rng().normal(0, p, len(s))))
-        r = 2 * vector(F, s) - vector(F, [1] * len(s)) + noise
+        r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+        #ri = vector(GF(2), [1 if a > 0 else 0 for a in r])
 
     else: # channel == 'BEC'
-        # noise = list(uniform(0, 1, size=len(s)))
-        #noisepos = sample(range(0, len(s)), floor(len(s) * p))
-        #noise = vector(GF(2), [1 if a in noisepos else 0 for a in range(len(s))])
-        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, len(s)))])
-        #print(noise.hamming_weight()/len(s))
+        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        noisepos = sample(range(0, len(s)), floor(len(s)*p))
+        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
+        #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
         r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])
     return r
@@ -63,7 +61,8 @@ def get_base_matrix(bg, ils, zc):
     for row in txt_m:
         row = list(map(int, [c for c in row.split(' ') if c!= '']))
         matrix.append(row)
-    matrix.pop(-1)          # matrix contains an empty list at the end
+    if matrix[-1] == []:
+        matrix.pop(-1)          # matrix contains an empty list at the end
     return Matrix(matrix)
 
 

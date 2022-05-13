@@ -112,7 +112,7 @@ def minsum_SPA(H, r, channel, sigma, rcore):
         runs += 1
         # check if v_hat is a valid codeword
         if H * vhat == 0:
-            print(f"MinSum runs := {runs}")
+            #print(f"MinSum runs := {runs}")
             return vhat, True, runs
 
         # update Lv
