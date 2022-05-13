@@ -1,14 +1,17 @@
 from sage.all import *
 
 
-def RM_main(u, Zc, H, K, K_ap, rate, B):
+def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
     colpunct, punct = 2 * Zc, floor((K - K_ap) // Zc) * Zc
+    if channel == 'BEC':
+        colpunct = 0
     A_ap = K - colpunct - punct   # A is the amount of crc bits after removing 2 cols and padding
     E = ceil((B / rate) / Zc) * Zc
     pbits = u[K: K + (E-A_ap)]   # getting the parity bits and
     e = list(u[colpunct: B+(K-K_ap-punct)]) + list(pbits)
     Hm = H.matrix_from_rows_and_columns(list(range(E-A_ap)), list(range(K + (E-A_ap))))
     #te = vector(GF(2), list(u[:colpunct]) + list(e[:A_ap]) + [0]*(punct) + list(pbits))
+    #print(f"a:=\n {te}")
     #print(f'len reconstructed e= {len(te)}')
     #HH = H.matrix_from_rows_and_columns(list(range(E+colpunct+punct - K)), list(range(K + (E-A_ap))))
     #if (Hm*te).hamming_weight() != 0:
@@ -21,9 +24,11 @@ def RM_main(u, Zc, H, K, K_ap, rate, B):
 def fill_w_llr(r, Zc, K, K_ap, p, channel):
     # TODO: hard-coded to be 2??
     colpunct, punct = 2 * Zc, floor((K - K_ap) // Zc) * Zc
+    if channel == 'BEC':
+        colpunct = 0
     A = K - colpunct - punct
     llr = 2/p**2 if channel== 'AWGN' else log((1-p)/p)
-    col_inf = [0] * (2 * Zc)
+    col_inf = [0] * colpunct
     if channel == 'AWGN':
         inf_bits = list(r[:A]*llr)
         punct_inf = [-oo]*punct

@@ -85,14 +85,14 @@ def minsum_BEC(H, r):
         lv.append(temp)
     codeword, runs = False, 0
     while not codeword and runs < 30:
-        if runs > 20:
-            breakpoint()
         #Lc = nz_sum_approx(lv)
         Lc = nz_tanh(lv)
         ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
-        runs += 1
 
+        runs += 1
+        ltot = vector(RealField(10), [a * oo if a != 0 else 0 for a in vector(RealField(10), nz_col_sum(Lc, Lj))])
+        testvec = [a if a != 0 else 2 for a in ltot]
         # check if v_hat is a valid codeword
         if H * vhat == 0:
             #print(f"MinSum runs := {runs, H*vhat == 0}")
@@ -105,7 +105,7 @@ def minsum_BEC(H, r):
                 col_sum = sum(col.values())
                 if abs(col_sum) != 0:
                     for i, elem in col.items():
-                        lv[i].update({j: oo*col_sum})
+                        lv[i].update({j:  oo*(col_sum)})
 
     #print(f"MinSum runs := {runs, H*vhat == 0}")
     return vhat, codeword, runs

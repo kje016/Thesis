@@ -28,7 +28,7 @@ R.inject_variables()
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 R = 1/2 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 100
+runs = 500
 iter = 0
 """"[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
@@ -37,7 +37,7 @@ iter = 0
 runs_vals = [ [20, 0.2, 1/2, 'BEC'], [20, 1.5, 1/2, 'AWGN'], [20, 2, 1/2, 'AWGN'],
               [20, 2.5, 1/2, 'AWGN'], [20, 3, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN']
 ]
-runs_vals = [[20, 0.3, 1/2, 'BEC']]
+runs_vals = [[20, 0.4, 1/2, 'BEC']]
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
     print("START")
@@ -80,7 +80,8 @@ for elem in runs_vals:
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # TODO: testing for C > 1 & need to split crk
         D = vector(GF(2), crk)
         u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B)
+
+        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B, channel=channel)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
