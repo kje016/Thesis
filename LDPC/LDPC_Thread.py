@@ -24,24 +24,37 @@ var('x')
 R = PolynomialRing(GF(2), x)
 R.inject_variables()
 
+runs = 33
 
-#SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
-#SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
-R = 1/2 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 99
-iter = 0
 """"[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
               [20, 0.02, 1/2, 'BSC'], 
 """
-runs_vals = [ [20, 1, 1/2, 'AWGN'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
-              [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
-              [20, 0.02, 1/2, 'BSC'],
-]
-runs_vals = [[20, 1, 1/2, 'AWGN']]
+
+def thread_decoder(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a):
+    start_time = time.time()
+    r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
+    llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=sig if channel == 'AWGN' else snr,
+                                          channel=channel)
+    if channel == 'BEC':
+        import minsum_BEC
+        aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
+    else:
+        import LDPC_MinSum
+        aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
+    crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
+    print((aa[:A] + a).hamming_weight())
+    BER[0] = BER[0] + (aa[:A] + a).hamming_weight()
+    BLER[0] = BLER[0] + sign(crc_check.hamming_weight())
+    FAR[0] = FAR[0] + sign((aa[:A] + a).hamming_weight()) and not sign(crc_check.hamming_weight())
+
+    print(time.time() - start_time)
+
+
+runs_vals = [ [20, 1, 1/2, 'AWGN']]
+print("START")
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
-    print("START")
     A = elem[0]
     snr = elem[1]
     rate = elem[2]
@@ -50,8 +63,6 @@ for elem in runs_vals:
     pol = CRC.get_pol(A)
     B = A + pol.degree()
 
-    #sigma = vector(RealField(10), map(lambda z: sqrt(1 / (2 * R * 10 ** (z / 10))), SNR))
-    #N0 = 2 * sigma[0] ** 2
     bg = PF.det_BG(A, R)
     L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
     K_ap = B_ap // C
@@ -59,7 +70,6 @@ for elem in runs_vals:
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
     BG = HF.get_base_matrix(bg, iLS, Zc)
     #BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
-    #print(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
 
     if channel == 'AWGN':
@@ -67,8 +77,8 @@ for elem in runs_vals:
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
         N0 = 2 * sig ** 2
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
-    BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
+    BLER, BER, FAR, AVGit = [0], [0], [0], [0]
     for iteration in range(runs):
         if iteration % 50 == 0 or iteration == runs-1:
             print(time.time() - start_time)
@@ -77,31 +87,31 @@ for elem in runs_vals:
             print(iteration)
         a = random_vector(GF(2), A)
         c, G = CRC.CRC(a, A, pol)
-        # crk := padding the codeword
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # TODO: testing for C > 1 & need to split crk
         D = vector(GF(2), crk)
         u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B)
-        r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
-        # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
-        # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        #breakpoint()
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=sig if channel == 'AWGN' else snr, channel=channel)
-        # tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
-        if channel == 'BEC':
-            import minsum_BEC
-            aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
-        else:
-            import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
-        crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
-        BER += (aa[:A]+a).hamming_weight()
-        BLER += sign(crc_check.hamming_weight())
-        FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
-        AVGit += iter
+        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B)
+
+        thread1 = threading.Thread(target=thread_decoder, args=(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a))
+        thread2 = threading.Thread(target=thread_decoder, args=(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a))
+        thread3 = threading.Thread(target=thread_decoder, args=(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a))
+
+        thread1.start()
+        thread2.start()
+        thread3.start()
+
+        thread1.join()
+        thread2.join()
+        thread3.join()
+
+    print(BLER)
+    print(BER)
+    """
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, R, K, H.ncols(), runs, BER, BLER, snr, iter, suces, datetime.datetime.now()])
+            [A, rate, K, H.ncols(), runs, BER, BLER, snr, iter, suces, datetime.datetime.now()])
         gc.collect()
+    """
+
