@@ -6,10 +6,12 @@ def RM_main(u, Zc, H, K, K_ap, R, B):
     A_ap = K - colpunct - punct   # A is the amount of crc bits after removing 2 cols and padding
     E = ceil((B/R)/Zc) * Zc
     pbits = u[K: K + (E-A_ap)]   # getting the parity bits and
-    e = list(u[colpunct: B]) + list(pbits)
+    e = list(u[colpunct: B+(K-K_ap-punct)]) + list(pbits)
 
     te = vector(GF(2), list(u[:colpunct]) + list(e[:A_ap]) + [0]*(punct) + list(pbits))
-    Hm = H.matrix_from_rows_and_columns(list(range(K-A_ap)), list(range(K + (E-A_ap))))
+    Hm = H.matrix_from_rows_and_columns(list(range(E-A_ap)), list(range(K + (E-A_ap))))
+    HH = H.matrix_from_rows_and_columns(list(range(E+colpunct+punct - K)), list(range(K + (E-A_ap))))
+    breakpoint()
     return vector(ZZ, e), Hm
 
 
@@ -19,14 +21,14 @@ def fill_w_llr(r, Zc, K, K_ap, p, Kb, channel):
     # TODO: hard-coded to be 2??
     punct, short = 2 * Zc, floor((K - K_ap) // Zc) * Zc
     A = Kb - short - punct
-    llr = 4/p if channel== 'AWGN' else log((1-p)/p)
+    llr = 2/p**2 if channel== 'AWGN' else log((1-p)/p)
     punct_inf = [0] * (2 * Zc)
     if channel == 'AWGN':
-        inf_bits = r[:A]
-        short_bits = [-p]*floor((K-K_ap)//Zc) * Zc
-        p_bits = r[A:]
+        inf_bits = r[:A]*llr
+        short_bits = [-oo]*floor((K-K_ap)//Zc) * Zc
+        p_bits = r[A:]*llr
     elif channel == 'BSC':
-        inf_bits =  r[:A]*llr
+        inf_bits = r[:A]*llr
         short_bits = [-llr]*floor((K-K_ap)//Zc) * Zc
         p_bits = r[A:]*llr
     else:   # channel = BEC

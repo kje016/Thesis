@@ -33,7 +33,7 @@ iter = 0
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
               [20, 0.02, 1/2, 'BSC'], 
 """
-runs_vals = [ [21, 1, 1/2, 'AWGN']
+runs_vals = [ [21, 2, 1/2, 'AWGN']
 ]
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
@@ -57,11 +57,11 @@ for elem in runs_vals:
     print(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
     del BG; gc.collect()
-    breakpoint()
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
         N0 = 2 * sig ** 2
+        print(f"sigma:{sig}, N0:{N0}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
     print(elem)
@@ -78,11 +78,10 @@ for elem in runs_vals:
         D = vector(GF(2), crk)
         u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
         e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, R=R, B=B)
-        breakpoint()
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, N0 if channel == 'AWGN' else snr, H.ncols() - H.nrows(), channel)
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, sig if channel == 'AWGN' else snr, H.ncols() - H.nrows(), channel)
         # tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
         if channel == 'BEC':
             import minsum_BEC
