@@ -33,7 +33,7 @@ iter = 0
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
               [20, 0.02, 1/2, 'BSC'], 
 """
-runs_vals = [ [200, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
+runs_vals = [ [200, 2, 1/2, 'AWGN'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
               [20, 0.02, 1/2, 'BSC'],
 ]
@@ -63,7 +63,7 @@ for elem in runs_vals:
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
         N0 = 2 * sig ** 2
-        print(f"sigma:{sig}, N0:{N0}")
+        print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
     print(elem)
@@ -79,18 +79,21 @@ for elem in runs_vals:
         crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # TODO: testing for C > 1 & need to split crk
         D = vector(GF(2), crk)
         u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B, BG=BG)
+        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         # if 'AWGN' -> channel_noise(e, 'AWGN', sigma)
         # if 'BSC' || 'BSC' -> channel_noise(e, 'BSC'/'BSC', cross_p)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r, Zc, K, K_ap, sig if channel == 'AWGN' else snr, H.ncols() - H.nrows(), channel)
+        #breakpoint()
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=sig if channel == 'AWGN' else snr, channel=channel)
         # tess = OMS.OMS(Zc=Zc, H=HRM, r=llr_r)
         if channel == 'BEC':
             import minsum_BEC
-            aa, is_codeword, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
+            aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
         else:
             import LDPC_MinSum
-            aa, is_codeword, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
+        print(suces)
+        print()
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign(crc_check.hamming_weight())
@@ -100,5 +103,5 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, R, K, H.ncols(), runs, BER, BLER, snr, iter, is_codeword, datetime.datetime.now()])
+            [A, R, K, H.ncols(), runs, BER, BLER, snr, iter, suces, datetime.datetime.now()])
         gc.collect()
