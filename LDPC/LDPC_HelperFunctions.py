@@ -19,9 +19,9 @@ def channel_noise(s, channel, p):
         #ri = vector(GF(2), [1 if a > 0 else 0 for a in r])
 
     else: # channel == 'BEC'
-        #noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
-        noisepos = sample(range(0, len(s)), floor(len(s)*p))
-        noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
+        noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
+        #noisepos = sample(range(0, len(s)), floor(len(s)*p))
+        #noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
         #noise = list(map(lambda lis, i: lis[i] = 1, [0]*len(s)) list(random.sample(range(0, len(s)), floor(len(s)*p))))
         s_mod = vector(F, list(map(lambda y: (2 * y) - 1, vector(F, s))))
         r = vector(F, [2 if noise[i] == 1 else s_mod[i] for i, e in enumerate(s_mod)])

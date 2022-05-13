@@ -16,6 +16,7 @@ def extrensic_information(Lv, H):
 
 def nz_sum_approx(Lv):
     output = []
+    breakpoint()
     for i, row in enumerate(Lv):
         vec = vector(RealField(10), (row.values()))
         sign = (-1)**(len(vec))
@@ -23,6 +24,21 @@ def nz_sum_approx(Lv):
         P = product(signs)
         Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
         Lvi = [Lvi_signs[j]*oo for j in range(len(vec))]
+        output.append({k: v for k, v in zip(row.keys(), Lvi)})
+    return output
+
+
+def nz_tanh(Lv):
+    output = []
+    for i, row in enumerate(Lv):
+        #vec = vector(RealField(10), (row.values()))
+        vec = vector(RealField(10), list(map(lambda a: tanh(a), row.values())))
+        #Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+        #Lvi = [Lvi_signs[j]*oo for j in range(len(vec))]
+        Lvi = []
+        for j, elem in enumerate(vec):
+            vectemp = vector(RealField(10), list(vec[:j]) + list(vec[j+1:]))
+            Lvi.append(2*atanh(product(vectemp)))
         output.append({k: v for k, v in zip(row.keys(), Lvi)})
     return output
 
@@ -46,7 +62,7 @@ def get_column_vectors(nzmatrix, length):
     output = [{} for i in range(length)]
     for index, row in enumerate(nzmatrix):
         for j, elem in row.items():
-            output[j].update({index: sgn(elem)})
+            output[j].update({index: sign(elem)})
     return output
 
 
@@ -67,10 +83,12 @@ def minsum_BEC(H, r):
         for j in H.row(i).nonzero_positions():
             temp.update({j: Lj[j]})
         lv.append(temp)
-
     codeword, runs = False, 0
     while not codeword and runs < 30:
-        Lc = nz_sum_approx(lv)
+        if runs > 20:
+            breakpoint()
+        #Lc = nz_sum_approx(lv)
+        Lc = nz_tanh(lv)
         ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
@@ -85,8 +103,9 @@ def minsum_BEC(H, r):
         for j, col in enumerate(colvecs):
             if r[j] == 0:
                 col_sum = sum(col.values())
-                for i, elem in col.items():
-                    lv[i].update({j: 0 if col_sum - col.get(i) == 0 else oo*(col_sum - col.get(i))})
+                if abs(col_sum) != 0:
+                    for i, elem in col.items():
+                        lv[i].update({j: oo*col_sum})
 
     #print(f"MinSum runs := {runs, H*vhat == 0}")
     return vhat, codeword, runs

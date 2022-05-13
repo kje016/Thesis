@@ -28,17 +28,16 @@ R.inject_variables()
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 R = 1/2 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 99
+runs = 100
 iter = 0
 """"[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
               [20, 0.02, 1/2, 'BSC'], 
 """
-runs_vals = [ [20, 1, 1/2, 'AWGN'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
-              [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
-              [20, 0.02, 1/2, 'BSC'],
+runs_vals = [ [20, 0.2, 1/2, 'BEC'], [20, 1.5, 1/2, 'AWGN'], [20, 2, 1/2, 'AWGN'],
+              [20, 2.5, 1/2, 'AWGN'], [20, 3, 1/2, 'AWGN'], [20, 3.5, 1/2, 'AWGN']
 ]
-runs_vals = [[20, 1, 1/2, 'AWGN']]
+runs_vals = [[20, 0.3, 1/2, 'BEC']]
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
     print("START")
@@ -99,6 +98,8 @@ for elem in runs_vals:
         BLER += sign(crc_check.hamming_weight())
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
         AVGit += iter
+        print(f"success={suces}, iterations:{iter}")
+    breakpoint()
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
