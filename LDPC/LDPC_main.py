@@ -26,14 +26,13 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
 R = 2/5 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 0
+runs = 5000
 iter = 0
 
 runs_vals = [[21, 1, 1/3, 'AWGN'], [21, 2, 1/3, 'AWGN'],[21, 3, 1/3, 'AWGN'],[21, 4, 1/3, 'AWGN'] ]
 A = 21
-rate = 1/3
+rate = 2/5
 channel = 'AWGN'
-lim = 100
 N0, sig = None, None
 pol = CRC.get_pol(A)
 B = A + pol.degree()
@@ -59,21 +58,20 @@ for elem in runs_vals:
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
-    runs = 0
-    while BLER <= lim:
-        if runs % 10 == 0 or lim == runs-1:
+    for iterations in range(runs):
+        if iterations % 100 == 0:
             print(time.time() - start_time)
             start_time = time.time()
             print(f"BLER:{BLER}, BER:{BER}")
             print(runs)
-        a = random_vector(GF(2), A)
-        c, G = CRC.CRC(a, A, pol)
+            a = random_vector(GF(2), A)
+            c, G = CRC.CRC(a, A, pol)
 
-        crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
-        D = vector(GF(2), crk)
-        u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+            crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
+            D = vector(GF(2), crk)
+            u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+            e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B, channel=channel)
 
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B, channel=channel)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r, rr = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=N0 if channel == 'AWGN' else snr, channel=channel)
 
@@ -88,7 +86,6 @@ for elem in runs_vals:
         BLER += sign(crc_check.hamming_weight())
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
         AVGit += iter
-        runs += 1
 
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
