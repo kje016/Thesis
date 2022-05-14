@@ -2,6 +2,7 @@ import numpy.random
 from sage.all import *
 from numpy.random import default_rng
 from numpy.random import uniform
+from numpy.random import normal
 
 
 # 2 is representing the erasure symbol
@@ -14,8 +15,10 @@ def channel_noise(s, channel, p):
         noise = vector(F, [1 if a in noisepos else 0 for a in range(len(s))])
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
     elif channel == 'AWGN':
-        noise = vector(F, list(default_rng().normal(0, p, len(s))))
-        r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+        #noise = vector(F, list(default_rng().normal(0, p, len(s))))
+        inoise = vector(RealField(10), (numpy.random.normal(0, p, size=len(s))))
+        #r = 2*vector(F, s) - vector(F, [1]*len(s)) + noise
+        r = (2*s)-vector([1]*len(s))+inoise
         #ri = vector(GF(2), [1 if a > 0 else 0 for a in r])
 
     else: # channel == 'BEC'

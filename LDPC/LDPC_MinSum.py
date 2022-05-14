@@ -45,6 +45,7 @@ def nz_sum_approx(Lv, min_vals, rcore):
         signs = [-1 if vec[j] < 0 else 1 for j in range(len(vec))]
         P = product(signs)
         Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+        slvi = [product(signs[:j])*product(signs[j+1:]) for j in range(len(signs))]
         Lvi = nz_update_row(vec, min_vals[i], Lvi_signs, i < rcore)
         output.append({k:v for k,v in zip(row.keys(), Lvi)})
     return output
@@ -52,6 +53,8 @@ def nz_sum_approx(Lv, min_vals, rcore):
 
 def nz_update_row(row, min_vals, signs, offset):
     output, min_get = [0] * len(row), len(min_vals)
+    if len(min_vals) == 1:
+        min_get.vals(min_get[0])
     for i, elem in enumerate(row):
         if min_vals[-min_get] == abs(elem):
             output[i] = signs[i] * max(min_vals[min_get - 1] - (1 * offset), 0)

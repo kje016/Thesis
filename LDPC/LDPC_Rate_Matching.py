@@ -3,7 +3,7 @@ from sage.all import *
 
 def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
     colpunct, punct = 2 * Zc, floor((K - K_ap) // Zc) * Zc
-    if channel == 'BEC':
+    if channel:
         colpunct = 0
     A_ap = K - colpunct - punct   # A is the amount of crc bits after removing 2 cols and padding
     E = ceil((B / rate) / Zc) * Zc
@@ -24,10 +24,10 @@ def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
 def fill_w_llr(r, Zc, K, K_ap, p, channel):
     # TODO: hard-coded to be 2??
     colpunct, punct = 2 * Zc, floor((K - K_ap) // Zc) * Zc
-    if channel == 'BEC':
+    if channel:
         colpunct = 0
     A = K - colpunct - punct
-    llr = 2/p**2 if channel== 'AWGN' else log((1-p)/p)
+    llr = ((4*1)/p) if channel== 'AWGN' else log((1-p)/p)
     col_inf = [0] * colpunct
     if channel == 'AWGN':
         inf_bits = list(r[:A]*llr)
@@ -42,4 +42,4 @@ def fill_w_llr(r, Zc, K, K_ap, p, channel):
         punct_inf = [-oo] * punct
         p_bits = list(map(lambda y: 0 if y == 2 else y*oo, r[A:]))
     #te = vector(RealField(19),punct_inf + list(inf_bits) + list(short_bits) + list(p_bits))
-    return vector(RealField(10), col_inf + inf_bits + punct_inf + p_bits)
+    return vector(RealField(10), col_inf + inf_bits + punct_inf + p_bits), vector(RealField(10), col_inf + list(r[:A]) + [-oo]*punct + list(r[A:]))
