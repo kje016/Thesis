@@ -1,4 +1,5 @@
 # cd Desktop/Thesis/PySageMath/LDPC
+# cd PycharmProjects/Thesis/LDPC
 import time
 import threading
 
