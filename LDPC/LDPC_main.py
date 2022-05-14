@@ -89,6 +89,7 @@ for elem in runs_vals:
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
         AVGit += iter
         runs += 1
+
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
