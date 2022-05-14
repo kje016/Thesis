@@ -31,14 +31,14 @@ def nz_sum_approx(Lv):
 def nz_tanh(Lv):
     output = []
     for i, row in enumerate(Lv):
-        #vec = vector(RealField(10), (row.values()))
-        vec = vector(RealField(10), list(map(lambda a: tanh(a), row.values())))
-        #Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
-        #Lvi = [Lvi_signs[j]*oo for j in range(len(vec))]
+        veci = vector(RealField(10), list(map(lambda a: sign(a), row.values())))
         Lvi = []
-        for j, elem in enumerate(vec):
-            vectemp = vector(RealField(10), list(vec[:j]) + list(vec[j+1:]))
-            Lvi.append(2*atanh(product(vectemp)))
+        if len(veci.nonzero_positions()) - len(veci) >= 2:
+            Lvi = [0.0 for a in range(len(veci))]
+        else:
+            for j, elem in enumerate(veci):
+                prodtemp = product(veci[:j])*product(veci[j+1:])
+                Lvi.append(0 if prodtemp == 0 else prodtemp*oo)
         output.append({k: v for k, v in zip(row.keys(), Lvi)})
     return output
 
