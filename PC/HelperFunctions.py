@@ -124,15 +124,6 @@ def g_bec(beliefs, beta):
     return vector(F, result)
 
 
-def g_bsc(beliefs, beta):
-    F = RealField(7)
-    result = []
-    for a1, a2, b in zip(beliefs[0:len(beliefs) // 2], beliefs[len(beliefs) // 2: len(beliefs)], beta):
-        result.append(a2 + a1*(1-2*b))
-        #result.append(sign_rev(a2) or mod(sign_rev(a1) + b, 2))
-    return vector(F, result)
-
-
 class Decoder:
     def __init__(self, inf_bits, path_metric):
         self.inf_bits = inf_bits
@@ -215,6 +206,4 @@ def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm,
              input_decoders])
     else:
         new_decoders = [Decoder(decoder.inf_bits + str(sign_rev(belief)), decoder.path_metric)for decoder in input_decoders]
-        # new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(llr)) for decoder in input_decoders]
-        # new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(llr)) for decoder in input_decoders])
     return prune_decoders(new_decoders, L)

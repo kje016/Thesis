@@ -34,7 +34,7 @@ runs = 33
 def thread_decoder(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a):
     start_time = time.time()
     r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
-    llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=sig if channel == 'AWGN' else snr,
+    llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=N0 if channel == 'AWGN' else snr,
                                           channel=channel)
     if channel == 'BEC':
         import minsum_BEC

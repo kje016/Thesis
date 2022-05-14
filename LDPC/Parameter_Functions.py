@@ -35,19 +35,6 @@ def determine_kb(B, bg):
     return kb
 
 
-# C := Input to channel coding
-# D := Bits after encoding
-def get_d_c(Zc, K, C):
-    D = []
-    for k in range(2*Zc, K):
-        if C[k] != None:
-            D.append(C[k])
-        else:
-            C[k] = 0
-            D.append(None)
-    return D, C
-
-
 def det_Z(bg, kb, lifting_set, K_ap):
     lifted_set = {}
     for key, value in lifting_set.items():
