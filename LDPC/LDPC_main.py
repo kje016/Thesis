@@ -25,19 +25,18 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
-R = 2/5 # [1/2, 2/5, 1/3, 1/4,  1/5]   # Rate of the code
-runs = 5000
-iter = 0
+runs = 10000
 
-runs_vals = [[21, 1, 1/3, 'AWGN'], [21, 2, 1/3, 'AWGN'],[21, 3, 1/3, 'AWGN'],[21, 4, 1/3, 'AWGN'] ]
+
+runs_vals =[ [0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.55, 'BEC']
+]
 A = 21
-rate = 2/5
-channel = 'AWGN'
+rate = 1/4
 N0, sig = None, None
 pol = CRC.get_pol(A)
 B = A + pol.degree()
 
-bg = PF.det_BG(A, R)
+bg = PF.det_BG(A, rate)
 L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
 K_ap = B_ap // C
 Kb = PF.determine_kb(B=B, bg=bg)
@@ -49,8 +48,8 @@ H = HF.Protograph(BG, Zc)
 
 del BG; gc.collect()
 for elem in runs_vals:
-    snr = elem[1]
-
+    snr = elem[0]
+    channel = elem[1]
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
@@ -58,19 +57,20 @@ for elem in runs_vals:
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
+    print(elem)
     for iterations in range(runs):
         if iterations % 100 == 0:
             print(time.time() - start_time)
             start_time = time.time()
             print(f"BLER:{BLER}, BER:{BER}")
-            print(runs)
+            print(iterations)
             a = random_vector(GF(2), A)
             c, G = CRC.CRC(a, A, pol)
 
             crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
             D = vector(GF(2), crk)
             u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-            e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=R, B=B, channel=channel)
+            e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
 
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r, rr = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=N0 if channel == 'AWGN' else snr, channel=channel)

@@ -20,17 +20,17 @@ import HelperFunctions as HF
 import PC_CRC
 import test_CRC
 
-run_vals = [[1/2, 1, 330, 'AWGN'], [1/3, 2, 330, 'AWGN'], [1/3, 3, 330, 'AWGN']]
+run_vals = [[2/5, 0.14, 15, 'BSC'], [2/5, 0.12, 15, 'BSC'], [2/5, 0.1, 15, 'BSC'], [2/5, 0.08, 15, 'BSC']]
 I_IL = 0
 runs = 5000
 decoder = 'SC'
-for elem in run_val:
+for elem in run_vals:
     rate = elem[0]
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
 
-    pol = PC_CRC.get_pol(A, I_IL)
+    pol = test_CRC.get_pol(A, I_IL)
     K = A + pol.degree()
     N0 = None
     false_negative = 'NaN'
@@ -53,19 +53,21 @@ for elem in run_val:
     BLER, BER = 0, 0
     print(elem)
     start_time = time.time()
+    print(elem)
     for iteration in range(runs):
         if iteration % 100 == 0 or iteration == runs-1:
             print(time.time()-start_time)
             start_time = time.time()
             print(f"{BER}, {BLER}")
             print(iteration)
-        a = random_vector(GF(2), A)
-        c, G = test_CRC.CRC(a, A, pol)
-        c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
-        u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
-        d = vector(GF(2), u) * GN
-        e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
-        breakpoint()
+            a = random_vector(GF(2), A)
+            c, G = test_CRC.CRC(a, A, pol)
+            c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
+            #print(c_ap)
+            u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
+            d = vector(GF(2), u) * GN
+            e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
+
         r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
         scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
                                         p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
@@ -87,10 +89,10 @@ for elem in run_val:
         BLER = BLER + sign((a + scout[:A]).hamming_weight())
 
     file_getter = channel + '_' + decoder
-    #with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
-              #newline='') as file:
-    with open(f'Users\\kristian\\PycharmProjects\\Thesis\\PC\\Tests\\{file_getter}.csv', mode='a', newline='') as file:
+    with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
+              newline='') as file:
+    #with open(f'Users\\kristian\\PycharmProjects\\Thesis\\PC\\Tests\\{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, '', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, 'PM = sign()', snr, I_IL, datetime.datetime.now()])
         gc.collect()
