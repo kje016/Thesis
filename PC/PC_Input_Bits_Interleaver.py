@@ -1,7 +1,7 @@
 # cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
 
-import test_CRC
+import CRC
 
 var('x')
 R = PolynomialRing(GF(2), x)
