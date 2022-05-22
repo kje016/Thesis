@@ -44,6 +44,7 @@ def minsum_BEC(H, r):
         for j in H.row(i).nonzero_positions():
             temp.update({j: Lj[j]})
         lv.append(temp)
+
     codeword, runs = False, 0
     while not codeword and runs < 30:
         Lc = nz_tanh(lv)
@@ -65,5 +66,6 @@ def minsum_BEC(H, r):
                     for i, elem in col.items():
                         lv[i].update({j:  oo*(col_sum)})
 
+    #print(f"MinSum runs := {runs, H*vhat == 0}")
     return vhat, codeword, runs
 

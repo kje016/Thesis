@@ -73,14 +73,16 @@ def minsum_SPA(H, r, channel, sigma, rcore):
             temp.update({j: Lj[j]})
         lv.append(temp)
     codeword, runs = False, 0
+    # breakpoint()
     while not codeword and runs < 30:
         min_vals = nz_min_fun(lv, 2)
         Lc = nz_sum_approx(lv, min_vals, rcore)
         ltot = nz_col_sum(Lc, Lj) + r
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
-
-        if H * vhat == 0:   # check if v_hat is a valid codeword
+        # check if v_hat is a valid codeword
+        if H * vhat == 0:
+            #print(f"MinSum runs := {runs}")
             return vhat, True, runs
 
         # update Lv

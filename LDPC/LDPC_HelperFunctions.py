@@ -4,6 +4,8 @@ from numpy.random import default_rng
 from numpy.random import uniform
 from numpy.random import normal
 
+from numpy.random import uniform
+import os
 
 # 2 is representing the erasure symbol
 # returns the modulation of the codeword with added noise
@@ -47,7 +49,9 @@ def Protograph(base_matrix, z):
 
 def get_base_matrix(bg, ils, zc):
     matrix = []
-    f = open("base_matrices\\" + f"NR_{bg}_{ils}_{zc}.txt", "r")
+    file = os.path.expanduser(f"base_matrices/" + f"NR_{bg}_{ils}_{zc}.txt")
+    #file = open(f"base_matrices/" + f"NR_{bg}_{ils}_{zc}.txt")
+    f = open(file)
     txt_m = f.read().split('\n')
     for row in txt_m:
         row = list(map(int, [c for c in row.split(' ') if c!= '']))

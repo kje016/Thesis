@@ -1,4 +1,5 @@
 # cd Desktop/Thesis/PySageMath/LDPC
+# cd PycharmProjects/Thesis/LDPC
 import time
 import threading
 
@@ -7,6 +8,7 @@ import gc
 import csv
 import datetime
 from scipy.stats import norm
+import sys
 
 import CRC
 import Parameter_Functions as PF
