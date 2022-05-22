@@ -1,73 +1,89 @@
 from sage.all import *
+import PC_Encoder
+import PC_Input_Bits_Interleaver
+import PC_Subchannel_Allocation
+import CRC
 
-var('x')
-R = PolynomialRing(GF(2), x)
-R.inject_variables()
+# cd Desktop/Thesis/PySageMath/PC
+run_vals = [[2/5, 0.14, 15, 'BSC'], [2/5, 0.12, 15, 'BSC'], [2/5, 0.1, 15, 'BSC'], [2/5, 0.08, 21, 'BSC'],
+            ]
+I_IL = 1
+runs = 10
+decoder = 'SCL'
+for elem in run_vals:
+    rate = elem[0]
+    snr = elem[1]
+    A = elem[2]
+    channel = elem[3]
 
-crc6 = x**6 + x**5 + x**0
-crc11 = x**11 + x**10 + x**9 + x**5 + x**0
-crc16 = x**16 + x**12 + x**5 + x**0
-crc24 = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
+    pol = CRC.get_pol(A, I_IL)
+    K = A + pol.degree()
+    N0 = None
+    false_negative = 'NaN'
 
+    E = ceil(K / rate)
+    n = min(ceil(log(E, 2)), 10)     # TODO: hvordan velges egt 'n'?
+    N = 2 ** n
+    QN0 = PC_Subchannel_Allocation.get_Q_N0(N)
+    npc, n_wm_pc = PC_Subchannel_Allocation.get_n_pc_bits(K, E, I_IL)
+    QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.freeze(N, K, E, npc, QN0)
+    GN = PC_Encoder.gen_G(n)
+    QNPC = PC_Subchannel_Allocation.get_n_wm_pc(GN, n_wm_pc, QNI, npc)
 
-def get_pol(A, I_IL):
-    if I_IL == 1:
-        return crc24
-    else:
-        if A < 12:
-            return x**0
-        elif 12 <= A <= 19:
-            return crc6
-        elif 20 <= A <= 1706:
-            return crc11
-        else:
-            return crc24
-
-
-def CRC(a, A, pol):
-    if len(a) < 12:
-        return a, None
-    P = pol.degree()
-    C = zero_matrix(GF(2), A, P)
-    C[-1] = vector(GF(2), pol.list()[::-1][1:])
-    k = A-2
-    while k >= 0:
-        for i in range(P-1):
-            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
-        C[k, P-1] = C[k+1, 0] * pol[0]
-        k = k-1
-    res = (vector(GF(2), a)*C).list()
-    CRC = vector(GF(2), list(a) + res)
-    return CRC, C
+    BLER, BER = 0, 0
+    print(elem)
+    for iteration in range(runs):
+        a = random_vector(GF(2), A)
+        H = CRC.gen_CRC_mat(K, pol)
+        c, G = CRC.CRC(a, A, pol)
+        ct = vector(GF(2), list(a) + (vector(GF(2), a) * H[-A:]).list())
 
 
-def CRC_check(a, A, pol):
-    P = pol.degree()
-    C = zero_matrix(GF(2), A, P)
-    C[-1] = vector(GF(2), pol.list()[::-1][1:])
-    k = A-2
-    while k >= 0:
-        for i in range(P-1):
-            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
-            C[k, P-1] = C[k+1, 0] * pol[0]
-        k = k-1
-    res = vector(Matrix(GF(2), a)*C)
-    return res
+        c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
+        c_ap = vector(GF(2), c_ap)
+        iPI = [PI.index(a) for a in PI if a >= A]
+
+        gperm = Matrix(G[a] for a in [y for y in PI if y < A])
+
+        cbits = [c_ap[a] for a in iPI]
+        print(f'cbits:\n{cbits}')
+        ca = c_ap[:iPI[1]]
+        cc = c_ap[:iPI[1]+1]
+        hperm = Matrix(GF(2), [H[a] for a in PI])
+        print(ca*gperm[:iPI[1]])
+        for i in range(hperm.nrows()-G.nrows()):
+            hh = gperm[:iPI[0]].rows()
+            hh.insert(0, hperm[i])
+            res = cc*Matrix(GF(2), hh)
+            if res[0]==0:
+                print(i)
+        #print(ca*hperm[-iPI[0]:])
+        #print(cc*hperm[-(iPI[0]+1):])
+
+        breakpoint()
 
 
-def ICRC_check(a, A, iPI):
-    breakpoint()
-    map(lambda x: a.append(a.pop(x)), iPI)
-    pol = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
-    P = pol.degree()
-    C = zero_matrix(GF(2), A, P)
-    C[-1] = vector(GF(2), pol.list()[::-1][1:])
-    k = A-2
-    while k >= 0:
-        for i in range(P-1):
-            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
-            C[k, P-1] = C[k+1, 0] * pol[0]
-        k = k-1
-    res = vector(Matrix(GF(2), a)*C).list()
-    return res
 
+
+"""
+        g1 = gperm[:iPI[0]]
+        h1 = g1.rows()
+        h1.append(h[A+0])
+        h1 = Matrix(GF(2), h1)
+        #g1.insert(0, hperm[-14])
+        g1 = Matrix(GF(2), g1)
+        print((ca*g1)[0])
+        print((cc*h1)[0])
+        breakpoint()
+
+        cc2 = c_ap[:iPI[1]+1]
+        temp = vector(GF(2), [cc2[a] for a in iPI[:2]])
+        c2ap = vector(GF(2), [cc2[i] for i, a in enumerate(PI[:iPI[1]]) if a < A])
+        c2 = vector(GF(2), list(c2ap)+list(temp))
+        g2 = gperm[:iPI[1]-1]
+        h2 = hperm[:iPI[1]+1]
+        print()
+        print((c2ap*g2)[:2])
+        print((cc2*h2)[:2])
+        breakpoint()
+"""

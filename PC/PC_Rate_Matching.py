@@ -56,7 +56,6 @@ def inv_circular_buffer(N, ee, matching_scheme, MS, p_cross, channel, N0):
     y, counter = [], 0
     llr = -(4/N0) if channel == 'AWGN' else log(p_cross / (1 - p_cross)) # LLR = ((2*(sqrt(Eb))/sigma**2)/r
     ms_operand = oo if matching_scheme=='shortening' else 0
-
     for a in range(N):
         if a in MS:
             yi = ee[N+counter]*llr + ee[counter]*llr if matching_scheme == 'repetition' else\

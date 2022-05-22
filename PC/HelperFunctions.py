@@ -172,10 +172,10 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, 
 
     if len(input_decoders[0].inf_bits) in crcbit:
         new_decoders = []
+        iPI = crcbit[:crcbit.index(len(input_decoders[0].inf_bits))]
         for decoder in input_decoders:
-            iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
             cword = list(vector(GF(2), decoder.inf_bits))
-            list(map(lambda x: cword.pop(x), iPI))
+            list(map(lambda x: cword.pop(x), iPI[::-1]))
             check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
             if check == sign_rev(belief):
                 new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
