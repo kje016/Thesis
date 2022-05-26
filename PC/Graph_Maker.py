@@ -1,20 +1,22 @@
-import matplotlib.pyplot as plt
 import csv
-import os
+import os.path
+import matplotlib as mpl
+mpl.use('template')
+import matplotlib.pyplot as plt
 
 
 def csv_to_plot(input_file):
-    file = csv.reader(input_file)
-    next(file, None)
-    test_results, y_axis = {}, {}
-    for row in csv.reader(input_file):
-        dict_getter = test_results.get((float(row[1]), float(row[8]) ), [0]*(4))
-        dict_getter[0]+=int(row[0])*int(row[4]) # tot information bits sent
-        dict_getter[1]+= int(row[4])   # tot runs
-        dict_getter[2]+= int(row[5])    # tot bit errors
-        dict_getter[3]+= int(row[6])   # tot block errors
-        test_results.update({(float(row[1]), float(row[8])): dict_getter})
-
+    with open(input_file, mode='r',  newline='') as file:
+        myfile = csv.reader(file)
+        next(myfile, None)
+        test_results, y_axis = {}, {}
+        for row in myfile:
+            dict_getter = test_results.get((float(row[1]), float(row[8]) ), [0]*(4))
+            dict_getter[0]+=int(row[0])*int(row[4]) # tot information bits sent
+            dict_getter[1]+= int(row[4])   # tot runs
+            dict_getter[2]+= int(row[5])    # tot bit errors
+            dict_getter[3]+= int(row[6])   # tot block errors
+            test_results.update({(float(row[1]), float(row[8])): dict_getter})
     for key, value in test_results.items():
         test_results.update({key : [value[0], value[1], value[2]/(value[0]), value[3]/value[1]]})
 
@@ -29,31 +31,47 @@ def csv_to_plot(input_file):
         ber_plot.update({key[0] : ber_get})
         bler_plot.update({key[0] : bler_get})
 
+
+    fig, ax = plt.subplots()
+    ax.set_facecolor('#F7F7F7')
     for key, value in ber_plot.items():
-        plt.plot(value[1], value[0], label=str(key))
+        plot_x = sorted(value[1])
+        plot_y = [value[0][value[1].index(a)] for a in plot_x]
+        ax.semilogy(plot_x, plot_y, label=str(key), marker='d', markerfacecolor='none')
+        ax.set(title=str(key))
 
-    name = input_file.name.split('/')[-1].replace('.csv', '')
-    plt.xlabel('SNR')
-    plt.ylabel('BER')
-    plt.title(f'Bit Error Rate {name}')
-    #plt.gca().invert_xaxis()
-    plt.legend()    # show a legend on the plot
-    plt.show() # function to show the plot
+    name = input_file.split('\\')[-1].replace('.csv', '')
+    ax.grid(True, linewidth=0.5)
+    ax.set_xlabel('SNR')
+    ax.set_ylabel('BER')
+    ax.set_title(f'Bit Error Rate {name}')
+    ax.legend()    # show a legend on the plot
+    #ax.show() # function to show the plot
+    fig.savefig(f'{name}_BER.png')
+    #breakpoint()
 
+    fig, ax = plt.subplots()
+    ax.set_facecolor('#F7F7F7')
     for key, value in bler_plot.items():
-        plt.plot(value[1], value[0], label=str(key))
-    plt.yscale('log')
-    plt.grid(axis='y')
-    plt.xlabel('SNR (db)')
-    plt.ylabel('BLER')
-    plt.title(f'Block Error Rate {name}')
-    #plt.gca().invert_xaxis()
-    plt.legend()    # show a legend on the plot
-    plt.show() # function to show the plot
+        plot_x = sorted(value[1])
+        plot_y = [value[0][value[1].index(a)] for a in plot_x]
+        ax.semilogy(plot_x, plot_y, label=str(key), marker='d', markerfacecolor='none')
+        ax.set(title=str(key))
+
+    ax.grid(True, linewidth=0.5)
+    ax.set_xlabel('SNR')
+    ax.set_ylabel('BER')
+    ax.set_title(f'Bit Error Rate {name}')
+    ax.legend()    # show a legend on the plot
+    #ax.show() # function to show the plot
+    fig.savefig(f'{name}_BLER.png')
+    #plt.legend()    # show a legend on the plot
+    #plt.show() # function to show the plot
 
 
 
 #csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/AWGN_SC.csv")))
 #res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BSC_SC.csv")))
 #res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BEC_SC.csv")))
-csv_to_plot(f'Users\\Kristian\\Dekstop\\Thesis\\PySageMath\\PC\\Tests\\AWGN_SCL.csv')
+csv_to_plot('C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\AWGN_SCL.csv')
+#csv_to_plot(open(os.path.join("C:/Users/Kristian/Desktop/Thesis/PySageMath/PC/Tests", "AWGN_SCL.csv")))
