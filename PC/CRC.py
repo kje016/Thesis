@@ -37,6 +37,19 @@ def gen_CRC_mat(A, pol):
     return C
 
 
+def skikkelig_kjedelig(A, pol):
+    P = pol.degree()
+    C = zero_matrix(GF(2), A, P)
+    C[0] = vector(GF(2), pol.list()[::-1][1:])
+    k = 1
+    while k <= A-1:
+        for i in range(P-1):
+            C[k, i] = C[k-1, i+1] + C[k-1, 0] * pol[P - (i+1)]
+        C[k, P - 1] = C[k - 1, 0] * pol[0]
+        k = k +1
+    return C
+
+
 def CRC(a, A, pol):
     if len(a) < 12:
         return a, None

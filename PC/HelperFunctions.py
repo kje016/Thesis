@@ -135,18 +135,19 @@ class Decoder:
 
 
 class Node:
-    def __init__(self, state):
+    def __init__(self, state, child):
         self.beliefs = []
         self.state = state
+        self.child = child
 
     def __str__(self):
-        return f'beliefs:{str(self.beliefs)}, state:{self.state}'
+        return f'beliefs:{str(self.beliefs)}, state:{self.state}, state:{self.child}'
 
 
 def init_tree(N, r):
     tree, d, n = [], 0, 1
     while d <= log(N, 2):
-        tree.extend([Node('') for i in range(n)])
+        tree.extend([Node('', '') for i in range(n)])
         d, n = d+1, n*2
     tree[0].beliefs = r
     return tree
@@ -173,9 +174,12 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, 
     if len(input_decoders[0].inf_bits) in crcbit:
         new_decoders = []
         iPI = crcbit[:crcbit.index(len(input_decoders[0].inf_bits))]
+        #breakpoint()
         for decoder in input_decoders:
             cword = list(vector(GF(2), decoder.inf_bits))
-            list(map(lambda x: cword.pop(x), iPI[::-1]))
+            for a in iPI[::-1]:
+                cword.pop(a)
+            #cword = vector(GF(2), list(map(lambda x: cword.pop(x), iPI[::-1]))
             check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
             if check == sign_rev(belief):
                 new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))

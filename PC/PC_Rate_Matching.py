@@ -14,6 +14,8 @@ def matching_selection(E, N, K):
 
 
 def get_rm_set(U, matching_scheme, QN0):
+    if U <= 0:
+        return set()
     bit_len = len("{0:b}".format(len(QN0)-1))
     bm = [int(("0" * (bit_len - len("{0:b}".format(a))) + "{0:b}".format(a))[::-1], 2) for a in list(range(len(QN0)))]
     if matching_scheme == "puncturing":

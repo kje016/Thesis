@@ -19,4 +19,6 @@ def gen_G(n):
     GN = Kronecker_Product(G2, G2)
     for i in range(n - 2):
         GN = Kronecker_Product(G2, GN)
+    if n == 1:
+        return G2
     return GN

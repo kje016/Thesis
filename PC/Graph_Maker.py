@@ -8,7 +8,7 @@ def csv_to_plot(input_file):
     next(file, None)
     test_results, y_axis = {}, {}
     for row in csv.reader(input_file):
-        dict_getter = test_results.get((float(row[1]),float(row[8]) ), [0]*(4))
+        dict_getter = test_results.get((float(row[1]), float(row[8]) ), [0]*(4))
         dict_getter[0]+=int(row[0])*int(row[4]) # tot information bits sent
         dict_getter[1]+= int(row[4])   # tot runs
         dict_getter[2]+= int(row[5])    # tot bit errors
@@ -42,7 +42,9 @@ def csv_to_plot(input_file):
 
     for key, value in bler_plot.items():
         plt.plot(value[1], value[0], label=str(key))
-    plt.xlabel('SNR')
+    plt.yscale('log')
+    plt.grid(axis='y')
+    plt.xlabel('SNR (db)')
     plt.ylabel('BLER')
     plt.title(f'Block Error Rate {name}')
     #plt.gca().invert_xaxis()
@@ -53,4 +55,5 @@ def csv_to_plot(input_file):
 
 #csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/AWGN_SC.csv")))
 #res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BSC_SC.csv")))
-res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BEC_SC.csv")))
+#res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BEC_SC.csv")))
+csv_to_plot(f'Users\\Kristian\\Dekstop\\Thesis\\PySageMath\\PC\\Tests\\AWGN_SCL.csv')
