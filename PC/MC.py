@@ -20,16 +20,14 @@ import HelperFunctions as HF
 import CRC
 
 
-run_vals = [[2/5, 1, 19, 'AWGN'], [2/5, 2, 19, 'AWGN'], [2/5, 3, 19, 'AWGN'], [2/5, 4, 19, 'AWGN'],
-            [2/5, 5, 19, 'AWGN']]
 
-"""
-run_vals = [ [2/5, 0.14, 19, 'BSC'], [2/5, 0.12, 19, 'BSC'], [2/5, 0.10, 19, 'BSC'],
-[2/5, 0.08, 19, 'BSC'], ]
-"""
+run_vals = [ [2/5, 0.14, 19, 'BSC'], [2/5, 0.12, 19, 'BSC'], [2/5, 0.1, 19, 'BSC'],
+[2/5, 0.08, 19, 'BSC'] ]
+
+
 I_IL = 0
 runs = 10000
-decoder = 'SC'
+decoder = 'SCL'
 for elem in run_vals:
     rate = elem[0]
     snr = elem[1]

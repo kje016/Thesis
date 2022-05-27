@@ -47,7 +47,7 @@ def csv_to_plot(input_file):
     ax.set_title(f'Bit Error Rate {name}')
     ax.legend()    # show a legend on the plot
     #ax.show() # function to show the plot
-    fig.savefig(f'{name}_BER.png')
+    fig.savefig(f'{name}_BER.svg')
     #breakpoint()
 
     fig, ax = plt.subplots()
@@ -61,10 +61,10 @@ def csv_to_plot(input_file):
     ax.grid(True, linewidth=0.5)
     ax.set_xlabel('SNR')
     ax.set_ylabel('BER')
-    ax.set_title(f'Bit Error Rate {name}')
+    ax.set_title(f'Block Error Rate {name}')
     ax.legend()    # show a legend on the plot
     #ax.show() # function to show the plot
-    fig.savefig(f'{name}_BLER.png')
+    fig.savefig(f'{name}_BLER.svg')
     #plt.legend()    # show a legend on the plot
     #plt.show() # function to show the plot
 
@@ -73,5 +73,5 @@ def csv_to_plot(input_file):
 #csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/AWGN_SC.csv")))
 #res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BSC_SC.csv")))
 #res = csv_to_plot( open(os.path.expanduser("~/PycharmProjects/Thesis/PC/Tests/BEC_SC.csv")))
-csv_to_plot('C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\AWGN_SCL.csv')
+csv_to_plot('C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\AWGN_SC.csv')
 #csv_to_plot(open(os.path.join("C:/Users/Kristian/Desktop/Thesis/PySageMath/PC/Tests", "AWGN_SCL.csv")))
