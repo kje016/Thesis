@@ -21,21 +21,10 @@ import HelperFunctions as HF
 import CRC
 
 
-#run_vals = [[2/5, 1.5, 19, 'AWGN'], [2/5, 2.5, 19, 'AWGN'], [2/5, 3.5, 19, 'AWGN'], [2/5, 4.5, 19, 'AWGN'],
-#            [2/5, 5.5, 19, 'AWGN']]
 
-#run_vals = [[2/5, 1, 19, 'AWGN'], [2/5, 2, 19, 'AWGN'], [2/5, 3, 19, 'AWGN'], [2/5, 4, 19, 'AWGN'],
-#            [2/5, 5, 19, 'AWGN']]
-
-run_vals = [[2/5, 0.12, 19, 'BSC', 'SCL'], [2/5, 0.1, 19, 'BSC', 'SCL'], [2/5, 0.08, 19, 'BSC', 'SCL'],[2/5, 0.06, 19, 'BSC', 'SCL'],
-[2/5, 0.04, 19, 'BSC', 'SCL'],
-
-[2/5, 1, 19, 'AWGN', 'SCL'], [2/5, 2, 19, 'AWGN', 'SCL'], [2/5, 3, 19, 'AWGN', 'SCL'],[2/5, 4, 19, 'AWGN', 'SCL'],
-[2/5, 5, 19, 'AWGN', 'SCL'],
-
-[2/5, 0.1, 19, 'BEC', 'SCL'], [2/5, 0.12, 19, 'BEC', 'SCL'], [2/5, 0.08, 19, 'BEC', 'SCL'],[2/5, 0.06, 19, 'BEC', 'SCL'],
-[2/5, 0.04, 19, 'BEC', 'SCL'],
-]
+run_vals = [
+[1/2, 1, 21, 'AWGN', 'SCL'], [1/2, 2, 21, 'AWGN', 'SCL'], [1/2, 3, 21, 'AWGN', 'SCL'], [1/2, 4, 21, 'AWGN', 'SCL'],
+[1/2, 5, 21, 'AWGN', 'SCL'],
 
 """
 run_vals = [ [2/5, 0.14, 19, 'BSC'], [2/5, 0.12, 19, 'BSC'], [2/5, 0.10, 19, 'BSC'],
@@ -61,7 +50,7 @@ for elem in run_vals:
     N = 2 ** n
     QN0 = PC_Subchannel_Allocation.get_Q_N0(N)
     npc, n_wm_pc = PC_Subchannel_Allocation.get_n_pc_bits(K, E, I_IL)
-    QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.freeze(N, K, E, npc, QN0, N-E)
+    QNF, QNI, MS, matching_scheme = PC_Subchannel_Allocation.freeze(N, K, E, npc, QN0, 0)
     GN = PC_Encoder.gen_G(n)
     QNPC = PC_Subchannel_Allocation.get_n_wm_pc(GN, n_wm_pc, QNI, npc)
     del QN0; gc.collect()
@@ -81,7 +70,6 @@ for elem in run_vals:
             print(f"{BER}, {BLER}")
             print(iteration)
             a = random_vector(GF(2), A)
-            a = vector(GF(2), [1, 0, 0, 1])
             #a = vector(GF(2), [1])
             c, G = CRC.CRC(a, A, pol)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
@@ -90,6 +78,7 @@ for elem in run_vals:
             d = vector(GF(2), u) * GN
             #print(f'd:\n{d}')
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
+
         r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
         scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
                                         p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
