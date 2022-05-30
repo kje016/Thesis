@@ -21,18 +21,29 @@ import CRC
 
 
 
-run_vals = [ [2/5, 0.14, 19, 'BSC'], [2/5, 0.12, 19, 'BSC'], [2/5, 0.1, 19, 'BSC'],
-[2/5, 0.08, 19, 'BSC'] ]
+run_vals = [
+[1/2, 1, 21, 'AWGN', 'SCL'], [1/2, 2, 21, 'AWGN', 'SCL'], [1/2, 3, 21, 'AWGN', 'SCL'], [1/2, 4, 21, 'AWGN', 'SCL'],
+[1/2, 5, 21, 'AWGN', 'SCL'],
+
+[1/2, 0.1, 21, 'BSC', 'SCL'], [1/2, 0.08, 21, 'BSC', 'SCL'], [1/2, 0.06, 21, 'BSC', 'SCL'], [1/2, 0.04, 21, 'BSC', 'SCL'],
+[1/2, 0.02, 21, 'BSC', 'SCL'],
+
+[1/2, 1, 15, 'AWGN', 'SCL'], [1/3, 2, 15, 'AWGN', 'SCL'], [1/3, 3, 15, 'AWGN', 'SCL'], [1/3, 4, 15, 'AWGN', 'SCL'],
+[1/3, 5, 15, 'AWGN', 'SCL'],
+
+[1/3, 0.14, 15, 'BSC', 'SCL'], [1/3, 0.12, 15, 'BSC', 'SCL'], [1/3, 0.1, 15, 'BSC', 'SCL'],
+[1/3, 0.08, 15, 'BSC', 'SCL'], [1/3, 0.06, 15, 'BSC', 'SCL'],
+]
 
 
-I_IL = 0
-runs = 10000
-decoder = 'SCL'
+I_IL = 1
+runs = 20000
 for elem in run_vals:
     rate = elem[0]
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
+    decoder = elem[4]
 
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()

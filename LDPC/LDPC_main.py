@@ -27,31 +27,42 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
-runs = 10000
+
+runs = 20000
 
 
-runs_vals =[ [0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.55, 'BEC']
+runs_vals = [
+[1/3, 1, 15, 'AWGN'], [1/3, 2, 15, 'AWGN'], [1/3, 3, 15, 'AWGN'], [1/3, 4, 15, 'AWGN'], [1/3, 5, 15, 'AWGN'],
+
+[1/3, 0.14, 15, 'BSC'], [1/3, 0.12, 15, 'BSC'], [1/3, 0.1, 15, 'BSC'], [1/3, 0.08, 15, 'BSC'], [1/3, 0.06, 15, 'BSC']
+
 ]
-A = 21
-rate = 1/4
-N0, sig = None, None
-pol = CRC.get_pol(A)
-B = A + pol.degree()
 
-bg = PF.det_BG(A, rate)
-L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
-K_ap = B_ap // C
-Kb = PF.determine_kb(B=B, bg=bg)
-Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
-BG = HF.get_base_matrix(bg, iLS, Zc)
-# BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
-# print(bg, iLS, Zc)
-H = HF.Protograph(BG, Zc)
 
-del BG; gc.collect()
+
 for elem in runs_vals:
-    snr = elem[0]
-    channel = elem[1]
+    rate = elem[0]
+    snr = elem[1]
+    A = elem[2]
+    channel = elem[3]
+
+    N0, sig = None, None
+    pol = CRC.get_pol(A)
+    B = A + pol.degree()
+
+    bg = PF.det_BG(A, rate)
+    L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
+    K_ap = B_ap // C
+    Kb = PF.determine_kb(B=B, bg=bg)
+    Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
+    BG = HF.get_base_matrix(bg, iLS, Zc)
+    # BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
+    # print(bg, iLS, Zc)
+    H = HF.Protograph(BG, Zc)
+    del BG;
+    gc.collect()
+
+
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
@@ -68,7 +79,6 @@ for elem in runs_vals:
             print(iterations)
             a = random_vector(GF(2), A)
             c, G = CRC.CRC(a, A, pol)
-
             crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
             D = vector(GF(2), crk)
             u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
