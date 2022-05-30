@@ -24,7 +24,7 @@ var('x')
 R = PolynomialRing(GF(2), x)
 R.inject_variables()
 
-runs = 500
+runs = 1000
 
 """"[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
@@ -37,26 +37,22 @@ def thread_decoder(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a):
                                           channel=channel)
     if channel == 'BEC':
         import minsum_BEC
-        aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
+        aa, suces, iters = minsum_BEC.minsum_BEC(HRM, llr_r)
     else:
         import LDPC_MinSum
-        aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
+        aa, suces, iters = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
     crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
 
     BER[0] = BER[0] + (aa[:A] + a).hamming_weight()
     BLER[0] = BLER[0] + sign(crc_check.hamming_weight())
     FAR[0] = FAR[0] + sign((aa[:A] + a).hamming_weight()) and not sign(crc_check.hamming_weight())
+    AVGit[0] = AVGit[0] + iters
 
 
-runs_vals = [
-    [1000, 0.4, 1/2, 'BEC'], [1000, 0.3, 1/2, 'BEC'], [1000, 0.2, 1/2, 'BEC'], [1000, 0.1, 1/2, 'BEC'],
-    [1000, 0.4, 1/2, 'BEC'], [1000, 0.3, 1/2, 'BEC'], [1000, 0.2, 1/2, 'BEC'], [1000, 0.1, 1/2, 'BEC'],
-    [1000, 0.4, 1/2, 'BEC'], [1000, 0.3, 1/2, 'BEC'], [1000, 0.2, 1/2, 'BEC'], [1000, 0.1, 1/2, 'BEC'],
-]
-runs_vals =[['', 0.1],['', 0.09],['', 0.08],['', 0.07],['', 0.06],['', 0.05],['', 0.1],['', 0.07],['', 0.05]]
+runs_vals =[['', 1], ['', 2], ['', 3], ['', 4], ['', 5]]
 A = 21
-rate = 1/2
-channel = 'BSC'
+rate = 2/5
+channel = 'AWGN'
 pol = CRC.get_pol(A)
 B = A + pol.degree()
 
@@ -72,9 +68,7 @@ H = HF.Protograph(BG, Zc)
 
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
-    print(elem)
     snr = elem[1]
-    N0, sig = None, None
 
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
@@ -83,18 +77,25 @@ for elem in runs_vals:
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = [0], [0], [0], [0]
     start_time = time.time()
-    for iteration in range(runs):
-        if iteration % 1 == 0 or iteration == runs-1:
+    a = random_vector(GF(2), A)
+    c, G = CRC.CRC(a, A, pol)
+
+    crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)  # crk := padding the codeword
+    D = vector(GF(2), crk)
+    u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+    for iterations in range(runs):
+        if runs % 100 == 0:
             print(time.time() - start_time)
-            print(f"BLER:{BLER}, BER:{BER}")
-            print(iteration)
             start_time = time.time()
-        a = random_vector(GF(2), A)
-        c, G = CRC.CRC(a, A, pol)
-        crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # TODO: testing for C > 1 & need to split crk
-        D = vector(GF(2), crk)
-        u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-        e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B)
+            print(f"BLER:{BLER}, BER:{BER}")
+            print(iterations)
+            a = random_vector(GF(2), A)
+            c, G = CRC.CRC(a, A, pol)
+
+            crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)  # crk := padding the codeword
+            D = vector(GF(2), crk)
+            u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+            e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
 
         thread1 = threading.Thread(target=thread_decoder, args=(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a))
         thread2 = threading.Thread(target=thread_decoder, args=(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a))
@@ -112,7 +113,7 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, len(e), runs, BER, BLER, snr, 'iter', 'threads=3', datetime.datetime.now()])
+            [A, rate, K, len(e), runs, BER, BLER, snr, AVGit, 'threads=3', datetime.datetime.now()])
         gc.collect()
     """
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',

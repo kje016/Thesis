@@ -22,7 +22,7 @@ def decoder(d, N, frozen_set, I_IL, PI, C):
     list_decoders = [HF.Decoder("", 0)]
     depth, done, node = 0, False, tree[0]
     node_i = tree.index(node)
-    #breakpoint()
+    breakpoint()
     while not done:
         if depth == log(N, 2):
             is_frozen = node_i-(N-1) in frozen_set

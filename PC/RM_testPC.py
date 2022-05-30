@@ -19,10 +19,10 @@ import HelperFunctions as HF
 import CRC
 
 run_vals = [[1/2, 1, 22, 'AWGN'], [1/2, 2, 22, 'AWGN'], [1/2, 3, 22, 'AWGN'], [1/2, 4, 22, 'AWGN'],
-            [1/2, 5, 2, 'AWGN']]
+            [1/2, 5, 22, 'AWGN']]
 I_IL = 0
-runs = 1
-decoder = 'SCL'
+runs = 10000
+decoder = 'SC'
 rate = 1/2
 snr = 2
 channel = 'AWGN'
@@ -38,9 +38,8 @@ N = 2 ** n
 for elem in run_vals:
     snr = elem[1]
     K_max = floor(N*rate)
-    breakpoint()
     for rep in range(N - Emin, 0, -2):
-        A = 22 + (N-Emin- rep)
+        A = 22 + (N-Emin - rep)
         K = A + pol.degree()
         N0 = None
         #E = ceil(K / rate)
@@ -93,10 +92,10 @@ for elem in run_vals:
             BLER = BLER + sign((a + scout[:A]).hamming_weight())
 
         file_getter = channel + '_' + decoder
-        #with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
-                  #newline='') as file:
+        with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
+                  newline='') as file:
         #with open(f'Users\\kristian\\PycharmProjects\\Thesis\\PC\\Tests\\{file_getter}.csv', mode='a', newline='') as file:
-        #    result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        #    result_writer.writerow(
-        #        [A, rate, K, N, runs, BER, BLER, f'U={U}', snr, I_IL, datetime.datetime.now()])
-        #    gc.collect()
+            result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            result_writer.writerow(
+                [A, rate, K, N, runs, BER, BLER, f'U={U}', snr, I_IL, datetime.datetime.now()])
+            gc.collect()
