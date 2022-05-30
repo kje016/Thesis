@@ -13,7 +13,6 @@ def decoder(d, N, frozen_set):
     depth, done, node = 0, False, tree[0]
     node_i = tree.index(node)
     vhat = []
-    breakpoint()
     while not done:
         if depth == log(N, 2):
             is_frozen = node_i-(N-1) in frozen_set

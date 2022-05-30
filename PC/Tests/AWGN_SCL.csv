@@ -99,3 +99,4 @@ A,R,K,N,Runs,BER,BLER,false_negative,p_cross,Date
 19,0.4,43,128,20000,1102,58,RM testing: U=N-E shortening,3,1,2022-05-30 03:50:56.216891
 19,0.4,43,128,20000,38,2,RM testing: U=N-E shortening,4,1,2022-05-30 04:40:46.480549
 19,0.4,43,128,20000,0,0,RM testing: U=N-E shortening,5,1,2022-05-30 05:30:20.304822
+21,0.5,45,128,10,21,1,RM testing: U=0,1,1,2022-05-30 09:34:16.494385
