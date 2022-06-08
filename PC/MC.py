@@ -20,35 +20,52 @@ import PC_Subchannel_Allocation
 import HelperFunctions as HF
 import CRC
 
-
-
+"""
 run_vals = [
-[1/2, 1, 40, 'AWGN', 'SCL'], [1/2, 2, 40, 'AWGN', 'SCL'], [1/2, 3, 40, 'AWGN', 'SCL'], [1/2, 4, 40, 'AWGN', 'SCL'],
-[1/2, 5, 40, 'AWGN', 'SCL'],
+[1/2, 0.5, 1, 'BEC', 'SCL'], [1/2, 0.4, 1, 'BEC', 'SCL'],[1/2, 0.3, 1, 'BEC', 'SCL'],[1/2, 0.2, 1, 'BEC', 'SCL'],
+[1/2, 0.1, 1, 'BEC', 'SCL'],
 
-[1/2, 0.1, 40, 'BSC', 'SCL'], [1/2, 0.08, 40, 'BSC', 'SCL'], [1/2, 0.06, 40, 'BSC', 'SCL'], [1/2, 0.04, 40, 'BSC', 'SCL'],
-[1/2, 0.02, 40, 'BSC', 'SCL'],
+[2/5, 0.6, 8, 'BEC', 'SCL'],[2/5, 0.5, 8, 'BEC', 'SCL'],[2/5, 0.4, 8, 'BEC', 'SCL'],[2/5, 0.3, 8, 'BEC', 'SCL'],
+[2/5, 0.2, 8, 'BEC', 'SCL'],[2/5, 0.1, 8, 'BEC', 'SCL'],
 
-[1/3, 1, 18, 'AWGN', 'SCL'], [1/3, 2, 18, 'AWGN', 'SCL'], [1/3, 3, 18, 'AWGN', 'SCL'], [1/3, 4, 18, 'AWGN', 'SCL'],
-[1/3, 5, 18, 'AWGN', 'SCL'],
-
-[1/3, 0.14, 18, 'BSC', 'SCL'], [1/3, 0.12, 18, 'BSC', 'SCL'], [1/3, 0.1, 18, 'BSC', 'SCL'],
-[1/3, 0.08, 18, 'BSC', 'SCL'], [1/3, 0.06, 18, 'BSC', 'SCL']
+[2/5, 1, 19, 'AWGN', 'SCL'],[2/5, 2, 19, 'AWGN', 'SCL'],[2/5, 3, 19, 'AWGN', 'SCL'],[2/5, 4, 19, 'AWGN', 'SCL'],
+[2/5, 5, 19, 'AWGN', 'SCL'],
+[2/5, 0.14, 19, 'BSC', 'SCL'],[2/5, 0.12, 19, 'BSC', 'SCL'],[2/5, 0.1, 19, 'BSC', 'SCL'],[2/5, 0.08, 19, 'BSC', 'SCL'],
+[2/5, 0.06, 19, 'BSC', 'SCL'],[2/5, 0.04, 19, 'BSC', 'SCL'],
+[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],
+[2/5, 0.2, 19, 'BEC', 'SCL'],
+[1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
+[1/2, 5, 21, 'AWGN', 'SCL'],
 ]
 """
-run_vals = [ [2/5, 0.14, 19, 'BSC'], [2/5, 0.12, 19, 'BSC'], [2/5, 0.10, 19, 'BSC'],
-[2/5, 0.08, 19, 'BSC'], ]
-"""
-I_IL = 1
-runs = 20000
-#decoder = 'SC'
+run_vals = [
+
+[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
+[1/2, 0.02, 21, 'BSC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'],
+[1/2, 0.1, 21, 'BEC', 'SCL'],
+
+[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],
+[2/5, 0.2, 19, 'BEC', 'SCL'],
+
+[1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
+[1/2, 5, 21, 'AWGN', 'SCL'],
+[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
+[1/2, 0.02, 21, 'BSC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'],
+[1/2, 0.1, 21, 'BEC', 'SCL'],
+
+]
+
+I_IL = 0
+runs = 10000
+
 for elem in run_vals:
     rate = elem[0]
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
     decoder = elem[4]
-
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()
     N0 = None
@@ -79,7 +96,7 @@ for elem in run_vals:
             print(f"{BER}, {BLER}")
             print(iteration)
             a = random_vector(GF(2), A)
-            #a = vector(GF(2), [1])
+
             c, G = CRC.CRC(a, A, pol)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
             #print(f'c:\n{c_ap}')

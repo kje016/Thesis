@@ -16,7 +16,7 @@ def decoder(d, N, frozen_set, I_IL, PI, C):
         C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
         CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
     tree = HF.init_tree(N, d)
-    F = RealField(7)
+    F = RealField(10)
     """SCL initialization"""
     L = 8
     list_decoders = [HF.Decoder("", 0)]
