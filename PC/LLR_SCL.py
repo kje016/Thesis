@@ -13,7 +13,7 @@ def decoder(d, N, frozen_set, I_IL, PI, H):
     if I_IL:
         pis = [PI.index(a) for a in PI if a >= len(PI)-24]
     tree = HF.init_tree(N, d)
-    F = RealField(7)
+    F = RealField(10)
     """SCL initialization"""
     L = 8
     list_decoders = [HF.Decoder("", 0)]

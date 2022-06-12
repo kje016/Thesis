@@ -24,8 +24,21 @@ import CRC
 [1/2, 1, 40, 'AWGN', 'SCL'], [1/2, 2, 40, 'AWGN', 'SCL'], [1/2, 3, 40, 'AWGN', 'SCL'], [1/2, 4, 40, 'AWGN', 'SCL'],
 [1/2, 5, 40, 'AWGN', 'SCL'],
 
-[1/2, 0.1, 40, 'BSC', 'SCL'], [1/2, 0.08, 40, 'BSC', 'SCL'], [1/2, 0.06, 40, 'BSC', 'SCL'], [1/2, 0.04, 40, 'BSC', 'SCL'],
-[1/2, 0.02, 40, 'BSC', 'SCL'],
+run_vals = [
+[1/2, 0.5, 1, 'BEC', 'SCL'], [1/2, 0.4, 1, 'BEC', 'SCL'],[1/2, 0.3, 1, 'BEC', 'SCL'],[1/2, 0.2, 1, 'BEC', 'SCL'],
+[1/2, 0.1, 1, 'BEC', 'SCL'],
+
+[2/5, 0.6, 8, 'BEC', 'SCL'],[2/5, 0.5, 8, 'BEC', 'SCL'],[2/5, 0.4, 8, 'BEC', 'SCL'],[2/5, 0.3, 8, 'BEC', 'SCL'],
+[2/5, 0.2, 8, 'BEC', 'SCL'],[2/5, 0.1, 8, 'BEC', 'SCL'],
+
+[2/5, 1, 19, 'AWGN', 'SCL'],[2/5, 2, 19, 'AWGN', 'SCL'],[2/5, 3, 19, 'AWGN', 'SCL'],[2/5, 4, 19, 'AWGN', 'SCL'],
+[2/5, 5, 19, 'AWGN', 'SCL'],
+[2/5, 0.14, 19, 'BSC', 'SCL'],[2/5, 0.12, 19, 'BSC', 'SCL'],[2/5, 0.1, 19, 'BSC', 'SCL'],[2/5, 0.08, 19, 'BSC', 'SCL'],
+[2/5, 0.06, 19, 'BSC', 'SCL'],[2/5, 0.04, 19, 'BSC', 'SCL'],
+[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],
+[2/5, 0.2, 19, 'BEC', 'SCL'],
+[1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
+[1/2, 5, 21, 'AWGN', 'SCL'],
 
 run_vals = [
 [2/5, 0.12, 27, 'BSC', 'SCL'], [2/5, 0.1, 27, 'BSC', 'SCL'],[2/5, 0.08, 27, 'BSC', 'SCL'],[2/5, 0.06, 27, 'BSC', 'SCL'],
@@ -51,7 +64,23 @@ run_vals = [
 [1/2, 5, 8, 'AWGN', 'SCL', 1],
 [1/2, 0.1, 8, 'BSC', 'SCL', 1],[1/2, 0.08, 8, 'BSC', 'SCL', 1],[1/2, 0.06, 8, 'BSC', 'SCL', 1],[1/2, 0.04, 8, 'BSC', 'SCL', 1],
 [1/2, 0.02, 8, 'BSC', 'SCL', 1],
+[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
+[1/2, 0.02, 21, 'BSC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'],
+[1/2, 0.1, 21, 'BEC', 'SCL'],
 
+[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],
+[2/5, 0.2, 19, 'BEC', 'SCL'],
+
+[1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
+[1/2, 5, 21, 'AWGN', 'SCL'],
+[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
+[1/2, 0.02, 21, 'BSC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'], [1/2, 0.1, 21, 'BEC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SC'],[1/2, 0.4, 21, 'BEC', 'SC'],[1/2, 0.3, 21, 'BEC', 'SC'],[1/2, 0.2, 21, 'BEC', 'SC'], [1/2, 0.1, 21, 'BEC', 'SC'],
+
+[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],[2/5, 0.2, 19, 'BEC', 'SCL'],
+[2/5, 0.6, 19, 'BEC', 'SC'],[2/5, 0.5, 19, 'BEC', 'SC'],[2/5, 0.4, 19, 'BEC', 'SC'],[2/5, 0.3, 19, 'BEC', 'SC'],[2/5, 0.2, 19, 'BEC', 'SC'],
 
 [1/2, 0.5, 8, 'BEC', 'SCL', 1],[1/2, 0.4, 8, 'BEC', 'SCL', 1],[1/2, 0.3, 8, 'BEC', 'SCL', 1],[1/2, 0.2, 8, 'BEC', 'SCL', 1],
 [1/2, 0.1, 8, 'BEC', 'SCL', 1],
@@ -105,8 +134,7 @@ for elem in run_vals:
             #a = vector(GF(2), [1])
             c, H = CRC.CRC(a, A, pol, I_IL, PI)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
-            #CRC.test_I_CRC(c=c, cap=c_ap, a=a, PI=PI, pol=pol)
-            #print(f'c_ap:\n{c_ap}')
+            #print(f'c:\n{c_ap}')
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
             d = vector(GF(2), u) * GN
             #print(f'd:\n{d}')
@@ -122,7 +150,14 @@ for elem in run_vals:
                     scout = a + vector(GF(2), [1] * A)
                     ET += 1
             else:
-                scout = scout[:A]
+                crc_pass = False
+                for i, elem in enumerate(scout):
+                    if CRC.CRC_check(elem.inf_bits, K, pol) == 0:
+                        scout = vector(GF(2), elem.inf_bits)
+                        crc_pass = True
+                        break
+                if not crc_pass:
+                    scout = vector(GF(2), scout[0].inf_bits)
         BER = BER + (a + scout[:A]).hamming_weight()
         BLER = BLER + sign((a + scout[:A]).hamming_weight())
     file_getter = channel + '_' + decoder
@@ -131,5 +166,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'RM testing: U={len(MS)}', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}', snr, I_IL, datetime.datetime.now()])
         gc.collect()
