@@ -27,14 +27,20 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 
 #SNR = vector(RealField(10), [1, 1.5, 2, 2.5, 3, 3.5, 5, 4.5, 5, 5.5, 6])
 #SNP = vector(RealField(4), [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45])
+"""
+[1/3, 1, 15, 'AWGN'], [1/3, 2, 15, 'AWGN'],[1/3, 3, 15, 'AWGN'],[1/3, 4, 15, 'AWGN'],[1/3, 5, 15, 'AWGN'],
+[1/3, 0.14, 15, 'BSC'], [1/3, 0.12, 15, 'BSC'],[1/3, 0.1, 15, 'BSC'],[1/3, 0.08, 15, 'BSC'],[1/3, 0.06, 15, 'BSC'],
+[1/3, 0.04, 15, 'BSC'],
 
+[1/3, 0.65, 15, 'BEC'], [1/3, 0.6, 15, 'BEC'], [1/3, 0.5, 15, 'BEC'],  [1/3, 0.4, 15, 'BEC'],  [1/3, 0.3, 15, 'BEC'],
+[1 / 3, 0.2, 15, 'BEC'],
+"""
 runs = 20000
 
 
-runs_vals = [
-[1/3, 1, 15, 'AWGN'], [1/3, 2, 15, 'AWGN'], [1/3, 3, 15, 'AWGN'], [1/3, 4, 15, 'AWGN'], [1/3, 5, 15, 'AWGN'],
-
-[1/3, 0.14, 15, 'BSC'], [1/3, 0.12, 15, 'BSC'], [1/3, 0.1, 15, 'BSC'], [1/3, 0.08, 15, 'BSC'], [1/3, 0.06, 15, 'BSC']
+runs_vals =[
+[1/2, 0.4, 21, 'BEC'], [1/2, 0.3, 21, 'BEC'], [1/2, 0.2, 21, 'BEC'], [1/2, 0.1, 21, 'BEC'],
+[2/5, 0.6, 19, 'BEC'], [2/5, 0.5, 19, 'BEC'],[2/5, 0.4, 19, 'BEC'],[2/5, 0.3, 19, 'BEC'],[2/5, 0.2, 19, 'BEC'],
 
 ]
 
@@ -83,13 +89,13 @@ for elem in runs_vals:
             D = vector(GF(2), crk)
             u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
-
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
-        llr_r, rr = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=N0 if channel == 'AWGN' else snr, channel=channel)
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=N0 if channel == 'AWGN' else snr, channel=channel)
 
         if channel == 'BEC':
             import minsum_BEC
             aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
+            #print(suces, iter)
         else:
             import LDPC_MinSum
             aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
@@ -103,5 +109,5 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, H.ncols(), runs, BER, BLER, snr, AVGit, 'no colpunct', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'nz_sum_approx(lv, min_vals, False)', datetime.datetime.now()])
         gc.collect()

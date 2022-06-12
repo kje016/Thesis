@@ -15,8 +15,9 @@ def channel_noise(s, channel, p):
         noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])
         r = vector(F, list(map(lambda y: (2 * y) - 1, (vector(F, s)+noise) % 2)))
     elif channel == 'AWGN':
-        inoise = vector(RealField(10), (numpy.random.normal(0, p, size=len(s))))
-        r = (2*s)-vector([1]*len(s))+inoise
+        noise = vector(F, list(default_rng().normal(0, p, len(s))))
+        r_mod = 2 * vector(F, s) - vector(F, [1] * len(s))
+        r = r_mod + noise
 
     else: # channel == 'BEC'
         noise = vector(F, [1 if x <= p else 0 for x in list(uniform(0, 1, size=len(s)))])

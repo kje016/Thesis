@@ -24,7 +24,7 @@ var('x')
 R = PolynomialRing(GF(2), x)
 R.inject_variables()
 
-runs = 1000
+runs = 6700
 
 """"[20, 0.1, 1/2, 'BSC'],  [20, 0.09, 1/2, 'BSC'], [20, 0.08, 1/2, 'BSC'], [20, 0.07, 1/2, 'BSC'],
               [20, 0.06, 1/2, 'BSC'], [20, 0.05, 1/2, 'BSC'], [20, 0.04, 1/2, 'BSC'], [20, 0.03, 1/2, 'BSC'],
@@ -49,26 +49,29 @@ def thread_decoder(e, channel, sig, snr, Zc, K, K_ap, HRM, B, a):
     AVGit[0] = AVGit[0] + iters
 
 
-runs_vals =[['', 1], ['', 2], ['', 3], ['', 4], ['', 5]]
-A = 21
-rate = 2/5
-channel = 'AWGN'
-pol = CRC.get_pol(A)
-B = A + pol.degree()
-
-bg = PF.det_BG(A, rate)
-L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
-K_ap = B_ap // C
-Kb = PF.determine_kb(B=B, bg=bg)
-Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
-BG = HF.get_base_matrix(bg, iLS, Zc)
-#BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
-H = HF.Protograph(BG, Zc)
+runs_vals =[
+[1/2, 0.4, 21, 'BEC']
+]
 
 
 # sage LDPC_main.py 20 bsc
 for elem in runs_vals:
+    rate = elem[0]
     snr = elem[1]
+    A = elem[2]
+    channel = elem[3]
+
+    pol = CRC.get_pol(A)
+    B = A + pol.degree()
+
+    bg = PF.det_BG(A, rate)
+    L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
+    K_ap = B_ap // C
+    Kb = PF.determine_kb(B=B, bg=bg)
+    Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
+    BG = HF.get_base_matrix(bg, iLS, Zc)
+    # BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
+    H = HF.Protograph(BG, Zc)
 
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
@@ -83,8 +86,9 @@ for elem in runs_vals:
     crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)  # crk := padding the codeword
     D = vector(GF(2), crk)
     u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+    print(elem)
     for iterations in range(runs):
-        if runs % 100 == 0:
+        if iterations % 100 == 0:
             print(time.time() - start_time)
             start_time = time.time()
             print(f"BLER:{BLER}, BER:{BER}")
@@ -109,11 +113,11 @@ for elem in runs_vals:
         thread2.join()
         thread3.join()
 
-    with open(f'PycharmProjects\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
+    with open(f'Tests/{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, len(e), runs, BER, BLER, snr, AVGit, 'threads=3', datetime.datetime.now()])
+            [A, rate, K, len(e), runs, BER, BLER, snr, AVGit, 'threads=3, colpunct=True', datetime.datetime.now()])
         gc.collect()
     """
     with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',

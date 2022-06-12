@@ -18,13 +18,19 @@ import HelperFunctions as HF
 #import test_CRC
 import CRC
 
-run_vals = [[1/2, 1, 22, 'AWGN'], [1/2, 2, 22, 'AWGN'], [1/2, 3, 22, 'AWGN'], [1/2, 4, 22, 'AWGN'],
-            [1/2, 5, 22, 'AWGN']]
+run_vals = [
+[1/2, 1, 22, 'AWGN'], [1/2, 2, 22, 'AWGN'], [1/2, 3, 22, 'AWGN'], [1/2, 4, 22, 'AWGN'],
+[1/2, 0.1, 22, 'BSC'], [1/2, 0.08, 22, 'BSC'],[1/2, 0.06, 22, 'BSC'],[1/2, 0.04, 22, 'BSC'],
+[1/2, 0.5, 22, 'BEC'], [1/2, 0.4, 22, 'BEC'], [1/2, 0.3, 22, 'BEC'], [1/2, 0.2, 22, 'BEC'],
+
+[1/2, 1, 22, 'AWGN'], [1/2, 2, 22, 'AWGN'], [1/2, 3, 22, 'AWGN'], [1/2, 4, 22, 'AWGN'],
+[1/2, 0.1, 22, 'BSC'], [1/2, 0.08, 22, 'BSC'],[1/2, 0.06, 22, 'BSC'],[1/2, 0.04, 22, 'BSC'],
+[1/2, 0.5, 22, 'BEC'], [1/2, 0.4, 22, 'BEC'], [1/2, 0.3, 22, 'BEC'], [1/2, 0.2, 22, 'BEC'],
+]
 I_IL = 0
 runs = 10000
-decoder = 'SC'
+decoder = 'SCL'
 rate = 1/2
-snr = 2
 channel = 'AWGN'
 
 A = 22
@@ -38,7 +44,8 @@ N = 2 ** n
 for elem in run_vals:
     snr = elem[1]
     K_max = floor(N*rate)
-    for rep in range(N - Emin, 0, -2):
+    channel = elem[3]
+    for rep in range(N - Emin, 0, -10):
         A = 22 + (N-Emin - rep)
         K = A + pol.degree()
         N0 = None
@@ -92,8 +99,7 @@ for elem in run_vals:
             BLER = BLER + sign((a + scout[:A]).hamming_weight())
 
         file_getter = channel + '_' + decoder
-        with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\{file_getter}.csv', mode='a',
-                  newline='') as file:
+        with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         #with open(f'Users\\kristian\\PycharmProjects\\Thesis\\PC\\Tests\\{file_getter}.csv', mode='a', newline='') as file:
             result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             result_writer.writerow(

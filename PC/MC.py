@@ -20,26 +20,47 @@ import PC_Subchannel_Allocation
 import HelperFunctions as HF
 import CRC
 
-
-
-run_vals = [
+"""
 [1/2, 1, 40, 'AWGN', 'SCL'], [1/2, 2, 40, 'AWGN', 'SCL'], [1/2, 3, 40, 'AWGN', 'SCL'], [1/2, 4, 40, 'AWGN', 'SCL'],
 [1/2, 5, 40, 'AWGN', 'SCL'],
 
 [1/2, 0.1, 40, 'BSC', 'SCL'], [1/2, 0.08, 40, 'BSC', 'SCL'], [1/2, 0.06, 40, 'BSC', 'SCL'], [1/2, 0.04, 40, 'BSC', 'SCL'],
 [1/2, 0.02, 40, 'BSC', 'SCL'],
 
-[1/3, 1, 18, 'AWGN', 'SCL'], [1/3, 2, 18, 'AWGN', 'SCL'], [1/3, 3, 18, 'AWGN', 'SCL'], [1/3, 4, 18, 'AWGN', 'SCL'],
-[1/3, 5, 18, 'AWGN', 'SCL'],
+run_vals = [
+[2/5, 0.12, 27, 'BSC', 'SCL'], [2/5, 0.1, 27, 'BSC', 'SCL'],[2/5, 0.08, 27, 'BSC', 'SCL'],[2/5, 0.06, 27, 'BSC', 'SCL'],
+[2/5, 0.04, 27, 'BSC', 'SCL'],
 
-[1/3, 0.14, 18, 'BSC', 'SCL'], [1/3, 0.12, 18, 'BSC', 'SCL'], [1/3, 0.1, 18, 'BSC', 'SCL'],
-[1/3, 0.08, 18, 'BSC', 'SCL'], [1/3, 0.06, 18, 'BSC', 'SCL']
+[2/5, 1, 27, 'AWGN', 'SCL'],[2/5, 2, 27, 'AWGN', 'SCL'],[2/5, 3, 27, 'AWGN', 'SCL'],[2/5, 4, 27, 'AWGN', 'SCL'],
+[2/5, 5, 27, 'AWGN', 'SCL'],
+
+[1/2, 0.1, 40, 'BSC', 'SCL'],[1/2, 0.08, 40, 'BSC', 'SCL'],[1/2, 0.06, 40, 'BSC', 'SCL'],[1/2, 0.04, 40, 'BSC', 'SCL'],
+[1/2, 0.02, 40, 'BSC', 'SCL'],
+
+[1/2, 1, 40, 'AWGN', 'SCL'],[1/2, 2, 40, 'AWGN', 'SCL'],[1/2, 3, 40, 'AWGN', 'SCL'],[1/2, 4, 40, 'AWGN', 'SCL'],
+[1/2, 5, 40, 'AWGN', 'SCL'],
+[1/2, 0.5, 8, 'BEC', 'SCL', 1],[1/2, 0.4, 8, 'BEC', 'SCL', 1],[1/2, 0.3, 8, 'BEC', 'SCL', 1],[1/2, 0.2, 8, 'BEC', 'SCL', 1],
+[1/2, 0.1, 8, 'BEC', 'SCL', 1],
+[1/2, 0.5, 21, 'BEC', 'SCL',0],[1/2, 0.4, 21, 'BEC', 'SCL',0],[1/2, 0.3, 21, 'BEC', 'SCL',0],[1/2, 0.2, 21, 'BEC', 'SCL',0],
+[1/2, 0.1, 21, 'BEC', 'SCL',0],
 ]
 """
-run_vals = [ [2/5, 0.14, 19, 'BSC'], [2/5, 0.12, 19, 'BSC'], [2/5, 0.10, 19, 'BSC'],
-[2/5, 0.08, 19, 'BSC'], ]
-"""
-I_IL = 1
+run_vals = [
+
+[1/2, 1, 8, 'AWGN', 'SCL', 1],[1/2, 2, 8, 'AWGN', 'SCL', 1],[1/2, 3, 8, 'AWGN', 'SCL', 1],[1/2, 4, 8, 'AWGN', 'SCL', 1],
+[1/2, 5, 8, 'AWGN', 'SCL', 1],
+[1/2, 0.1, 8, 'BSC', 'SCL', 1],[1/2, 0.08, 8, 'BSC', 'SCL', 1],[1/2, 0.06, 8, 'BSC', 'SCL', 1],[1/2, 0.04, 8, 'BSC', 'SCL', 1],
+[1/2, 0.02, 8, 'BSC', 'SCL', 1],
+
+
+[1/2, 0.5, 8, 'BEC', 'SCL', 1],[1/2, 0.4, 8, 'BEC', 'SCL', 1],[1/2, 0.3, 8, 'BEC', 'SCL', 1],[1/2, 0.2, 8, 'BEC', 'SCL', 1],
+[1/2, 0.1, 8, 'BEC', 'SCL', 1],
+[1/2, 1, 8, 'AWGN', 'SCL', 1],[1/2, 2, 8, 'AWGN', 'SCL', 1],[1/2, 3, 8, 'AWGN', 'SCL', 1],[1/2, 4, 8, 'AWGN', 'SCL', 1],
+[1/2, 5, 8, 'AWGN', 'SCL', 1],
+[1/2, 0.1, 8, 'BSC', 'SCL', 1],[1/2, 0.08, 8, 'BSC', 'SCL', 1],[1/2, 0.06, 8, 'BSC', 'SCL', 1],[1/2, 0.04, 8, 'BSC', 'SCL', 1],
+[1/2, 0.02, 8, 'BSC', 'SCL', 1],
+]
+
 runs = 20000
 #decoder = 'SC'
 for elem in run_vals:
@@ -48,9 +69,11 @@ for elem in run_vals:
     A = elem[2]
     channel = elem[3]
     decoder = elem[4]
+    I_IL = elem[5]
 
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()
+    PI = PC_Input_Bits_Interleaver.get_pi(K)
     N0 = None
     false_negative = 'NaN'
 
@@ -69,42 +92,37 @@ for elem in run_vals:
         p = 1 - norm.cdf(1 / sigma)  # error probability, from proposition 2.9
         N0 = 2 * sigma ** 2
 
-    BLER, BER = 0, 0
+    BLER, BER, ET = 0, 0, 0
     start_time = time.time()
-    print(elem, N-E)
+    print(elem, len(MS))
     for iteration in range(runs):
         if iteration % 100 == 0 or iteration == runs-1:
             print(time.time()-start_time)
             start_time = time.time()
-            print(f"{BER}, {BLER}")
+            print(f"{BER}, {BLER}, {ET}")
             print(iteration)
             a = random_vector(GF(2), A)
             #a = vector(GF(2), [1])
-            c, G = CRC.CRC(a, A, pol)
+            c, H = CRC.CRC(a, A, pol, I_IL, PI)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
-            #print(f'c:\n{c_ap}')
+            #CRC.test_I_CRC(c=c, cap=c_ap, a=a, PI=PI, pol=pol)
+            #print(f'c_ap:\n{c_ap}')
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
             d = vector(GF(2), u) * GN
             #print(f'd:\n{d}')
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
         r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
         scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
-                                        p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
+                                        p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, H=H)
 
         if decoder == 'SCL':
             if I_IL:
                 scout = scout[0].inf_bits
                 if scout == '':
                     scout = a + vector(GF(2), [1] * A)
+                    ET += 1
             else:
-                crc_pass = False
-                for i, elem in enumerate(scout):
-                    if CRC.CRC_check(elem.inf_bits, K, pol) == 0:
-                        scout = vector(GF(2), elem.inf_bits)
-                        crc_pass = True
-                        break
-                if not crc_pass:
-                    scout = vector(GF(2), scout[0].inf_bits)
+                scout = scout[:A]
         BER = BER + (a + scout[:A]).hamming_weight()
         BLER = BLER + sign((a + scout[:A]).hamming_weight())
     file_getter = channel + '_' + decoder
