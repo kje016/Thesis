@@ -28,7 +28,6 @@ def get_Q_N0(N):
 
 def freeze(N, K, E, npc, QN0, U):
     matching_scheme = RM.matching_selection(E=E, N=N, K=K)
-    matching_scheme = 'shortening'
     MS = RM.get_rm_set(U=U, matching_scheme=matching_scheme, QN0=QN0)
 
     if len(MS) == 0:

@@ -36,9 +36,6 @@ run_vals = [
 [2/5, 0.2, 19, 'BEC', 'SCL'],
 [1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
 [1/2, 5, 21, 'AWGN', 'SCL'],
-]
-"""
-run_vals = [
 
 [1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
 [1/2, 0.02, 21, 'BSC', 'SCL'],
@@ -52,12 +49,33 @@ run_vals = [
 [1/2, 5, 21, 'AWGN', 'SCL'],
 [1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
 [1/2, 0.02, 21, 'BSC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'],
-[1/2, 0.1, 21, 'BEC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'], [1/2, 0.1, 21, 'BEC', 'SCL'],
+[1/2, 0.5, 21, 'BEC', 'SC'],[1/2, 0.4, 21, 'BEC', 'SC'],[1/2, 0.3, 21, 'BEC', 'SC'],[1/2, 0.2, 21, 'BEC', 'SC'], [1/2, 0.1, 21, 'BEC', 'SC'],
 
+[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],[2/5, 0.2, 19, 'BEC', 'SCL'],
+[2/5, 0.6, 19, 'BEC', 'SC'],[2/5, 0.5, 19, 'BEC', 'SC'],[2/5, 0.4, 19, 'BEC', 'SC'],[2/5, 0.3, 19, 'BEC', 'SC'],[2/5, 0.2, 19, 'BEC', 'SC'],
+]
+"""
+run_vals = [
+[1/2, 5, 40, 'AWGN', 'SCL'], [1/2, 5, 8, 40, 'AWGN', 'SCL'],
+
+[1/2, 0.5, 40, 'BEC', 'SCL'], [1/2, 0.4, 40, 'BEC', 'SCL'], [1/2, 0.3, 40, 'BEC', 'SCL'],[1/2, 0.2, 40, 'BEC', 'SCL'],
+[1/2, 0.1, 40, 'BEC', 'SCL'],
+[1/2, 0.5, 40, 'BEC', 'SCL'], [1/2, 0.4, 40, 'BEC', 'SCL'], [1/2, 0.3, 40, 'BEC', 'SCL'],[1/2, 0.2, 40, 'BEC', 'SCL'],
+[1/2, 0.1, 40, 'BEC', 'SCL'],
+
+[1/2, 0.14, 40, 'BSC', 'SCL'],[1/2, 0.12, 40, 'BSC', 'SCL'],[1/2, 0.1, 40, 'BSC', 'SCL'],[1/2, 0.08, 40, 'BSC', 'SCL'],
+[1/2, 0.06, 40, 'BSC', 'SCL'],[1/2, 0.04, 40, 'BSC', 'SCL'],
+[1/2, 0.14, 40, 'BSC', 'SCL'],[1/2, 0.12, 40, 'BSC', 'SCL'],[1/2, 0.1, 40, 'BSC', 'SCL'],[1/2, 0.08, 40, 'BSC', 'SCL'],
+[1/2, 0.06, 40, 'BSC', 'SCL'],[1/2, 0.04, 40, 'BSC', 'SCL'],
+
+[2/5, 0.6, 27, 'BEC', 'SCL'],[2/5, 0.5, 27, 'BEC', 'SCL'],[2/5, 0.4, 27, 'BEC', 'SCL'],[2/5, 0.3, 27, 'BEC', 'SCL'],
+[2/5, 0.2, 27, 'BEC', 'SCL'],
+[2/5, 0.6, 27, 'BEC', 'SCL'],[2/5, 0.5, 27, 'BEC', 'SCL'],[2/5, 0.4, 27, 'BEC', 'SCL'],[2/5, 0.3, 27, 'BEC', 'SCL'],
+[2/5, 0.2, 27, 'BEC', 'SCL'],
 ]
 
-I_IL = 0
+I_IL = 1
 runs = 10000
 
 for elem in run_vals:
@@ -130,5 +148,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'RM testing: U={len(MS)}', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}', snr, I_IL, datetime.datetime.now()])
         gc.collect()
