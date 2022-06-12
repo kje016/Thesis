@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/Tests/AWGN_SCL_RM.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Tests/BEC_SC.csv">
           <value>
             <Attribute>
@@ -39,6 +46,20 @@
           </value>
         </entry>
         <entry key="/Tests/BSC_SCL.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Tests/CA_AWGN.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Tests/CA_BEC.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

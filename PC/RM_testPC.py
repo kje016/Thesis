@@ -20,13 +20,9 @@ import HelperFunctions as HF
 import CRC
 
 run_vals = [
-[1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
-[0.1, 'BSC'], [0.08, 'BSC'], [0.06, 'BSC'], [0.04, 'BSC'], [0.02, 'BSC'],
 [0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.2, 'BEC'],[0.1, 'BEC'],
-
+[0.02, 'BSC'],[0.04, 'BSC'], [0.06, 'BSC'], [0.08, 'BSC'], [0.1, 'BSC'],
 [1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
-[0.1, 'BSC'], [0.08, 'BSC'], [0.06, 'BSC'], [0.04, 'BSC'], [0.02, 'BSC'],
-[0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.2, 'BEC'],[0.1, 'BEC'],
 ]
 I_IL = 0
 runs = 20000

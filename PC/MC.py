@@ -59,41 +59,20 @@ run_vals = [
 ]
 """
 run_vals = [
+['', 1, 8, 'AWGN', 'SCL', 1], ['', 2, 8, 'AWGN', 'SCL', 1], ['', 3, 8, 'AWGN', 'SCL', 1], ['', 4, 8, 'AWGN', 'SCL', 1],['', 5, 8, 'AWGN', 'SCL', 1],
+['', 1, 8, 'AWGN', 'SCL', 1], ['', 2, 8, 'AWGN', 'SCL', 1], ['', 3, 8, 'AWGN', 'SCL', 1], ['', 4, 8, 'AWGN', 'SCL', 1],['', 5, 8, 'AWGN', 'SCL', 1],
 
-[1/2, 1, 8, 'AWGN', 'SCL', 1],[1/2, 2, 8, 'AWGN', 'SCL', 1],[1/2, 3, 8, 'AWGN', 'SCL', 1],[1/2, 4, 8, 'AWGN', 'SCL', 1],
-[1/2, 5, 8, 'AWGN', 'SCL', 1],
-[1/2, 0.1, 8, 'BSC', 'SCL', 1],[1/2, 0.08, 8, 'BSC', 'SCL', 1],[1/2, 0.06, 8, 'BSC', 'SCL', 1],[1/2, 0.04, 8, 'BSC', 'SCL', 1],
-[1/2, 0.02, 8, 'BSC', 'SCL', 1],
-[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
-[1/2, 0.02, 21, 'BSC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'],
-[1/2, 0.1, 21, 'BEC', 'SCL'],
+['', 0.1, 8, 'BSC', 'SCL'],['', 0.08, 8, 'BSC', 'SCL'],['', 0.06, 8, 'BSC', 'SCL'],['', 0.04, 8, 'BSC', 'SCL'],['', 0.02, 8, 'BSC', 'SCL'],
+['', 0.1, 8, 'BSC', 'SCL'],['', 0.08, 8, 'BSC', 'SCL'],['', 0.06, 8, 'BSC', 'SCL'],['', 0.04, 8, 'BSC', 'SCL'],['', 0.02, 8, 'BSC', 'SCL'],
 
-[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],
-[2/5, 0.2, 19, 'BEC', 'SCL'],
-
-[1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
-[1/2, 5, 21, 'AWGN', 'SCL'],
-[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
-[1/2, 0.02, 21, 'BSC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'], [1/2, 0.1, 21, 'BEC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SC'],[1/2, 0.4, 21, 'BEC', 'SC'],[1/2, 0.3, 21, 'BEC', 'SC'],[1/2, 0.2, 21, 'BEC', 'SC'], [1/2, 0.1, 21, 'BEC', 'SC'],
-
-[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],[2/5, 0.2, 19, 'BEC', 'SCL'],
-[2/5, 0.6, 19, 'BEC', 'SC'],[2/5, 0.5, 19, 'BEC', 'SC'],[2/5, 0.4, 19, 'BEC', 'SC'],[2/5, 0.3, 19, 'BEC', 'SC'],[2/5, 0.2, 19, 'BEC', 'SC'],
-
-[1/2, 0.5, 8, 'BEC', 'SCL', 1],[1/2, 0.4, 8, 'BEC', 'SCL', 1],[1/2, 0.3, 8, 'BEC', 'SCL', 1],[1/2, 0.2, 8, 'BEC', 'SCL', 1],
-[1/2, 0.1, 8, 'BEC', 'SCL', 1],
-[1/2, 1, 8, 'AWGN', 'SCL', 1],[1/2, 2, 8, 'AWGN', 'SCL', 1],[1/2, 3, 8, 'AWGN', 'SCL', 1],[1/2, 4, 8, 'AWGN', 'SCL', 1],
-[1/2, 5, 8, 'AWGN', 'SCL', 1],
-[1/2, 0.1, 8, 'BSC', 'SCL', 1],[1/2, 0.08, 8, 'BSC', 'SCL', 1],[1/2, 0.06, 8, 'BSC', 'SCL', 1],[1/2, 0.04, 8, 'BSC', 'SCL', 1],
-[1/2, 0.02, 8, 'BSC', 'SCL', 1],
+['', 0.5, 8, 'BEC', 'SCL'], ['', 0.4, 8, 'BEC', 'SCL'], ['', 0.3, 8, 'BEC', 'SCL'], ['', 0.2, 8, 'BEC', 'SCL'], ['', 0.1, 8, 'BEC', 'SCL'],
+['', 0.5, 8, 'BEC', 'SCL'], ['', 0.4, 8, 'BEC', 'SCL'], ['', 0.3, 8, 'BEC', 'SCL'], ['', 0.2, 8, 'BEC', 'SCL'], ['', 0.1, 8, 'BEC', 'SCL'],
 ]
 
-runs = 20000
+runs = 100
 #decoder = 'SC'
 for elem in run_vals:
-    rate = elem[0]
+    rate = 1/2
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
@@ -152,7 +131,7 @@ for elem in run_vals:
             else:
                 crc_pass = False
                 for i, elem in enumerate(scout):
-                    if CRC.CRC_check(elem.inf_bits, K, pol) == 0:
+                    if H * scout == 0:
                         scout = vector(GF(2), elem.inf_bits)
                         crc_pass = True
                         break
@@ -166,5 +145,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}, H-check, SCL', snr, I_IL, datetime.datetime.now()])
         gc.collect()
