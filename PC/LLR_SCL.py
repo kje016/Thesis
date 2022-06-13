@@ -10,6 +10,7 @@ F = RealField(10)
 
 
 def decoder(d, N, frozen_set, I_IL, PI, H):
+    pis = []
     if I_IL:
         pis = [PI.index(a) for a in PI if a >= len(PI)-24]
     tree = HF.init_tree(N, d)
@@ -50,6 +51,7 @@ def decoder(d, N, frozen_set, I_IL, PI, H):
             node.state = node_states[2]
             node_i = floor((node_i - 1) / 2)
             node, depth = tree[node_i], depth-1
+
     if PI:
         for dec in list_decoders:
             deinterleave = [0]*len(dec.inf_bits)
@@ -61,7 +63,7 @@ def decoder(d, N, frozen_set, I_IL, PI, H):
             dec.inf_bits = vector(GF(2), dec.inf_bits)
             if H*dec.inf_bits == 0:
                 return dec.inf_bits
-
+        return list_decoders[0].inf_bits
     del tree
     gc.collect()
     list_decoders.sort(key=lambda dec: dec.path_metric)

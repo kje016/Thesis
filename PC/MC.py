@@ -59,17 +59,19 @@ run_vals = [
 ]
 """
 run_vals = [
-['', 1, 8, 'AWGN', 'SCL', 1], ['', 2, 8, 'AWGN', 'SCL', 1], ['', 3, 8, 'AWGN', 'SCL', 1], ['', 4, 8, 'AWGN', 'SCL', 1],['', 5, 8, 'AWGN', 'SCL', 1],
-['', 1, 8, 'AWGN', 'SCL', 1], ['', 2, 8, 'AWGN', 'SCL', 1], ['', 3, 8, 'AWGN', 'SCL', 1], ['', 4, 8, 'AWGN', 'SCL', 1],['', 5, 8, 'AWGN', 'SCL', 1],
+['', 0.5, 8, 'BEC', 'SCL', 1], ['', 0.4, 8, 'BEC', 'SCL', 1], ['', 0.3, 8, 'BEC', 'SCL', 1], ['', 0.2, 8, 'BEC', 'SCL', 1], ['', 0.1, 8, 'BEC', 'SCL', 1],
+['', 0.5, 21, 'BEC', 'SCL', 0], ['', 0.4, 21, 'BEC', 'SCL',0],['', 0.3, 21, 'BEC', 'SCL',0],['', 0.2, 21, 'BEC', 'SCL',0],['', 0.1, 21, 'BEC', 'SCL',0],
 
-['', 0.1, 8, 'BSC', 'SCL'],['', 0.08, 8, 'BSC', 'SCL'],['', 0.06, 8, 'BSC', 'SCL'],['', 0.04, 8, 'BSC', 'SCL'],['', 0.02, 8, 'BSC', 'SCL'],
-['', 0.1, 8, 'BSC', 'SCL'],['', 0.08, 8, 'BSC', 'SCL'],['', 0.06, 8, 'BSC', 'SCL'],['', 0.04, 8, 'BSC', 'SCL'],['', 0.02, 8, 'BSC', 'SCL'],
+['', 0.5, 8, 'BEC', 'SCL', 1], ['', 0.4, 8, 'BEC', 'SCL', 1], ['', 0.3, 8, 'BEC', 'SCL', 1], ['', 0.2, 8, 'BEC', 'SCL', 1], ['', 0.1, 8, 'BEC', 'SCL', 1],
+['', 0.5, 21, 'BEC', 'SCL',0], ['', 0.4, 21, 'BEC', 'SCL',0],['', 0.3, 21, 'BEC', 'SCL',0],['', 0.2, 21, 'BEC', 'SCL',0],['', 0.1, 21, 'BEC', 'SCL',0],
 
-['', 0.5, 8, 'BEC', 'SCL'], ['', 0.4, 8, 'BEC', 'SCL'], ['', 0.3, 8, 'BEC', 'SCL'], ['', 0.2, 8, 'BEC', 'SCL'], ['', 0.1, 8, 'BEC', 'SCL'],
-['', 0.5, 8, 'BEC', 'SCL'], ['', 0.4, 8, 'BEC', 'SCL'], ['', 0.3, 8, 'BEC', 'SCL'], ['', 0.2, 8, 'BEC', 'SCL'], ['', 0.1, 8, 'BEC', 'SCL'],
+['', 0.5, 21,'BEC', 'SC',0], ['', 0.4, 21,'BEC', 'SC',0], ['', 0.3, 21,'BEC', 'SC',0], ['', 0.2, 21,'BEC', 'SC',0], ['', 0.1, 21,'BEC', 'SC',0],
+['', 0.5, 21,'BEC', 'SC',0], ['', 0.4, 21,'BEC', 'SC',0], ['', 0.3, 21,'BEC', 'SC',0], ['', 0.2, 21,'BEC', 'SC',0], ['', 0.1, 21,'BEC', 'SC',0],
+
+['', 0.1, 8, 'BSC', 'SCL', 1], ['', 1, 8, 'AWGN', 'SCL', 1]
 ]
 
-runs = 100
+runs = 20000
 #decoder = 'SC'
 for elem in run_vals:
     rate = 1/2
@@ -128,15 +130,7 @@ for elem in run_vals:
                 if scout == '':
                     scout = a + vector(GF(2), [1] * A)
                     ET += 1
-            else:
-                crc_pass = False
-                for i, elem in enumerate(scout):
-                    if H * scout == 0:
-                        scout = vector(GF(2), elem.inf_bits)
-                        crc_pass = True
-                        break
-                if not crc_pass:
-                    scout = vector(GF(2), scout[0].inf_bits)
+
         BER = BER + (a + scout[:A]).hamming_weight()
         BLER = BLER + sign((a + scout[:A]).hamming_weight())
     file_getter = channel + '_' + decoder
