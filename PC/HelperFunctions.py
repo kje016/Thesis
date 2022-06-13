@@ -206,7 +206,7 @@ def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, H, pis)
         else:
             for decoder in input_decoders:
                 for i in range(2):
-                    check = Hi * vector(GF(2), list(decoder.inf_bits)+ [GF(2)(sign_rev(belief)+i)])
+                    check = Hi * vector(GF(2), list(decoder.inf_bits)+ [i])
                     if check[:pis.index(len(input_decoders[0].inf_bits)) + 1].hamming_weight() == 0:
                         new_decoders.append(Decoder(decoder.inf_bits + str(i), decoder.path_metric + abs(llr)))
     elif abs(belief) != oo:

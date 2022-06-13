@@ -23,9 +23,14 @@ run_vals = [
 [0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.2, 'BEC'],[0.1, 'BEC'],
 [0.02, 'BSC'],[0.04, 'BSC'], [0.06, 'BSC'], [0.08, 'BSC'], [0.1, 'BSC'],
 [1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
+
+[0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.2, 'BEC'],[0.1, 'BEC'],
+[0.02, 'BSC'],[0.04, 'BSC'], [0.06, 'BSC'], [0.08, 'BSC'], [0.1, 'BSC'],
+[1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
 ]
 I_IL = 0
-runs = 20000
+PI = []
+runs = 10000
 decoder = 'SCL'
 rate = 1/2
 
@@ -48,8 +53,7 @@ GN = PC_Encoder.gen_G(n)
 K_max = floor(N*rate)
 E_loop = list(np.arange(8, E_max-E_min, 16))
 E_loop.append(E_max-E_min+1)
-E_loop.pop(0)
-
+E_loop = [E_loop[0]]
 for elem in run_vals:
     snr = elem[0]
     channel = elem[1]
@@ -77,28 +81,20 @@ for elem in run_vals:
                 print(f"{BER}, {BLER}")
                 print(iteration)
             a = random_vector(GF(2), A)
-            c, G = CRC.CRC(a, A, pol)
+            c, H = CRC.CRC(a, A, pol, I_IL, PI)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
             d = vector(GF(2), u) * GN
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
             r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
             scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
-                                            p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
+                                            p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, H=H)
             if decoder == 'SCL':
                 if I_IL:
                     scout = scout[0].inf_bits
                     if scout == '':
                         scout = a + vector(GF(2), [1] * A)
-                else:
-                    crc_pass = False
-                    for i, elem in enumerate(scout):
-                        if CRC.CRC_check(elem.inf_bits, K, pol) == 0:
-                            scout = vector(GF(2), elem.inf_bits)
-                            crc_pass = True
-                            break
-                    if not crc_pass:
-                        scout = vector(GF(2), scout[0].inf_bits)
+
             BER = BER + (a + scout[:A]).hamming_weight()
             BLER = BLER + sign((a + scout[:A]).hamming_weight())
 
