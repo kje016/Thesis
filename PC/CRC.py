@@ -37,19 +37,19 @@ def gen_CRC_mat(A, pol):
     return C
 
 
-def CRC(a, A, pol):
+
+def CRC(a, A, pol, I_IL, PI):
+    if len(a) < 12 and I_IL == 0:
+        return a, None
     P = pol.degree()
-    C = zero_matrix(GF(2), A, P)
-    C[-1] = vector(GF(2), pol.list()[::-1][1:])
-    k = A-2
-    while k >= 0:
-        for i in range(P-1):
-            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
-        C[k, P-1] = C[k+1, 0] * pol[0]
-        k = k-1
+    C = gen_CRC_mat(A, pol)
     res = (vector(GF(2), a)*C).list()
     CRC = vector(GF(2), list(a) + res)
-    return CRC, C
+    H = block_matrix(GF(2), [[C.transpose(), matrix.identity(C.ncols())]])
+    if I_IL:
+        H = column_matrix(GF(2), [H.column(a) for a in PI])
+
+    return CRC, H
 
 
 def CRC_check(a, A, pol):
@@ -66,39 +66,20 @@ def CRC_check(a, A, pol):
     return res
 
 
-def ICRC_check(a, A, iPI, K, PI):
-    crcbits= []
-    for elem in iPI[::-1]:
-        crcbits.insert(0, a[elem])
-
-    infbits = [i for i in a]
-    for a in iPI[::-1]:
-        print(a)
-        infbits.pop(a)
-
-    cword = vector(GF(2), list(infbits) + list(crcbits))
-    breakpoint()
-    #cword = list(map(lambda x: a.append(a.pop(x)), iPI))
-    #cword = vector(GF(2), list(a:[]))
-    pol = x**24 + x**23 + x**21 + x**20 + x**17 + x**15 + x**13 + x**12 + x**8 + x**4 + x**2 + x + x**0
-    P = pol.degree()
-    C = zero_matrix(GF(2), K, P)
-    C[-1] = vector(GF(2), pol.list()[::-1][1:])
-    k = K-2
-    while k >= 0:
-        for i in range(P-1):
-            C[k, i] = C[k+1, i+1] + C[k+1, 0] * pol[P - (i+1)]
-            C[k, P-1] = C[k+1, 0] * pol[0]
-        k = k-1
-    cc = Matrix(GF(2), [C[a] for a in PI])
-    breakpoint()
-    testi = cword*cc
-    Cap = cc[:A].rows()
-    #Cap.append(vector(GF(2), [a for a in cc[iPI[0]]]))
-    Cap = Matrix(GF(2), Cap)
-
-    res = vector(GF(2), a) *Cap
-    print(f'res:{res}')
-    breakpoint()
-    return res
-
+def test_I_CRC(c, cap, a, PI, pol):
+    cap = vector(GF(2), cap)
+    A = len(cap)-pol.degree()
+    C = gen_CRC_mat(A, pol)
+    #G = block_matrix(GF(2), [[matrix.identity(C.nrows()), C]])
+    H = block_matrix(GF(2), [[C.transpose(), matrix.identity(C.ncols())]])
+    Hperm = column_matrix(GF(2), [H.column(a) for a in PI])
+    """
+    iPI = [PI.index(a) for a in PI if a >= A]
+    h1 = column_matrix(GF(2), [H.column(a) for a in PI[:iPI[0]+1]])
+    for i in range(len(iPI)):
+        hi = column_matrix(GF(2), [H.column(a) for a in PI[:iPI[i]+1]])
+        ci = cap[:iPI[i]+1]
+        print(f'h1*c={hi*ci}')
+    """
+    #Hperm = Matrix(GF(2), [Hperm[a] for a in PI])
+    return Hperm

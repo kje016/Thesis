@@ -21,6 +21,9 @@ import HelperFunctions as HF
 import CRC
 
 """
+[1/2, 1, 40, 'AWGN', 'SCL'], [1/2, 2, 40, 'AWGN', 'SCL'], [1/2, 3, 40, 'AWGN', 'SCL'], [1/2, 4, 40, 'AWGN', 'SCL'],
+[1/2, 5, 40, 'AWGN', 'SCL'],
+
 run_vals = [
 [1/2, 0.5, 1, 'BEC', 'SCL'], [1/2, 0.4, 1, 'BEC', 'SCL'],[1/2, 0.3, 1, 'BEC', 'SCL'],[1/2, 0.2, 1, 'BEC', 'SCL'],
 [1/2, 0.1, 1, 'BEC', 'SCL'],
@@ -37,55 +40,48 @@ run_vals = [
 [1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
 [1/2, 5, 21, 'AWGN', 'SCL'],
 
-[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
-[1/2, 0.02, 21, 'BSC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'],
-[1/2, 0.1, 21, 'BEC', 'SCL'],
+run_vals = [
+[2/5, 0.12, 27, 'BSC', 'SCL'], [2/5, 0.1, 27, 'BSC', 'SCL'],[2/5, 0.08, 27, 'BSC', 'SCL'],[2/5, 0.06, 27, 'BSC', 'SCL'],
+[2/5, 0.04, 27, 'BSC', 'SCL'],
 
-[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],
-[2/5, 0.2, 19, 'BEC', 'SCL'],
+[2/5, 1, 27, 'AWGN', 'SCL'],[2/5, 2, 27, 'AWGN', 'SCL'],[2/5, 3, 27, 'AWGN', 'SCL'],[2/5, 4, 27, 'AWGN', 'SCL'],
+[2/5, 5, 27, 'AWGN', 'SCL'],
 
-[1/2, 1, 21, 'AWGN', 'SCL'],[1/2, 2, 21, 'AWGN', 'SCL'],[1/2, 3, 21, 'AWGN', 'SCL'],[1/2, 4, 21, 'AWGN', 'SCL'],
-[1/2, 5, 21, 'AWGN', 'SCL'],
-[1/2, 0.1, 21, 'BSC', 'SCL'],[1/2, 0.08, 21, 'BSC', 'SCL'],[1/2, 0.06, 21, 'BSC', 'SCL'],[1/2, 0.04, 21, 'BSC', 'SCL'],
-[1/2, 0.02, 21, 'BSC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SCL'],[1/2, 0.4, 21, 'BEC', 'SCL'],[1/2, 0.3, 21, 'BEC', 'SCL'],[1/2, 0.2, 21, 'BEC', 'SCL'], [1/2, 0.1, 21, 'BEC', 'SCL'],
-[1/2, 0.5, 21, 'BEC', 'SC'],[1/2, 0.4, 21, 'BEC', 'SC'],[1/2, 0.3, 21, 'BEC', 'SC'],[1/2, 0.2, 21, 'BEC', 'SC'], [1/2, 0.1, 21, 'BEC', 'SC'],
+[1/2, 0.1, 40, 'BSC', 'SCL'],[1/2, 0.08, 40, 'BSC', 'SCL'],[1/2, 0.06, 40, 'BSC', 'SCL'],[1/2, 0.04, 40, 'BSC', 'SCL'],
+[1/2, 0.02, 40, 'BSC', 'SCL'],
 
-[2/5, 0.6, 19, 'BEC', 'SCL'],[2/5, 0.5, 19, 'BEC', 'SCL'],[2/5, 0.4, 19, 'BEC', 'SCL'],[2/5, 0.3, 19, 'BEC', 'SCL'],[2/5, 0.2, 19, 'BEC', 'SCL'],
-[2/5, 0.6, 19, 'BEC', 'SC'],[2/5, 0.5, 19, 'BEC', 'SC'],[2/5, 0.4, 19, 'BEC', 'SC'],[2/5, 0.3, 19, 'BEC', 'SC'],[2/5, 0.2, 19, 'BEC', 'SC'],
+[1/2, 1, 40, 'AWGN', 'SCL'],[1/2, 2, 40, 'AWGN', 'SCL'],[1/2, 3, 40, 'AWGN', 'SCL'],[1/2, 4, 40, 'AWGN', 'SCL'],
+[1/2, 5, 40, 'AWGN', 'SCL'],
+[1/2, 0.5, 8, 'BEC', 'SCL', 1],[1/2, 0.4, 8, 'BEC', 'SCL', 1],[1/2, 0.3, 8, 'BEC', 'SCL', 1],[1/2, 0.2, 8, 'BEC', 'SCL', 1],
+[1/2, 0.1, 8, 'BEC', 'SCL', 1],
+[1/2, 0.5, 21, 'BEC', 'SCL',0],[1/2, 0.4, 21, 'BEC', 'SCL',0],[1/2, 0.3, 21, 'BEC', 'SCL',0],[1/2, 0.2, 21, 'BEC', 'SCL',0],
+[1/2, 0.1, 21, 'BEC', 'SCL',0],
 ]
 """
 run_vals = [
-[1/2, 5, 40, 'AWGN', 'SCL'], [1/2, 5, 8, 40, 'AWGN', 'SCL'],
+['', 1, 8, 'AWGN', 'SCL', 1], ['', 2, 8, 'AWGN', 'SCL', 1], ['', 3, 8, 'AWGN', 'SCL', 1], ['', 4, 8, 'AWGN', 'SCL', 1],['', 5, 8, 'AWGN', 'SCL', 1],
+['', 1, 8, 'AWGN', 'SCL', 1], ['', 2, 8, 'AWGN', 'SCL', 1], ['', 3, 8, 'AWGN', 'SCL', 1], ['', 4, 8, 'AWGN', 'SCL', 1],['', 5, 8, 'AWGN', 'SCL', 1],
 
-[1/2, 0.5, 40, 'BEC', 'SCL'], [1/2, 0.4, 40, 'BEC', 'SCL'], [1/2, 0.3, 40, 'BEC', 'SCL'],[1/2, 0.2, 40, 'BEC', 'SCL'],
-[1/2, 0.1, 40, 'BEC', 'SCL'],
-[1/2, 0.5, 40, 'BEC', 'SCL'], [1/2, 0.4, 40, 'BEC', 'SCL'], [1/2, 0.3, 40, 'BEC', 'SCL'],[1/2, 0.2, 40, 'BEC', 'SCL'],
-[1/2, 0.1, 40, 'BEC', 'SCL'],
+['', 0.1, 8, 'BSC', 'SCL'],['', 0.08, 8, 'BSC', 'SCL'],['', 0.06, 8, 'BSC', 'SCL'],['', 0.04, 8, 'BSC', 'SCL'],['', 0.02, 8, 'BSC', 'SCL'],
+['', 0.1, 8, 'BSC', 'SCL'],['', 0.08, 8, 'BSC', 'SCL'],['', 0.06, 8, 'BSC', 'SCL'],['', 0.04, 8, 'BSC', 'SCL'],['', 0.02, 8, 'BSC', 'SCL'],
 
-[1/2, 0.14, 40, 'BSC', 'SCL'],[1/2, 0.12, 40, 'BSC', 'SCL'],[1/2, 0.1, 40, 'BSC', 'SCL'],[1/2, 0.08, 40, 'BSC', 'SCL'],
-[1/2, 0.06, 40, 'BSC', 'SCL'],[1/2, 0.04, 40, 'BSC', 'SCL'],
-[1/2, 0.14, 40, 'BSC', 'SCL'],[1/2, 0.12, 40, 'BSC', 'SCL'],[1/2, 0.1, 40, 'BSC', 'SCL'],[1/2, 0.08, 40, 'BSC', 'SCL'],
-[1/2, 0.06, 40, 'BSC', 'SCL'],[1/2, 0.04, 40, 'BSC', 'SCL'],
-
-[2/5, 0.6, 27, 'BEC', 'SCL'],[2/5, 0.5, 27, 'BEC', 'SCL'],[2/5, 0.4, 27, 'BEC', 'SCL'],[2/5, 0.3, 27, 'BEC', 'SCL'],
-[2/5, 0.2, 27, 'BEC', 'SCL'],
-[2/5, 0.6, 27, 'BEC', 'SCL'],[2/5, 0.5, 27, 'BEC', 'SCL'],[2/5, 0.4, 27, 'BEC', 'SCL'],[2/5, 0.3, 27, 'BEC', 'SCL'],
-[2/5, 0.2, 27, 'BEC', 'SCL'],
+['', 0.5, 8, 'BEC', 'SCL'], ['', 0.4, 8, 'BEC', 'SCL'], ['', 0.3, 8, 'BEC', 'SCL'], ['', 0.2, 8, 'BEC', 'SCL'], ['', 0.1, 8, 'BEC', 'SCL'],
+['', 0.5, 8, 'BEC', 'SCL'], ['', 0.4, 8, 'BEC', 'SCL'], ['', 0.3, 8, 'BEC', 'SCL'], ['', 0.2, 8, 'BEC', 'SCL'], ['', 0.1, 8, 'BEC', 'SCL'],
 ]
 
-I_IL = 1
-runs = 10000
-
+runs = 100
+#decoder = 'SC'
 for elem in run_vals:
-    rate = elem[0]
+    rate = 1/2
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
     decoder = elem[4]
+    I_IL = elem[5]
+
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()
+    PI = PC_Input_Bits_Interleaver.get_pi(K)
     N0 = None
     false_negative = 'NaN'
 
@@ -104,18 +100,18 @@ for elem in run_vals:
         p = 1 - norm.cdf(1 / sigma)  # error probability, from proposition 2.9
         N0 = 2 * sigma ** 2
 
-    BLER, BER = 0, 0
+    BLER, BER, ET = 0, 0, 0
     start_time = time.time()
-    print(elem, N-E)
+    print(elem, len(MS))
     for iteration in range(runs):
         if iteration % 100 == 0 or iteration == runs-1:
             print(time.time()-start_time)
             start_time = time.time()
-            print(f"{BER}, {BLER}")
+            print(f"{BER}, {BLER}, {ET}")
             print(iteration)
             a = random_vector(GF(2), A)
-
-            c, G = CRC.CRC(a, A, pol)
+            #a = vector(GF(2), [1])
+            c, H = CRC.CRC(a, A, pol, I_IL, PI)
             c_ap, PI = PC_Input_Bits_Interleaver.interleaver(I_IL=I_IL, c_seq=c)
             #print(f'c:\n{c_ap}')
             u = PC_Subchannel_Allocation.calc_u(N, QNI, c_ap, QNPC)
@@ -124,17 +120,18 @@ for elem in run_vals:
             e = PC_Rate_Matching.circular_buffer(d, MS, matching_scheme)
         r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
         scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
-                                        p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, C=G)
+                                        p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, H=H)
 
         if decoder == 'SCL':
             if I_IL:
                 scout = scout[0].inf_bits
                 if scout == '':
                     scout = a + vector(GF(2), [1] * A)
+                    ET += 1
             else:
                 crc_pass = False
                 for i, elem in enumerate(scout):
-                    if CRC.CRC_check(elem.inf_bits, K, pol) == 0:
+                    if H * scout == 0:
                         scout = vector(GF(2), elem.inf_bits)
                         crc_pass = True
                         break
@@ -148,5 +145,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}, H-check, SCL', snr, I_IL, datetime.datetime.now()])
         gc.collect()

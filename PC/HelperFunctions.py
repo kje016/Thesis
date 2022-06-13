@@ -79,7 +79,10 @@ def bec_uhat(belief, frozen):
     if frozen:
         return vector(RealField(7), [oo])
     else:
-        return vector(RealField(7), [belief[0]*oo])
+        if abs(belief) == oo:
+            return vector(RealField(7), [belief[0]*oo])
+        else:
+            return vector(RealField(7), [2])
 
 
 def uhat(belief, frozen, F):
@@ -165,22 +168,20 @@ def prune_decoders(input_decoders, decoder_size):
 # @arg is_frozen_node Boolean of the current node is a frozen node
 # @belief the belief for the current node
 # @input_decoders list of current decoders
-def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, crcbit):
+def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, H, PI, pis):
     if is_frozen_node:
         return input_decoders
 
-    if len(input_decoders[0].inf_bits) in crcbit:
+    if len(input_decoders[0].inf_bits) in pis:
         new_decoders = []
-        iPI = crcbit[:crcbit.index(len(input_decoders[0].inf_bits))]
-        #breakpoint()
+        pi = pis[pis.index(len(input_decoders[0].inf_bits))]#PI.index(len(input_decoders[0].inf_bits))
+        Hi = column_matrix(GF(2), [H.column(a) for a in range(pi+1)])
         for decoder in input_decoders:
-            cword = list(vector(GF(2), decoder.inf_bits))
-            for a in iPI[::-1]:
-                cword.pop(a)
-            #cword = vector(GF(2), list(map(lambda x: cword.pop(x), iPI[::-1]))
-            check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
-            if check == sign_rev(belief):
-                new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
+            for i in range(2):
+                check = Hi * vector(GF(2), list(decoder.inf_bits)+ [GF(2)(sign_rev(belief)+i)])
+
+                if check[:pis.index(len(input_decoders[0].inf_bits))+1].hamming_weight() == 0:
+                    new_decoders.append(Decoder(decoder.inf_bits + str(GF(2)(sign_rev(belief)+i)), decoder.path_metric + abs(belief)*i))
     else:
         new_decoders = [Decoder(decoder.inf_bits+"1", decoder.path_metric + (1-sign_rev(belief))*abs(belief)) for decoder in input_decoders]
         new_decoders.extend([Decoder(decoder.inf_bits + "0",  decoder.path_metric + sign_rev(belief)*abs(belief)) for decoder in input_decoders])
@@ -188,25 +189,32 @@ def update_decoders(is_frozen_node, belief, input_decoders, n_decoders, C_perm, 
     return new_decoders
 
 
-def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, C_perm, crcbit):
+def bec_update_decoders(is_frozen_node, belief, llr,  input_decoders, L, H, pis):
     if is_frozen_node:
         return input_decoders
 
-    if abs(belief) != oo:
+    if len(input_decoders[0].inf_bits) in pis:
+        new_decoders = []
+        pi = pis[pis.index(len(input_decoders[0].inf_bits))]  # PI.index(len(input_decoders[0].inf_bits))
+        Hi = column_matrix(GF(2), [H.column(a) for a in range(pi + 1)])
+
+        if abs(belief) == oo:
+            for decoder in input_decoders:
+                check = Hi * vector(GF(2), list(decoder.inf_bits)+ [GF(2)(sign_rev(belief))])
+                if check[:pis.index(len(input_decoders[0].inf_bits)) + 1].hamming_weight() == 0:
+                    new_decoders.append(Decoder(decoder.inf_bits + str(sign_rev(belief)), decoder.path_metric))
+        else:
+            for decoder in input_decoders:
+                for i in range(2):
+                    check = Hi * vector(GF(2), list(decoder.inf_bits)+ [GF(2)(sign_rev(belief)+i)])
+                    if check[:pis.index(len(input_decoders[0].inf_bits)) + 1].hamming_weight() == 0:
+                        new_decoders.append(Decoder(decoder.inf_bits + str(i), decoder.path_metric + abs(llr)))
+    elif abs(belief) != oo:
         new_decoders = [Decoder(decoder.inf_bits + "1", decoder.path_metric + abs(llr)) for
                         decoder in input_decoders]
         new_decoders.extend([Decoder(decoder.inf_bits + "0", decoder.path_metric + abs(llr)) for decoder in
              input_decoders])
-
-    elif len(input_decoders[0].inf_bits) in crcbit:
-        new_decoders = []
-        for decoder in input_decoders:
-            iPI = crcbit[:crcbit.index(len(decoder.inf_bits))][::-1]
-            cword = list(vector(GF(2), decoder.inf_bits))
-            list(map(lambda x: cword.pop(x), iPI))
-            check = (vector(GF(2), cword) * Matrix(GF(2), C_perm[:len(cword)]))[len(iPI)]
-            if float(check) == uhat([belief], False, RealField(10))[0]:
-                new_decoders.append(Decoder(decoder.inf_bits + str(check), decoder.path_metric))
     else:
         new_decoders = [Decoder(decoder.inf_bits + str(sign_rev(belief)), decoder.path_metric)for decoder in input_decoders]
+
     return prune_decoders(new_decoders, L)

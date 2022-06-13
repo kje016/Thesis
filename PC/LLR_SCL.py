@@ -9,12 +9,9 @@ child = ['left', 'right']
 F = RealField(10)
 
 
-def decoder(d, N, frozen_set, I_IL, PI, C):
-    #d = vector(RealField(10), [1, -1])
-    C_perm, CRCpos = [], []
+def decoder(d, N, frozen_set, I_IL, PI, H):
     if I_IL:
-        C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
-        CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
+        pis = [PI.index(a) for a in PI if a >= len(PI)-24]
     tree = HF.init_tree(N, d)
     F = RealField(10)
     """SCL initialization"""
@@ -25,7 +22,7 @@ def decoder(d, N, frozen_set, I_IL, PI, C):
     while not done:
         if depth == log(N, 2):
             is_frozen = node_i-(N-1) in frozen_set
-            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], list_decoders, L, C_perm, CRCpos)
+            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], list_decoders, L, H, PI, pis)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             node.beliefs = vector(F, [HF.sign_rev(node.beliefs)*(not is_frozen)])
@@ -58,10 +55,13 @@ def decoder(d, N, frozen_set, I_IL, PI, C):
             deinterleave = [0]*len(dec.inf_bits)
             for i, elem in enumerate(PI):
                 deinterleave[elem] = dec.inf_bits[i]
-            dec.inf_bits = vector(GF(2), deinterleave[:C.nrows()])
+            dec.inf_bits = vector(GF(2), deinterleave[:H.ncols()])
     else:
         for dec in list_decoders:
             dec.inf_bits = vector(GF(2), dec.inf_bits)
+            if H*dec.inf_bits == 0:
+                return dec.inf_bits
+
     del tree
     gc.collect()
     list_decoders.sort(key=lambda dec: dec.path_metric)

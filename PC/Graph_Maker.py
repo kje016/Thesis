@@ -168,6 +168,6 @@ def plot_SC_SCL():
 
     fig.savefig(f'comparison_{name}.svg', facecolor=fig.get_facecolor())
 
-#update_dicts('C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\PC\\Tests\\BEC_SC.csv')
+update_dicts('Tests/BSC_SC.csv')
 #plot_SC_SCL()
 plot_dict(BEC_SC, 'BEC_SC')

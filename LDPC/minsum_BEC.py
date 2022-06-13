@@ -24,6 +24,7 @@ def nz_col_sum(NZMatrix, r):
         nzelems = [col_pos[j] for j, elem in enumerate(col_pos) if r[elem] == 0]
         for elem in nzelems:
             output[elem] += sgn(row.get(elem))
+    output = vector(RealField(10), [0 if a == 0 else a*oo for a in output])
     return vector(RealField(10), output)
 
 
@@ -46,26 +47,32 @@ def minsum_BEC(H, r):
         lv.append(temp)
 
     codeword, runs = False, 0
-    while not codeword and runs < 30:
+    LTOTS= []
+    while not codeword and runs < 20:
         Lc = nz_tanh(lv)
         ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
-
         runs += 1
-        ltot = vector(RealField(10), [a * oo if a != 0 else 0 for a in vector(RealField(10), nz_col_sum(Lc, Lj))])
+        #ltot = vector(RealField(10), [a * oo if a != 0 else 0 for a in vector(RealField(10), nz_col_sum(Lc, Lj))])
         if H * vhat == 0:    # check if v_hat is a valid codeword
             #print(f"MinSum runs := {runs, H*vhat == 0}")
             return vhat, True, runs
+        if ltot in LTOTS:
+            return vhat, codeword, runs
 
         # update Lv
         colvecs = get_column_vectors(Lc, len(r))
         for j, col in enumerate(colvecs):
+            col_sum = sum(col.values())
             if r[j] == 0:
-                col_sum = sum(col.values())
                 if abs(col_sum) != 0:
                     for i, elem in col.items():
                         lv[i].update({j:  oo*(col_sum)})
+        LTOTS.append(ltot)
 
     #print(f"MinSum runs := {runs, H*vhat == 0}")
     return vhat, codeword, runs
 
+def PP(inputt):
+    for elem in inputt:
+        print(elem)

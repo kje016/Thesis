@@ -6,11 +6,10 @@ node_states = ['l', 'r', 'u']
 F = RealField(10)
 
 
-def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
-    C_perm, CRCpos = [], []
+def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
+    pis = []
     if I_IL:
-        C_perm = Matrix(C[a] for a in [a for a in PI if a < C.nrows()])
-        CRCpos = [PI.index(a) for a in PI if a >= C.nrows()]
+        pis = [PI.index(a) for a in PI if a >= len(PI)-24]
     llr = -p_cross
     tree = HF.init_tree(N, d)
     """SCL initialization"""
@@ -18,12 +17,11 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
     list_decoders = [HF.Decoder("", 0)]
     depth, done, node = 0, False, tree[0]
     node_i = tree.index(node)
-
     while not done:
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = node_i-(N-1) in frozen_set # alternatively var name,
-            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, C_perm, CRCpos)
+            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, H, pis)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
@@ -48,14 +46,15 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, C):
             node.state = node_states[2]
             node_i = floor((node_i - 1) / 2)
             node, depth = tree[node_i], depth-1
-
     if PI:
         for dec in list_decoders:
             deinterleave = [0]*len(dec.inf_bits)
             for i, elem in enumerate(PI):
                 deinterleave[elem] = dec.inf_bits[i]
-            dec.inf_bits = vector(GF(2), deinterleave[:C.nrows()])
+            dec.inf_bits = vector(GF(2), deinterleave[:H.ncols()])
     else:
         for dec in list_decoders:
             dec.inf_bits = vector(GF(2), dec.inf_bits)
+            if H*dec.inf_bits == 0:
+                return dec.inf_bits
     return list_decoders

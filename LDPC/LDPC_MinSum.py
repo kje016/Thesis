@@ -74,7 +74,7 @@ def minsum_SPA(H, r, channel, sigma, rcore):
         lv.append(temp)
     codeword, runs = False, 0
     # breakpoint()
-    while not codeword and runs < 30:
+    while not codeword and runs < 20:
         min_vals = nz_min_fun(lv, 2)
         Lc = nz_sum_approx(lv, min_vals, rcore)
         ltot = nz_col_sum(Lc, Lj) + r
