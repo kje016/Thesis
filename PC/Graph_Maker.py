@@ -51,13 +51,13 @@ BEC_SCL = {(0.3333333333333333, 'BER'): [[0.0, 0.0, 7.777777777777778e-05, 0.000
 (0.4, 'BLER'): [[0.0, 0.000125, 0.004225, 0.03325, 0.052975, 0.29985, 0.7064], [0.1, 0.2, 0.3, 0.35, 0.4, 0.5, 0.6]]
 }
 
-rates = [1/2, 2/5]
+rates = [1/2]
 
 def update_dicts(input_file):
     with open(input_file, mode='r',  newline='') as file:
         myfile = csv.reader(file)
         next(myfile, None)
-        test_results, y_axis = {}, {}
+        test_results = {}
         #breakpoint()
         for row in myfile:
             dict_getter = test_results.get((float(row[1]), float(row[8]) ), [0]*(4))
@@ -66,6 +66,7 @@ def update_dicts(input_file):
             dict_getter[2]+= int(row[5])    # tot bit errors
             dict_getter[3]+= int(row[6])   # tot block errors
             test_results.update({(float(row[1]), float(row[8])): dict_getter})
+    #breakpoint()
     for key, value in test_results.items():
         test_results.update({key : [value[0], value[1], value[2]/(value[0]), value[3]/value[1]]})
 
@@ -106,7 +107,6 @@ def plot_dict(plotter, name):
     ax1.legend()
     ax1.grid(True, linewidth=0.5)
     ax1.set_xlabel('SNR')
-
     if name.split('_')[0] != 'AWGN':
         ax1.invert_xaxis()
 
@@ -168,6 +168,6 @@ def plot_SC_SCL():
 
     fig.savefig(f'comparison_{name}.svg', facecolor=fig.get_facecolor())
 
-update_dicts('Tests/BSC_SC.csv')
+#update_dicts('Tests/AWGN_SC.csv')
 #plot_SC_SCL()
-plot_dict(BEC_SC, 'BEC_SC')
+#plot_dict(BEC_SC, 'AWGN_SC')
