@@ -53,7 +53,7 @@ GN = PC_Encoder.gen_G(n)
 K_max = floor(N*rate)
 E_loop = list(np.arange(8, E_max-E_min, 16))
 E_loop.append(E_max-E_min+1)
-E_loop = [E_loop[0]]
+E_loop = [0]
 for elem in run_vals:
     snr = elem[0]
     channel = elem[1]
