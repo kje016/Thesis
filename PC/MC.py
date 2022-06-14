@@ -59,7 +59,11 @@ run_vals = [
 ]
 """
 run_vals = [
-['', 0.1, 21, 'BSC', 'SCL'], ['', 0.08, 21, 'BSC', 'SCL'], ['', 0.06, 21, 'BSC', 'SCL'],
+['', 0.08, 21, 'BSC', 'SC'], ['', 0.04, 21, 'BSC', 'SC'], ['', 0.01, 21, 'BSC', 'SC'],
+['', 1, 21, 'AWGN', 'SC'], ['', 2, 21, 'AWGN', 'SC'], ['', 3, 21, 'AWGN', 'SC'],['', 4, 21, 'AWGN', 'SC'],
+['', 5, 21, 'AWGN', 'SC'],
+
+['', 0.1, 'BSC', 'SCL'], ['', 0.08, 'BSC', 'SCL'], ['', 0.06, 'BSC', 'SCL'],
 ]
 
 runs = 10000
@@ -71,7 +75,6 @@ for elem in run_vals:
     A = elem[2]
     channel = elem[3]
     decoder = elem[4]
-
 
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()
