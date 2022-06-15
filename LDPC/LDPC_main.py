@@ -41,17 +41,17 @@ runs = 10000
 
 
 runs_vals =[
-[1/2, 1, 21, 'AWGN'], [1/2, 2, 21, 'AWGN'], [1/2, 3, 21, 'AWGN'], [1/2, 4, 21, 'AWGN'],[1/2, 5, 21, 'AWGN'],
-[1/2, 0.1, 21, 'BSC'],[1/2, 0.08, 21, 'BSC'],[1/2, 0.06, 21, 'BSC'],[1/2, 0.04, 21, 'BSC'],[1/2, 0.02, 21, 'BSC'],
+[1/3, 1, 504, 'AWGN'], [1/3, 2, 504, 'AWGN'],[1/3, 3, 504, 'AWGN'],[1/3, 4, 504, 'AWGN'],[1/3, 5, 504, 'AWGN'],
+[1/3, 0.12, 504, 'BSC'],[1/3, 0.1, 504, 'BSC'],[1/3, 0.08, 504, 'BSC'],[1/3, 0.06, 504, 'BSC'],
 
-[1/2, 1, 21, 'AWGN', ], [1/2, 2, 21, 'AWGN'], [1/2, 3, 21, 'AWGN'], [1/2, 4, 21, 'AWGN'],[1/2, 5, 21, 'AWGN'],
-[1/2, 0.1, 21, 'BSC'],[1/2, 0.08, 21, 'BSC'],[1/2, 0.06, 21, 'BSC'],[1/2, 0.04, 21, 'BSC'],[1/2, 0.02, 21, 'BSC']
+[1/2, 1, 504, 'AWGN'], [1/2, 2, 504, 'AWGN'],[1/2, 3, 504, 'AWGN'],[1/2, 4, 504, 'AWGN'],[1/2, 5, 504, 'AWGN'],
+[1/2, 0.12, 504, 'BSC'],[1/2, 0.1, 504, 'BSC'],[1/2, 0.08, 504, 'BSC'],[1/2, 0.06, 504, 'BSC'],
 ]
 
 
 
 for elem in runs_vals:
-    rate = elem[0]
+    rate = 1/2
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
@@ -112,5 +112,5 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'nz_sum_approx(lv, min_vals, i < rcore)', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'no col punct, OMS', datetime.datetime.now()])
         gc.collect()

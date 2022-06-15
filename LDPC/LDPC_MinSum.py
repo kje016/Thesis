@@ -8,10 +8,13 @@ def nz_sum_approx(Lv, min_vals, rcore):
         vec = vector(RealField(10), (row.values()))
         sign = (-1)**(len(vec))
         signs = [-1 if vec[j] < 0 else 1 for j in range(len(vec))]
+        signs = [sgn(a) for a in vec]
         P = product(signs)
-        Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+        Lvi_signs = list([a * b for a,b in zip(signs, [P]*len(signs))])
+        #Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+
         #slvi = [product(signs[:j])*product(signs[j+1:]) for j in range(len(signs))]
-        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs,i < rcore) #TODO: 'i < rcore'
+        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs, i < rcore) #TODO: 'i < rcore'
         output.append({k:v for k,v in zip(row.keys(), Lvi)})
     return output
 
@@ -24,6 +27,10 @@ def nz_update_row(row, min_vals, signs, offset):
     if len(min_vals) == 0:
         min_vals = [0.0001, 0.0001]
     for i, elem in enumerate(row):
+        if min_vals[-min_get] == abs(elem):
+            output[i] = signs[i] * max(min_vals[min_get - 1] - (lam * offset), 0)
+        else:
+            output[i] = signs[i] * max(min_vals[-min_get] - (lam * offset), 0)
         if abs(elem) == oo:
             output[i] = elem
         else:
@@ -78,7 +85,7 @@ def minsum_SPA(H, r, channel, sigma, rcore):
         min_vals = nz_min_fun(lv, 2)
         Lc = nz_sum_approx(lv, min_vals, rcore)
         ltot = nz_col_sum(Lc, Lj) + r
-        vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
+        vhat = vector(GF(2), [0 if elem >= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword
         if H * vhat == 0:
