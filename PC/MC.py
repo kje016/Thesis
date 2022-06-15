@@ -59,6 +59,7 @@ run_vals = [
 ]
 """
 run_vals = [
+['', 1, 21, 'AWGN', 'SC'],
 ['', 0.08, 21, 'BSC', 'SC'], ['', 0.04, 21, 'BSC', 'SC'], ['', 0.01, 21, 'BSC', 'SC'],
 ['', 1, 21, 'AWGN', 'SC'], ['', 2, 21, 'AWGN', 'SC'], ['', 3, 21, 'AWGN', 'SC'],['', 4, 21, 'AWGN', 'SC'],
 ['', 5, 21, 'AWGN', 'SC'],
@@ -118,7 +119,6 @@ for elem in run_vals:
         r = list(HF.channel_noise(s=e, channel=channel, p=sigma if channel == 'AWGN' else snr))
         scout = PC_Decoding.PC_Decoding(r=r, N=N, N0=N0, QNF=QNF, ms=matching_scheme, MS=MS,
                                         p_cross=snr, channel=channel + '_' + decoder, I_IL=I_IL, PI=PI, H=H)
-
         if decoder == 'SCL':
             if I_IL:
                 scout = scout[0].inf_bits

@@ -24,6 +24,7 @@ def get_rm_set(U, matching_scheme, QN0):
         ms = set([bm.index(a) for a in QN0[-U:]])
     else: # matching_scheme == 'repetition'
         ms = set([QN0.index(a) for a in bm[:abs(U)]])
+        breakpoint()
     return ms
 
 

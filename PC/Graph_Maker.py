@@ -51,6 +51,12 @@ BEC_SCL = {(0.3333333333333333, 'BER'): [[0.0, 0.0, 7.777777777777778e-05, 0.000
 (0.4, 'BLER'): [[0.0, 0.000125, 0.004225, 0.03325, 0.052975, 0.29985, 0.7064], [0.1, 0.2, 0.3, 0.35, 0.4, 0.5, 0.6]]
 }
 
+CA_BSC = {(0.5, 'BER'): [[0.0003875, 0.005459375, 0.02128125, 0.05409375, 0.1019546875], [0.02, 0.04, 0.06, 0.08, 0.1]],
+(0.5, 'BLER'): [[0.001175, 0.014575, 0.0561, 0.1368, 0.2496625], [0.02, 0.04, 0.06, 0.08, 0.1]]}
+CA_BEC = {(0.5, 'BER'): [[0.0, 0.0007203125, 0.017209375, 0.118646875, 0.325384375], [0.1, 0.2, 0.3, 0.4, 0.5]],
+(0.5, 'BLER'): [[0.0, 0.0011625, 0.030033333333333332, 0.20846666666666666, 0.5795333333333333], [0.1, 0.2, 0.3, 0.4, 0.5]]}
+CA_AWGN = {(0.5, 'BER'): [[0.08906354166666666, 0.0335890625, 0.008734375, 0.0014765625, 0.000140625], [1.0, 2.0, 3.0, 4.0, 5.0]],
+(0.5, 'BLER'): [[0.20565833333333333, 0.0786875, 0.0203625, 0.0033875, 0.000325], [1.0, 2.0, 3.0, 4.0, 5.0]]}
 rates = [1/2]
 
 def update_dicts(input_file):
@@ -168,6 +174,40 @@ def plot_SC_SCL():
 
     fig.savefig(f'comparison_{name}.svg', facecolor=fig.get_facecolor())
 
+
+def plot_SC_SCL_CA():
+    pl1 = BEC_SC
+    pl2 = BEC_SCL
+    pl3 = CA_BEC
+    name = 'BEC'
+    ber_val, bler_val = 'BER', 'BLER'
+    fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
+    ax1.set_title('BER'); ax1.set_facecolor('#F7F7F7')
+    ax2.set_title('BLER'); ax2.set_facecolor('#F7F7F7')
+
+    ax1.semilogy(pl1.get((0.5, ber_val))[1], pl1.get((0.5, ber_val))[0], label='0.5_SC', linestyle='dotted', marker='|')
+    ax1.semilogy(pl2.get((0.5, ber_val))[1], pl2.get((0.5, ber_val))[0], label=f'0.5_SCL', linestyle='dotted', marker='|')
+    ax1.semilogy(pl3.get((0.5, ber_val))[1], pl3.get((0.5, ber_val))[0], label=f'0.5_CA', linestyle='dotted', marker='|')
+
+    ax2.semilogy(pl1.get((0.5, bler_val))[1], pl1.get((0.5, bler_val))[0], label=f'0.5_SC', linestyle='dotted',marker='|')
+    ax2.semilogy(pl2.get((0.5, bler_val))[1], pl2.get((0.5, bler_val))[0], label=f'0.5_SCL', linestyle='dotted',marker='|')
+    ax2.semilogy(pl3.get((0.5, bler_val))[1], pl3.get((0.5, bler_val))[0], label=f'0.5_CA', linestyle='dotted',marker='|')
+
+    ax1.legend()
+    ax1.grid(True, linewidth=0.5)
+    ax1.set_xlabel('SNR')
+    if name != 'AWGN':
+        ax1.invert_xaxis()
+
+    ax2.legend()
+    ax2.grid(True, linewidth=0.5)
+    ax2.set_xlabel('SNR')
+    if name != 'AWGN':
+        ax2.invert_xaxis()
+    fig.suptitle(f'{name}')
+    fig.savefig(f'{name}.svg')
+
 #update_dicts('Tests/AWGN_SC.csv')
 #plot_SC_SCL()
 #plot_dict(BEC_SC, 'AWGN_SC')
+plot_SC_SCL_CA()

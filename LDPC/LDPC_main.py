@@ -34,14 +34,18 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 
 [1/3, 0.65, 15, 'BEC'], [1/3, 0.6, 15, 'BEC'], [1/3, 0.5, 15, 'BEC'],  [1/3, 0.4, 15, 'BEC'],  [1/3, 0.3, 15, 'BEC'],
 [1 / 3, 0.2, 15, 'BEC'],
+
+[1/2, 1, 504, 'AWGN']
 """
-runs = 20000
+runs = 10000
 
 
 runs_vals =[
-[1/2, 0.4, 21, 'BEC'], [1/2, 0.3, 21, 'BEC'], [1/2, 0.2, 21, 'BEC'], [1/2, 0.1, 21, 'BEC'],
-[2/5, 0.6, 19, 'BEC'], [2/5, 0.5, 19, 'BEC'],[2/5, 0.4, 19, 'BEC'],[2/5, 0.3, 19, 'BEC'],[2/5, 0.2, 19, 'BEC'],
+[1/2, 1, 21, 'AWGN'], [1/2, 2, 21, 'AWGN'], [1/2, 3, 21, 'AWGN'], [1/2, 4, 21, 'AWGN'],[1/2, 5, 21, 'AWGN'],
+[1/2, 0.1, 21, 'BSC'],[1/2, 0.08, 21, 'BSC'],[1/2, 0.06, 21, 'BSC'],[1/2, 0.04, 21, 'BSC'],[1/2, 0.02, 21, 'BSC'],
 
+[1/2, 1, 21, 'AWGN', ], [1/2, 2, 21, 'AWGN'], [1/2, 3, 21, 'AWGN'], [1/2, 4, 21, 'AWGN'],[1/2, 5, 21, 'AWGN'],
+[1/2, 0.1, 21, 'BSC'],[1/2, 0.08, 21, 'BSC'],[1/2, 0.06, 21, 'BSC'],[1/2, 0.04, 21, 'BSC'],[1/2, 0.02, 21, 'BSC']
 ]
 
 
@@ -55,7 +59,6 @@ for elem in runs_vals:
     N0, sig = None, None
     pol = CRC.get_pol(A)
     B = A + pol.degree()
-
     bg = PF.det_BG(A, rate)
     L, C, B_ap = PF.get_code_block_param(bg=bg, B=B)
     K_ap = B_ap // C
@@ -105,9 +108,9 @@ for elem in runs_vals:
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
         AVGit += iter
 
-    with open(f'C:\\Users\\Kristian\\Desktop\\Thesis\\PySageMath\\LDPC\\Tests\\{channel}.csv', mode='a',
+    with open(f'Tests/{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'nz_sum_approx(lv, min_vals, False)', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'nz_sum_approx(lv, min_vals, i < rcore)', datetime.datetime.now()])
         gc.collect()

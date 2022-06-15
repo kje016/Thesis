@@ -66,3 +66,60 @@
 15,0.3333333333333333,31,312,20000,2749,1250,3,130509,no colpunct,2022-05-29 13:47:19.171795
 15,0.3333333333333333,31,312,20000,364,208,4,76255,no colpunct,2022-05-29 14:04:30.601954
 15,0.3333333333333333,31,312,20000,113,55,5,54308,no colpunct,2022-05-29 14:17:34.386157
+21,0.5,37,105,5000,13256,3293,1,76779,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:15:11.965146
+21,0.5,37,105,5000,13530,3290,1,76128,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:15:16.872511
+21,0.5,37,105,5000,12880,3224,1,75704,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:15:16.964470
+21,0.5,37,105,5000,13634,3344,1,77312,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:15:37.656353
+21,0.5,37,105,5000,6205,1762,2,53133,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:24:15.431481
+21,0.5,37,105,5000,6144,1765,2,52877,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:24:21.013618
+21,0.5,37,105,5000,6579,1864,2,54156,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:24:32.748504
+21,0.5,37,105,5000,6136,1778,2,52766,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:24:42.719763
+21,0.5,37,105,5000,1621,564,3,30083,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:29:37.260816
+21,0.5,37,105,5000,1901,633,3,30633,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:29:52.284221
+21,0.5,37,105,5000,1937,628,3,30718,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:30:05.805687
+21,0.5,37,105,5000,1825,604,3,30382,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:30:10.104945
+21,0.5,37,105,5000,325,114,4,16277,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:32:49.312334
+21,0.5,37,105,5000,283,115,4,16523,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:33:09.465883
+21,0.5,37,105,5000,294,113,4,16020,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:33:22.671390
+21,0.5,37,105,5000,412,133,4,16789,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:33:29.352860
+21,0.5,37,105,5000,56,24,5,10187,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:35:05.102324
+21,0.5,37,105,5000,60,24,5,10260,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:35:28.886776
+21,0.5,37,105,5000,37,19,5,10268,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:35:40.418615
+21,0.5,37,105,5000,60,23,5,10208,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 12:35:47.847733
+21,0.5,37,105,5000,13357,3282,1,76471,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 13:52:29.084272
+21,0.5,37,105,5000,13209,3294,1,76213,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 13:53:30.175687
+21,0.5,37,105,5000,13541,3312,1,77151,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 13:54:14.919027
+21,0.5,37,105,5000,13829,3359,1,77746,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 13:54:26.614240
+21,0.5,37,105,5000,6282,1775,2,53419,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:01:24.375136
+21,0.5,37,105,5000,6109,1737,2,52767,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:02:25.394027
+21,0.5,37,105,5000,6392,1779,2,52926,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:03:11.456659
+21,0.5,37,105,5000,6269,1742,2,53049,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:03:26.454719
+21,0.5,37,105,5000,1876,616,3,30684,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:06:46.156705
+21,0.5,37,105,5000,1886,605,3,31006,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:07:54.111795
+21,0.5,37,105,5000,1831,629,3,31208,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:08:34.475755
+21,0.5,37,105,5000,1994,627,3,30991,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:08:48.376918
+21,0.5,37,105,5000,318,112,4,16235,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:11:08.884168
+21,0.5,37,105,5000,360,127,4,16537,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:11:25.406027
+21,0.5,37,105,5000,64,23,5,10215,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:13:00.663600
+21,0.5,37,105,5000,73,25,5,10241,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 14:13:17.790188
+21,0.5,37,105,5000,326,108,4,15997,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:12:26.557865
+21,0.5,37,105,5000,354,127,4,16470,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:12:30.302553
+21,0.5,37,105,5000,60,25,5,10236,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:14:21.259790
+21,0.5,37,105,5000,78,27,5,10241,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:14:23.012234
+21,0.5,37,105,5000,13508,3295,1,76612,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:26:51.474280
+21,0.5,37,105,5000,13633,3294,1,76836,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:27:03.756424
+21,0.5,37,105,5000,6557,1813,2,54232,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:34:13.119102
+21,0.5,37,105,5000,6498,1811,2,53968,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:34:27.498066
+21,0.5,37,105,5000,1805,595,3,30008,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:38:29.298887
+21,0.5,37,105,5000,2100,630,3,30765,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:38:51.537559
+21,0.5,37,105,5000,358,137,4,16887,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:41:08.418389
+21,0.5,37,105,5000,351,135,4,16478,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:41:28.893802
+21,0.5,37,105,5000,59,22,5,10354,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:42:58.749349
+21,0.5,37,105,5000,48,19,5,10203,"nz_sum_approx(lv, min_vals, False), nocolpunct",2022-06-15 15:43:19.159647
+21,0.5,37,119,5000,21194,3742,1,89991,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 17:49:50.802575
+21,0.5,37,119,5000,21319,3740,1,89925,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 17:49:55.857843
+21,0.5,37,119,5000,21209,3753,1,89748,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 17:50:03.984153
+21,0.5,37,119,5000,21231,3706,1,90085,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 17:50:17.330893
+21,0.5,37,119,10000,70939,9781,1,198458,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 19:20:22.601705
+21,0.5,37,119,10000,69630,9752,1,198064,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 19:22:11.551968
+21,0.5,37,119,10000,71974,9814,1,198430,"nz_sum_approx(lv, min_vals, i < rcore)",2022-06-15 19:22:20.886926

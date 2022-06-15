@@ -20,13 +20,14 @@ import HelperFunctions as HF
 import CRC
 
 run_vals = [
+[1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
 [0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.2, 'BEC'],[0.1, 'BEC'],
 [0.02, 'BSC'],[0.04, 'BSC'], [0.06, 'BSC'], [0.08, 'BSC'], [0.1, 'BSC'],
-[1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
 
+[1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
 [0.5, 'BEC'], [0.4, 'BEC'], [0.3, 'BEC'], [0.2, 'BEC'],[0.1, 'BEC'],
 [0.02, 'BSC'],[0.04, 'BSC'], [0.06, 'BSC'], [0.08, 'BSC'], [0.1, 'BSC'],
-[1, 'AWGN'], [2, 'AWGN'], [3, 'AWGN'], [4, 'AWGN'], [5, 'AWGN'],
+
 ]
 I_IL = 0
 PI = []
@@ -53,7 +54,7 @@ GN = PC_Encoder.gen_G(n)
 K_max = floor(N*rate)
 E_loop = list(np.arange(8, E_max-E_min, 16))
 E_loop.append(E_max-E_min+1)
-E_loop = [0]
+E_loop = [32]
 for elem in run_vals:
     snr = elem[0]
     channel = elem[1]

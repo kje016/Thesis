@@ -11,22 +11,26 @@ def nz_sum_approx(Lv, min_vals, rcore):
         P = product(signs)
         Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
         #slvi = [product(signs[:j])*product(signs[j+1:]) for j in range(len(signs))]
-        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs, i < rcore)
+        Lvi = nz_update_row(vec, min_vals[i], Lvi_signs,i < rcore) #TODO: 'i < rcore'
         output.append({k:v for k,v in zip(row.keys(), Lvi)})
     return output
 
 
 def nz_update_row(row, min_vals, signs, offset):
+    lam = 0.2
     output, min_get = [0] * len(row), len(min_vals)
     if len(min_vals) == 1:
         min_vals = vector(RealField(10), list(min_vals)*2)
     if len(min_vals) == 0:
         min_vals = [0.0001, 0.0001]
     for i, elem in enumerate(row):
-        if min_vals[-min_get] == abs(elem):
-            output[i] = signs[i] * max(min_vals[min_get - 1] - (1 * offset), 0)
+        if abs(elem) == oo:
+            output[i] = elem
         else:
-            output[i] = signs[i] * max(min_vals[-min_get] - (1 * offset), 0)
+            if min_vals[-min_get] == abs(elem):
+                output[i] = signs[i] * max(min_vals[min_get - 1] - (lam * offset), 0)
+            else:
+                output[i] = signs[i] * max(min_vals[-min_get] - (lam * offset), 0)
     return output
 
 
@@ -62,10 +66,7 @@ def get_column_vectors(nzmatrix, length):
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
 def minsum_SPA(H, r, channel, sigma, rcore):
-    if channel == 'AWGN':
-        Lj = [(2/sigma)*rj for rj in r]
-    else:
-        Lj = list(r)
+    Lj = list(r)
     lv = []
     for i in range(H.nrows()):
         temp = {}
@@ -73,7 +74,6 @@ def minsum_SPA(H, r, channel, sigma, rcore):
             temp.update({j: Lj[j]})
         lv.append(temp)
     codeword, runs = False, 0
-    # breakpoint()
     while not codeword and runs < 20:
         min_vals = nz_min_fun(lv, 2)
         Lc = nz_sum_approx(lv, min_vals, rcore)
@@ -91,6 +91,6 @@ def minsum_SPA(H, r, channel, sigma, rcore):
             col_sum = sum(col.values())
 
             for i, elem in col.items():
-                lv[i].update({j: col_sum - col.get(i) + Lj[j]})
+                lv[i].update({j: sign(col_sum)*(abs(col_sum) - col.get(i)) + Lj[j]})
     return vhat, False, runs
 
