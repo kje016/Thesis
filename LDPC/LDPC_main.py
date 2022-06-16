@@ -15,6 +15,7 @@ import Parameter_Functions as PF
 import LDPC_Encoding
 import LDPC_Rate_Matching
 import LDPC_HelperFunctions as HF
+import BG2
 
 var('x')
 R = PolynomialRing(GF(2), x)
@@ -36,18 +37,25 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 [1 / 3, 0.2, 15, 'BEC'],
 
 [1/2, 1, 504, 'AWGN']
+
+, [1/2, 2, 504, 'AWGN'],[1/2, 3, 504, 'AWGN'],[1/2, 4, 504, 'AWGN'],[1/2, 5, 504, 'AWGN'],
+[1/2, 0.12, 504, 'BSC'],[1/2, 0.1, 504, 'BSC'],[1/2, 0.08, 504, 'BSC'],[1/2, 0.06, 504, 'BSC'],
 """
-runs = 10000
+runs = 500
 
 
 runs_vals =[
-[1/3, 1, 504, 'AWGN'], [1/3, 2, 504, 'AWGN'],[1/3, 3, 504, 'AWGN'],[1/3, 4, 504, 'AWGN'],[1/3, 5, 504, 'AWGN'],
-[1/3, 0.12, 504, 'BSC'],[1/3, 0.1, 504, 'BSC'],[1/3, 0.08, 504, 'BSC'],[1/3, 0.06, 504, 'BSC'],
-
-[1/2, 1, 504, 'AWGN'], [1/2, 2, 504, 'AWGN'],[1/2, 3, 504, 'AWGN'],[1/2, 4, 504, 'AWGN'],[1/2, 5, 504, 'AWGN'],
-[1/2, 0.12, 504, 'BSC'],[1/2, 0.1, 504, 'BSC'],[1/2, 0.08, 504, 'BSC'],[1/2, 0.06, 504, 'BSC'],
+[1/3, 5, 21, 'AWGN']
 ]
 
+def non_zero_matrix(input_matrix):
+    output = []
+    for i in range(input_matrix.nrows()):
+        temp = {}
+        for j in input_matrix.row(i).nonzero_positions():
+            temp.update({j: 1})
+        output.append(temp)
+    return output
 
 
 for elem in runs_vals:
@@ -64,9 +72,13 @@ for elem in runs_vals:
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
-    BG = HF.get_base_matrix(bg, iLS, Zc)
+    BG, Bi = BG2.create_BG(Zc, iLS, bg)
+    print(Bi)
+    print(BG)
+    #print(f'Zc:{Zc}, iLS:{iLS}, bg:{bg}')
+    #BG = HF.get_base_matrix(bg, iLS, Zc)
     # BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
-    # print(bg, iLS, Zc)
+    print(bg, iLS, Zc)
     H = HF.Protograph(BG, Zc)
     del BG;
     gc.collect()
@@ -90,18 +102,18 @@ for elem in runs_vals:
             c, G = CRC.CRC(a, A, pol)
             crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
             D = vector(GF(2), crk)
-            u = LDPC_Encoding.Encoding(H=H, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+            u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
+            HNZ = non_zero_matrix(HRM)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=N0 if channel == 'AWGN' else snr, channel=channel)
-
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, rate=rate)
         if channel == 'BEC':
             import minsum_BEC
             aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
             #print(suces, iter)
         else:
             import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, llr_r, channel, sig, 4 * Zc)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, HNZ, llr_r, channel, sig, 4 * Zc)
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign(crc_check.hamming_weight())
@@ -114,3 +126,4 @@ for elem in runs_vals:
         result_writer.writerow(
             [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'no col punct, OMS', datetime.datetime.now()])
         gc.collect()
+
