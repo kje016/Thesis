@@ -16,7 +16,7 @@ def nz_sum_approx(Lv, min_vals, rcore):
     return output
 
 
-def it_nz_sum_approx(input_vec, min_vals, rcore, lam):
+def it_nz_sum_approx(input_vec, min_vals, rcore, lam, gamma):
     vec = vector(RealField(10), (input_vec.values()))
     sign = (-1) ** (len(vec))
     #breakpoint()
@@ -24,24 +24,24 @@ def it_nz_sum_approx(input_vec, min_vals, rcore, lam):
     signs = [-1 if a < 0 else 1 for a in vec]
     P = product(signs)
     Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
-    Lvi = nz_update_row(vec, min_vals, Lvi_signs, rcore, lam)
+    Lvi = nz_update_row(vec, min_vals, Lvi_signs, rcore, lam, gamma)
     return {k:v for k,v in zip(input_vec.keys(), Lvi)}
 
 
-def nz_update_row(row, min_vals, signs, offset, lam):
-    gamma = 0.95
+def nz_update_row(row, min_vals, signs, offset, lam, gamma):
     output, min_get = [0] * len(row), len(min_vals)
     if len(min_vals) == 1:
         min_vals = vector(RealField(10), list(min_vals)*2)
     if len(min_vals) == 0:
         min_vals = [0.0001, 0.0001]
+    #breakpoint()
     for i, elem in enumerate(row):
         if abs(elem) == oo:
             output[i] = elem
         elif min_vals[0] != abs(elem):
-            output[i] = signs[i]*min_vals[0]#signs[i] * max(gamma*min_vals[0] - (lam * offset), 0)
+            output[i] = signs[i] * max(min_vals[0] - (lam * offset), 0)
         else:
-            output[i] = signs[i]*min_vals[-1] #signs[i] * max(gamma*min_vals[-1] - (lam * offset), 0)
+            output[i] = signs[i] * max(min_vals[-1] - (lam * offset), 0)
     return output
 
 
@@ -78,7 +78,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, HNZ, llr, r, rcore, lam, Zc, K, N0):
+def minsum_SPA(H, HNZ, llr, r, rcore, lam, gamma, Zc, K, N0):
     lv = [{} for i in range(len(HNZ))]
     Lc = [{} for i in range(len(HNZ))]
     for i, row in enumerate(HNZ):
@@ -91,7 +91,7 @@ def minsum_SPA(H, HNZ, llr, r, rcore, lam, Zc, K, N0):
     while not codeword and runs < 20:
         for l in range(len(HNZ)):
             min_vals = vec_mins(lv[l], 2)
-            Lc[l] = it_nz_sum_approx(lv[l], min_vals, True, lam) # l < rcore
+            Lc[l] = it_nz_sum_approx(lv[l], min_vals, False, lam, gamma) # l < rcore
         ltot = nz_col_sum(Lc, len(r)) + r
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
