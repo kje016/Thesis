@@ -40,12 +40,22 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 
 , [1/2, 2, 504, 'AWGN'],[1/2, 3, 504, 'AWGN'],[1/2, 4, 504, 'AWGN'],[1/2, 5, 504, 'AWGN'],
 [1/2, 0.12, 504, 'BSC'],[1/2, 0.1, 504, 'BSC'],[1/2, 0.08, 504, 'BSC'],[1/2, 0.06, 504, 'BSC'],
+
+[1/2, 5, 520, 'AWGN', 0.4],[1/2, 4, 520, 'AWGN', 0.4],[1/2, 3, 520, 'AWGN', 0.4],
+[1/3, 5, 520, 'AWGN', 0.4],[1/3, 4, 520, 'AWGN', 0.4],[1/3, 3, 520, 'AWGN', 0.4],
+[1/2, 5, 520, 'AWGN', 0.4],[1/2, 4, 520, 'AWGN', 0.4],[1/2, 3, 520, 'AWGN', 0.4],
+
+[1/3, 5, 520, 'AWGN', 0.2],[1/3, 4, 520, 'AWGN', 0.2],[1/3, 3, 520, 'AWGN', 0.2],
+[1/2, 5, 520, 'AWGN', 0.2],[1/2, 4, 520, 'AWGN', 0.2],[1/2, 3, 520, 'AWGN', 0.2],
+[1/3, 5, 520, 'AWGN', 0.2],[1/3, 4, 520, 'AWGN', 0.2],[1/3, 3, 520, 'AWGN', 0.2],
+[1/2, 5, 520, 'AWGN', 0.2],[1/2, 4, 520, 'AWGN', 0.2],[1/2, 3, 520, 'AWGN', 0.2],
 """
-runs = 500
+runs = 1000
 
 
 runs_vals =[
-[1/3, 5, 21, 'AWGN']
+[1/2, 4, 20, 'AWGN', 0.2],[1/2, 5, 20, 'AWGN', 0.2]
+
 ]
 
 def non_zero_matrix(input_matrix):
@@ -59,10 +69,11 @@ def non_zero_matrix(input_matrix):
 
 
 for elem in runs_vals:
-    rate = 1/2
+    rate = elem[0]
     snr = elem[1]
     A = elem[2]
     channel = elem[3]
+    lam = elem[4]
 
     N0, sig = None, None
     pol = CRC.get_pol(A)
@@ -72,14 +83,14 @@ for elem in runs_vals:
     K_ap = B_ap // C
     Kb = PF.determine_kb(B=B, bg=bg)
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
+    print(f'Zc:{Zc}, iLS:{iLS}, bg:{bg}')
     BG, Bi = BG2.create_BG(Zc, iLS, bg)
-    print(Bi)
-    print(BG)
-    #print(f'Zc:{Zc}, iLS:{iLS}, bg:{bg}')
     #BG = HF.get_base_matrix(bg, iLS, Zc)
     # BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
-    print(bg, iLS, Zc)
+    #print(bg, iLS, Zc)
+    #breakpoint()
     H = HF.Protograph(BG, Zc)
+
     del BG;
     gc.collect()
 
@@ -92,6 +103,7 @@ for elem in runs_vals:
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
     print(elem)
+    #breakpoint()
     for iterations in range(runs):
         if iterations % 100 == 0:
             print(time.time() - start_time)
@@ -99,31 +111,38 @@ for elem in runs_vals:
             print(f"BLER:{BLER}, BER:{BER}")
             print(iterations)
             a = random_vector(GF(2), A)
+            print(f'a:{a}')
             c, G = CRC.CRC(a, A, pol)
             crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
             D = vector(GF(2), crk)
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
+
+            #HRM = Matrix(GF(2), [[1,1,1,1,0,0],[0,0,1,1,0,1],[1,0,0,1,1,0]])
+
             HNZ = non_zero_matrix(HRM)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
-        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, rate=rate)
+        llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
+
+        #llr_r = vector(RealField(10), [-0.9, 0.3, 1.2, 0.9, 0.2, 0.4])
         if channel == 'BEC':
             import minsum_BEC
             aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
             #print(suces, iter)
         else:
             import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, HNZ, llr_r, channel, sig, 4 * Zc)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, HNZ, llr_r, 4 * Zc, lam, Zc, K)
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
-        BLER += sign(crc_check.hamming_weight())
+        BLER += sign((aa[:A]+a).hamming_weight())
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
         AVGit += iter
+        #print(iter)
 
     with open(f'Tests/{channel}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'no col punct, OMS', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'no col punct, core', datetime.datetime.now()])
         gc.collect()
 

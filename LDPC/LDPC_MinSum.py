@@ -11,30 +11,29 @@ def nz_sum_approx(Lv, min_vals, rcore):
         signs = [sgn(a) for a in vec]
         P = product(signs)
         #Lvi_signs = list([a * b for a,b in zip(signs, [P]*len(signs))])
-        Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+        Lvi_signs = list([a * b for a, b in zip(signs, [P*sign] * len(signs))])
         Lvi = nz_update_row(vec, min_vals[i], Lvi_signs, rcore) #TODO: 'i < rcore'
         output.append({k:v for k,v in zip(row.keys(), Lvi)})
     return output
 
 
-def it_nz_sum_approx(input_vec, min_vals, rcore):
+def it_nz_sum_approx(input_vec, min_vals, rcore, lam):
     vec = vector(RealField(10), (input_vec.values()))
     sign = (-1) ** (len(vec))
     signs = [sgn(a) for a in vec]
     P = product(signs)
     Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
-    Lvi = nz_update_row(vec, min_vals, Lvi_signs, rcore)  # TODO: 'i < rcore'
+    Lvi = nz_update_row(vec, min_vals, Lvi_signs, rcore, lam)
     return {k:v for k,v in zip(input_vec.keys(), Lvi)}
 
 
-def nz_update_row(row, min_vals, signs, offset):
-    lam = 0.2
+def nz_update_row(row, min_vals, signs, offset, lam):
+    gamma = 0.95
     output, min_get = [0] * len(row), len(min_vals)
     if len(min_vals) == 1:
         min_vals = vector(RealField(10), list(min_vals)*2)
     if len(min_vals) == 0:
         min_vals = [0.0001, 0.0001]
-        breakpoint()
     for i, elem in enumerate(row):
         if abs(elem) == oo:
             output[i] = elem
@@ -78,7 +77,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, HNZ, r, channel, sigma, rcore):
+def minsum_SPA(H, HNZ, r, rcore, lam, Zc, K):
     lv = [{} for i in range(len(HNZ))]
     Lc = [{} for i in range(len(HNZ))]
     for i, row in enumerate(HNZ):
@@ -87,15 +86,16 @@ def minsum_SPA(H, HNZ, r, channel, sigma, rcore):
 
 
     codeword, runs = False, 0
+    #breakpoint()
     while not codeword and runs < 20:
         for l in range(len(HNZ)):
             min_vals = vec_mins(lv[l], 2)
-            Lc[l] = it_nz_sum_approx(lv[l], min_vals, l<rcore) # l < rcore
+            Lc[l] = it_nz_sum_approx(lv[l], min_vals, l < rcore, lam) # l < rcore
         ltot = nz_col_sum(Lc, len(r)) + r
-        vhat = vector(GF(2), [0 if elem >= 0 else 1 for elem in ltot])
+        vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword
-        if H * vhat == 0:
+        if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0:
             #print(f"MinSum runs := {runs}")
             return vhat, True, runs
 
