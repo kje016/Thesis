@@ -54,12 +54,10 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 [1/2, 8, 20, 'AWGN', 0.4],
 """
 runs = 1000
-
+lim = 1000
 
 runs_vals =[
-[4/10, 4, 200, 'AWGN', 0.2],
-
-
+[1/3, 6, 80, 'AWGN', 0.2],
 ]
 
 def non_zero_matrix(input_matrix):
@@ -112,6 +110,8 @@ for elem in runs_vals:
     start_time = time.time()
     #breakpoint()
     for iterations in range(runs):
+        if BLER > lim:
+            break
         if iterations % 100 == 0:
             print(time.time() - start_time)
             start_time = time.time()
@@ -140,6 +140,7 @@ for elem in runs_vals:
         BLER += sign((aa[:A]+a).hamming_weight())
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
         AVGit += iter
+        print(f"BLER:{BLER}, BER:{BER}")
         #print(iter)
 
     with open(f'Tests/{channel}.csv', mode='a',

@@ -19,7 +19,9 @@ def nz_sum_approx(Lv, min_vals, rcore):
 def it_nz_sum_approx(input_vec, min_vals, rcore, lam):
     vec = vector(RealField(10), (input_vec.values()))
     sign = (-1) ** (len(vec))
-    signs = [sgn(a) for a in vec]
+    #breakpoint()
+    #signs = [sgn(a) for a in vec]
+    signs = [-1 if a < 0 else 1 for a in vec]
     P = product(signs)
     Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
     Lvi = nz_update_row(vec, min_vals, Lvi_signs, rcore, lam)
