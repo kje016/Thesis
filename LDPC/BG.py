@@ -109,8 +109,5 @@ def create_BG(Zc, iLS, bg):
         else:
             Bi = 0
     else:
-        if BG[0][22] == 1:
-            Bi = (0, 1)
-        else:
-            Bi = (1, BG[1][22])
+        Bi = BG[1][22]
     return BG, Bi

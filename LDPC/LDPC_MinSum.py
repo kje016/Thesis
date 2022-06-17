@@ -8,9 +8,8 @@ def nz_sum_approx(Lv, min_vals, rcore):
         vec = vector(RealField(10), (row.values()))
         sign = (-1)**(len(vec))
         #signs = [-1 if vec[j] < 0 else 1 for j in range(len(vec))]
-        signs = [sgn(a) for a in vec]
+        signs = [-1 if elem < 0 else 1 for elem in row]
         P = product(signs)
-        #Lvi_signs = list([a * b for a,b in zip(signs, [P]*len(signs))])
         Lvi_signs = list([a * b for a, b in zip(signs, [P*sign] * len(signs))])
         Lvi = nz_update_row(vec, min_vals[i], Lvi_signs, rcore) #TODO: 'i < rcore'
         output.append({k:v for k,v in zip(row.keys(), Lvi)})
@@ -38,9 +37,9 @@ def nz_update_row(row, min_vals, signs, offset, lam):
         if abs(elem) == oo:
             output[i] = elem
         elif min_vals[0] != abs(elem):
-            output[i] = signs[i] * max(min_vals[0] - (lam * offset), 0)
+            output[i] = signs[i]*min_vals[0]#signs[i] * max(gamma*min_vals[0] - (lam * offset), 0)
         else:
-            output[i] = signs[i] * max(min_vals[-1] - (lam * offset), 0)
+            output[i] = signs[i]*min_vals[-1] #signs[i] * max(gamma*min_vals[-1] - (lam * offset), 0)
     return output
 
 
@@ -77,20 +76,20 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, HNZ, r, rcore, lam, Zc, K):
+def minsum_SPA(H, HNZ, llr, r, rcore, lam, Zc, K, N0):
     lv = [{} for i in range(len(HNZ))]
     Lc = [{} for i in range(len(HNZ))]
     for i, row in enumerate(HNZ):
         for j, elem in row.items():
-            lv[i].update({j: r[j]})
+            lv[i].update({j: llr[j]})
 
-
+    r = vector(RealField(10), [a/(4/N0) for a in llr])
     codeword, runs = False, 0
     #breakpoint()
     while not codeword and runs < 20:
         for l in range(len(HNZ)):
             min_vals = vec_mins(lv[l], 2)
-            Lc[l] = it_nz_sum_approx(lv[l], min_vals, l < rcore, lam) # l < rcore
+            Lc[l] = it_nz_sum_approx(lv[l], min_vals, True, lam) # l < rcore
         ltot = nz_col_sum(Lc, len(r)) + r
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
@@ -105,6 +104,6 @@ def minsum_SPA(H, HNZ, r, rcore, lam, Zc, K):
             col_sum = sum(col.values())
 
             for i, elem in col.items():
-                lv[i].update({j: sign(col_sum)*(abs(col_sum) - col.get(i)) + r[j]})
+                lv[i].update({j: sign(col_sum)*(abs(col_sum) - col.get(i)) + llr[j]})
     return vhat, False, runs
 

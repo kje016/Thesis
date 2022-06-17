@@ -49,14 +49,16 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 [1/2, 5, 520, 'AWGN', 0.2],[1/2, 4, 520, 'AWGN', 0.2],[1/2, 3, 520, 'AWGN', 0.2],
 [1/3, 5, 520, 'AWGN', 0.2],[1/3, 4, 520, 'AWGN', 0.2],[1/3, 3, 520, 'AWGN', 0.2],
 [1/2, 5, 520, 'AWGN', 0.2],[1/2, 4, 520, 'AWGN', 0.2],[1/2, 3, 520, 'AWGN', 0.2],
+
+[1/2, 4, 20, 'AWGN', 0.4],[1/2, 5, 20, 'AWGN', 0.4], [1/2, 6, 20, 'AWGN', 0.4],[1/2, 7, 20, 'AWGN', 0.4],
+[1/2, 8, 20, 'AWGN', 0.4],
 """
-runs = 5000
+runs = 1000
 
 
 runs_vals =[
-[7/10, 4, 1024, 'AWGN', 0.2],
-[1/2, 4, 20, 'AWGN', 0.2],[1/2, 5, 20, 'AWGN', 0.2], [1/2, 6, 20, 'AWGN', 0.2],[1/2, 7, 20, 'AWGN', 0.2],
-[1/2, 8, 20, 'AWGN', 0.2],
+[1/2, 6, 20, 'AWGN', 0.2],
+
 
 ]
 
@@ -87,7 +89,7 @@ for elem in runs_vals:
     Kb = PF.determine_kb(B=B, bg=bg)
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
     print(f'Zc:{Zc}, iLS:{iLS}, bg:{bg}')
-    BG, Bi = BG.create_BG(Zc, 6, 1)
+    BG, Bi = BG.create_BG(Zc, iLS, bg)
     #print(BG)
     print(Bi)
     #breakpoint()
@@ -104,7 +106,7 @@ for elem in runs_vals:
     if channel == 'AWGN':
         sig = sqrt(1 / (2 * rate * 10 ** (snr / 10)))
         p = 1 - norm.cdf(1 / sig)  # error probability, from proposition 2.9
-        N0 = 2 * sig ** 2
+        N0 = 2*sig** 2
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
@@ -121,23 +123,18 @@ for elem in runs_vals:
             crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
             D = vector(GF(2), crk)
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
-            breakpoint()
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
-
-            #HRM = Matrix(GF(2), [[1,1,1,1,0,0],[0,0,1,1,0,1],[1,0,0,1,1,0]])
 
             HNZ = non_zero_matrix(HRM)
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
-
-        #llr_r = vector(RealField(10), [-0.9, 0.3, 1.2, 0.9, 0.2, 0.4])
         if channel == 'BEC':
             import minsum_BEC
             aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
             #print(suces, iter)
         else:
             import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(HRM, HNZ, llr_r, 4 * Zc, lam, Zc, K)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam, Zc=Zc, K=K, r=r, N0=N0)
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign((aa[:A]+a).hamming_weight())
@@ -149,6 +146,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, 'no col punct, core', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), runs, BER, BLER, snr, AVGit, f'no col punct, IOMS, gam:0.95, :lam{lam}', datetime.datetime.now()])
         gc.collect()
 

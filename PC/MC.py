@@ -60,7 +60,7 @@ run_vals = [
 ]
 """
 run_vals = [
-['', 1, 21, 'AWGN', 'SC'],
+['', 2, 21, 'AWGN', 'SC'],
 ['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
 ['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
 ['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
@@ -107,6 +107,7 @@ for elem in run_vals:
             start_time = time.time()
             print(f"{BER}, {BLER}, {ET}")
             print(iteration)
+            breakpoint()
             a = random_vector(GF(2), A)
             #a = vector(GF(2), [1])
             c, H = CRC.CRC(a, A, pol, I_IL, PI)

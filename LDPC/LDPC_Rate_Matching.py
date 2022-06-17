@@ -27,14 +27,14 @@ def fill_w_llr(r, Zc, K, K_ap, p, N0, channel, HRM):
     col_inf = [0] * colpunct
     if channel == 'AWGN':
         inf_bits = list(r[:A]*llr)
-        punct_inf = [oo]*punct
+        punct_inf = [-oo]*punct
         p_bits = list(r[A:]*llr)
     elif channel == 'BSC':
         inf_bits = list(r[:A]*llr)
-        punct_inf = [oo]*punct
+        punct_inf = [-oo]*punct
         p_bits = list(r[A:]*llr)
     else:   # channel = BEC
         inf_bits = list(map(lambda y: 0 if y == 2 else y*-oo, r[:A]))
-        punct_inf = [oo] * punct
+        punct_inf = [-oo] * punct
         p_bits = list(map(lambda y: 0 if y == 2 else y*-oo, r[A:]))
     return vector(RealField(10), col_inf + inf_bits + punct_inf + p_bits)#, vector(RealField(10), col_inf + list(r[:A]) + [-oo]*punct + list(r[A:]))
