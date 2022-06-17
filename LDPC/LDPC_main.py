@@ -15,7 +15,7 @@ import Parameter_Functions as PF
 import LDPC_Encoding
 import LDPC_Rate_Matching
 import LDPC_HelperFunctions as HF
-import BG2
+import BG
 
 var('x')
 R = PolynomialRing(GF(2), x)
@@ -54,6 +54,7 @@ runs = 5000
 
 
 runs_vals =[
+[7/10, 4, 1024, 'AWGN', 0.2],
 [1/2, 4, 20, 'AWGN', 0.2],[1/2, 5, 20, 'AWGN', 0.2], [1/2, 6, 20, 'AWGN', 0.2],[1/2, 7, 20, 'AWGN', 0.2],
 [1/2, 8, 20, 'AWGN', 0.2],
 
@@ -70,6 +71,7 @@ def non_zero_matrix(input_matrix):
 
 
 for elem in runs_vals:
+    print(elem)
     rate = elem[0]
     snr = elem[1]
     A = elem[2]
@@ -85,7 +87,10 @@ for elem in runs_vals:
     Kb = PF.determine_kb(B=B, bg=bg)
     Zc, iLS, K = PF.det_Z(bg=bg, kb=Kb, lifting_set=lss, K_ap=K_ap)
     print(f'Zc:{Zc}, iLS:{iLS}, bg:{bg}')
-    BG, Bi = BG2.create_BG(Zc, iLS, bg)
+    BG, Bi = BG.create_BG(Zc, 6, 1)
+    #print(BG)
+    print(Bi)
+    #breakpoint()
     #BG = HF.get_base_matrix(bg, iLS, Zc)
     # BGB = BG.matrix_from_rows_and_columns(list(range(4)), list(range(10, 10+4)))
     #print(bg, iLS, Zc)
@@ -103,7 +108,6 @@ for elem in runs_vals:
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
-    print(elem)
     #breakpoint()
     for iterations in range(runs):
         if iterations % 100 == 0:
@@ -112,11 +116,12 @@ for elem in runs_vals:
             print(f"BLER:{BLER}, BER:{BER}")
             print(iterations)
             a = random_vector(GF(2), A)
-            print(f'a:{a}')
+            #print(f'a:{a}')
             c, G = CRC.CRC(a, A, pol)
             crk = PF.calc_crk(C=C, K=K, K_ap=K_ap, L=L, b_bits=c)   # crk := padding the codeword
             D = vector(GF(2), crk)
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
+            breakpoint()
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
 
             #HRM = Matrix(GF(2), [[1,1,1,1,0,0],[0,0,1,1,0,1],[1,0,0,1,1,0]])

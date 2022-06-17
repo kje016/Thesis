@@ -1,4 +1,5 @@
 # cd Desktop/Thesis/PySageMath/PC
+# cd Desktop/Thesis/PC
 import time
 import os
 
@@ -60,14 +61,13 @@ run_vals = [
 """
 run_vals = [
 ['', 1, 21, 'AWGN', 'SC'],
-['', 0.08, 21, 'BSC', 'SC'], ['', 0.04, 21, 'BSC', 'SC'], ['', 0.01, 21, 'BSC', 'SC'],
-['', 1, 21, 'AWGN', 'SC'], ['', 2, 21, 'AWGN', 'SC'], ['', 3, 21, 'AWGN', 'SC'],['', 4, 21, 'AWGN', 'SC'],
-['', 5, 21, 'AWGN', 'SC'],
-
-['', 0.1, 'BSC', 'SCL'], ['', 0.08, 'BSC', 'SCL'], ['', 0.06, 'BSC', 'SCL'],
+['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
+['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
+['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
+['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
 ]
 
-runs = 10000
+runs = 5000
 I_IL = 0
 #decoder = 'SC'
 for elem in run_vals:

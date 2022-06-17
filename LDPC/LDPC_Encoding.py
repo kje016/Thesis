@@ -23,13 +23,25 @@ def calc_pa(H, Pc, D, Zc, K):
 def Encoding(H, Bi, Zc, D, K, kb, BG):
     # Pc (core parity): can be calculated from submatrices A & B
     lambdas = calc_lambdas(kb, H, Zc, D, K)
-
+    breakpoint()
+    PX = HF.P(Bi[1], Zc)
     if BG == 1:
-        pc1 = sum(lambdas)
-        pc1_shift = vector(GF(2),  list(pc1)[1:] + [pc1[0]])
-        pc2 = lambdas[0] + pc1_shift
-        pc4 = lambdas[3] + pc1_shift
-        pc3 = lambdas[2] + pc4
+        if Bi == (0,1):
+            pc1 = sum(lambdas)
+            pc1_shift = vector(GF(2), list(pc1)[1:] + [pc1[0]])
+            pc2 = lambdas[0] + pc1_shift
+            pc4 = lambdas[3] + pc1_shift
+            pc3 = lambdas[2] + pc4
+        else:
+            pc1 = sum(lambdas)
+            pc1_shift = vector(GF(2), list(pc1[Bi[1]:])+ list(pc1[:Bi[1]]))
+            pc2 = lambdas[0] + pc1_shift
+            pc4 = lambdas[3] + pc1_shift
+            pc3 = lambdas[2] + pc4
+        """
+        if Bi == 0:
+            
+        """
     else:
         if Bi == 1:
             pc1 = sum(lambdas)
