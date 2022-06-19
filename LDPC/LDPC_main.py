@@ -110,13 +110,11 @@ for elem in runs_vals:
     for iterations in range(runs):
         if BLER >= lim:
             break
-        if iterations % 50 == 0:
-            print(f"BLER:{BLER}, BER:{BER}, FAR:{FAR}")
         if iterations % 100 == 0:
-            print(iterations)
             print(time.time() - start_time)
             start_time = time.time()
-            #print(f"BLER:{BLER}, BER:{BER}")
+            print(f"BLER:{BLER}, BER:{BER}")
+            print(iterations)
             a = random_vector(GF(2), A)
             #print(f'a:{a}')
             c, G = CRC.CRC(a, A, pol)
@@ -125,7 +123,8 @@ for elem in runs_vals:
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
             HNZ = non_zero_matrix(HRM)
-
+        if iterations % 50 == 0:
+            print(f"BLER:{BLER}, BER:{BER}, FAR:{FAR}")
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
         if channel == 'BEC':
@@ -147,6 +146,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'OMS, gamma:{gamma}, :lam{lam}', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'OMS,gamma:{gamma},lam{lam}', datetime.datetime.now()])
         gc.collect()
 
