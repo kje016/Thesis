@@ -39,9 +39,9 @@ def nz_update_row(row, min_vals, signs, offset, lam, gamma):
         if abs(elem) == oo:
             output[i] = elem
         elif min_vals[0] != abs(elem):
-            output[i] = signs[i] * max(min_vals[0] - (lam * offset), 0)
+            output[i] = signs[i] * max(gamma * min_vals[0] - (lam * offset), 0)
         else:
-            output[i] = signs[i] * max(min_vals[-1] - (lam * offset), 0)
+            output[i] = signs[i] * max(gamma * min_vals[-1] - (lam * offset), 0)
     return output
 
 
@@ -91,8 +91,8 @@ def minsum_SPA(H, HNZ, llr, r, rcore, lam, gamma, Zc, K, N0):
     while not codeword and runs < 20:
         for l in range(len(HNZ)):
             min_vals = vec_mins(lv[l], 2)
-            Lc[l] = it_nz_sum_approx(lv[l], min_vals, False, lam, gamma) # l < rcore
-        ltot = nz_col_sum(Lc, len(r)) + r
+            Lc[l] = it_nz_sum_approx(lv[l], min_vals, True, lam, gamma) # l < rcore
+        ltot = nz_col_sum(Lc, len(r)) + llr
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword

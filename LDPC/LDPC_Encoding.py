@@ -53,6 +53,6 @@ def Encoding(H, Bi, Zc, D, K, kb, BG):
     X = vector(GF(2), list(D[:])+list(Pc)+list(Pa))
     #print(f"H*X ==0 := {H*X==0}")
     # print(f"mb = {BG.nrows()}: nb = {BG.ncols()} : kb = {BG.ncols()-BG.nrows()}")S
-    if (H*X).hamming_weight() != 0:
-        breakpoint()
+    #if (H*X).hamming_weight() != 0:
+    #    breakpoint()
     return X
