@@ -23,7 +23,7 @@ def fill_w_llr(r, Zc, K, K_ap, p, N0, channel, HRM):
     colpunct, punct = 0 if channel == 'BEC' else 2 * Zc, floor((K - K_ap) // Zc) * Zc
     colpunct = 0# TODO
     A = K - colpunct - punct
-    llr = (4/N0) if channel== 'AWGN' else log(((1-p) / p), 2).n()   #where p = N0
+    llr = (4/N0) if channel== 'AWGN' else log(((1-p) / p), 2)   #where p = N0
     col_inf = [0] * colpunct
     if channel == 'AWGN':
         inf_bits = list(r[:A]*llr)
