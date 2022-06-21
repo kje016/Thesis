@@ -11,9 +11,9 @@ def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
 
     ev = vector(GF(2), list(u[:K+ 4*Zc]))
     Hm = H.matrix_from_rows_and_columns(list(range(E-A_ap)), list(range(K + (E-A_ap))))
-    Ht = H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc)))
-    if Ht*ev != 0:
-        breakpoint()
+    #Ht = H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc)))
+    #if Ht*ev != 0:
+    #    breakpoint()
     return vector(RealField(10), e), Hm
 
 

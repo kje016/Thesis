@@ -127,7 +127,6 @@ for elem in runs_vals:
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
-    #breakpoint()
     for iterations in range(runs):
         if BLER >= lim:
             break
@@ -144,6 +143,8 @@ for elem in runs_vals:
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
             HNZ = non_zero_matrix(HRM)
+        if iterations % 50 == 0:
+            print(f"BLER:{BLER}, BER:{BER}, FAR:{FAR}")
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
         if channel == 'BEC':
@@ -152,7 +153,7 @@ for elem in runs_vals:
             #print(suces, iter)
         else:
             import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam,gamma=gamma, Zc=Zc,K=K, r=r, N0=N0, use_core=use_core)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam,gamma=gamma, Zc=Zc,K=K, N0=N0, use_core=use_core)
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign((aa[:A]+a).hamming_weight())
@@ -165,6 +166,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'OMS,gamma:{gamma},lam{lam}', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'OMS,gamma:{gamma},lam{lam},AMS:{use_core}', datetime.datetime.now()])
         gc.collect()
 

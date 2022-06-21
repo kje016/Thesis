@@ -28,6 +28,18 @@ def it_nz_sum_approx(input_vec, min_vals, rcore, lam, gamma):
     return {k:v for k,v in zip(input_vec.keys(), Lvi)}
 
 
+def AMS(input_vec, min_vals, rcore, lam, gamma):
+    vec = vector(RealField(10), (input_vec.values()))
+    sign = (-1) ** (len(vec))
+    #breakpoint()
+    #signs = [sgn(a) for a in vec]
+    signs = [-1 if a < 0 else 1 for a in vec]
+    P = product(signs)
+    Lvi_signs = list([a * b for a, b in zip(signs, [P * sign] * len(signs))])
+    Lvi = nz_update_row(vec, min_vals, Lvi_signs, rcore, lam, gamma)
+    return {k:v for k,v in zip(input_vec.keys(), Lvi)}
+
+
 def nz_update_row(row, min_vals, signs, offset, lam, gamma):
     output, min_get = [0] * len(row), len(min_vals)
     if len(min_vals) == 1:
@@ -78,20 +90,21 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, HNZ, llr, r, rcore, lam, gamma, Zc, K, N0, use_core):
+def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core):
     lv = [{} for i in range(len(HNZ))]
     Lc = [{} for i in range(len(HNZ))]
     for i, row in enumerate(HNZ):
         for j, elem in row.items():
             lv[i].update({j: llr[j]})
 
-    #r = vector(RealField(10), [a/(4/N0) for a in llr])
     codeword, runs = False, 0
-    #breakpoint()
     while not codeword and runs < 20:
         for l in range(len(HNZ)):
             min_vals = vec_mins(lv[l], 2)
-            Lc[l] = it_nz_sum_approx(lv[l], min_vals, True, lam, gamma) # l < rcore
+            if use_core:
+                Lc[l] = AMS(lv[l], min_vals, l<rcore, lam, gamma)
+            else:
+                Lc[l] = it_nz_sum_approx(lv[l], min_vals, True, lam, gamma) # l < rcore
         ltot = nz_col_sum(Lc, len(llr)) + llr
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
