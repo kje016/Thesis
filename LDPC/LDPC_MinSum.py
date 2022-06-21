@@ -85,14 +85,14 @@ def minsum_SPA(H, HNZ, llr, r, rcore, lam, gamma, Zc, K, N0, use_core):
         for j, elem in row.items():
             lv[i].update({j: llr[j]})
 
-    r = vector(RealField(10), [a/(4/N0) for a in llr])
+    #r = vector(RealField(10), [a/(4/N0) for a in llr])
     codeword, runs = False, 0
     #breakpoint()
     while not codeword and runs < 20:
         for l in range(len(HNZ)):
             min_vals = vec_mins(lv[l], 2)
             Lc[l] = it_nz_sum_approx(lv[l], min_vals, True, lam, gamma) # l < rcore
-        ltot = nz_col_sum(Lc, len(r)) + llr
+        ltot = nz_col_sum(Lc, len(llr)) + llr
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword
@@ -101,7 +101,7 @@ def minsum_SPA(H, HNZ, llr, r, rcore, lam, gamma, Zc, K, N0, use_core):
             return vhat, True, runs
 
         # update Lv
-        colvecs = get_column_vectors(Lc, len(r))
+        colvecs = get_column_vectors(Lc, len(llr))
         for j, col in enumerate(colvecs):
             col_sum = sum(col.values())
 
