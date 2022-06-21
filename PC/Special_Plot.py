@@ -154,7 +154,7 @@ def plot_RM(input_dict, name):
     fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
     ax1.set_title('BER')
     ax2.set_title('BLER')
-    U_set = [0, 8, 32, 24,40, 56, 64]
+    U_set = [0, 8, 32, 24, 40, 56, 64]
     for u in U_set:
         ax1.semilogy(input_dict.get( ((0.5, u), 'BER'))[1], input_dict.get( ((0.5, u), 'BER'))[0], label=f'{0.5, u}',linestyle='dotted', marker='|')
         ax2.semilogy(input_dict.get(((0.5, u), 'BLER'))[1], input_dict.get(((0.5, u), 'BER'))[0], label=f'{0.5, u}',linestyle='dotted',

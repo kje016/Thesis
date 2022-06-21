@@ -55,7 +55,7 @@ def minsum_BEC(H, r, Zc, K):
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         #ltot = vector(RealField(10), [a * oo if a != 0 else 0 for a in vector(RealField(10), nz_col_sum(Lc, Lj))])
-        if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0:    # check if v_hat is a valid codeword
+        if H * vhat == 0:    # check if v_hat is a valid codeword
             #print(f"MinSum runs := {runs, H*vhat == 0}")
             return vhat, True, runs
         if ltot in LTOTS:
