@@ -147,83 +147,10 @@ runs = 10000
 lim = 1000
 
 runs_vals =[
+[1/2, 0.00001, 21, 'BEC', 1, 0, False],
+[1/3, 0.1, 21, 'BEC', 1, 0, False],[1/3, 0.2, 21, 'BEC', 1, 0, False],[1/3, 0.3, 21, 'BEC', 1, 0, False],
+[1/3, 0.4, 21, 'BEC', 1, 0, False],[1/3, 0.5, 21, 'BEC', 1, 0, False],[1/3, 0.6, 21, 'BEC', 1, 0, False],
 
-[1/3, 0.02, 21, 'BSC', 1, 0, False], [1/3, 0.04, 21, 'BSC', 1, 0, False], [1/3, 0.06, 21, 'BSC', 1, 0, False],
-[1/3, 0.08, 21, 'BSC', 1, 0, False], [1/3, 0.1, 21, 'BSC', 1, 0, False],
-
-[1/3, 0.02, 21, 'BSC', 0.95, 0.4, False], [1/3, 0.04, 21, 'BSC', 0.95, 0.4, False], [1/3, 0.06, 21, 'BSC', 0.95, 0.4, False],
-[1/3, 0.08, 21, 'BSC', 0.95, 0.4, False], [1/3, 0.1, 21, 'BSC', 0.95, 0.4, False],
-
-[1/3, 0.02, 53, 'BSC', 1, 0, False], [1/3, 0.04, 53, 'BSC', 1, 0, False], [1/3, 0.06, 53, 'BSC', 1, 0, False],
-[1/3, 0.08, 53, 'BSC', 1, 0, False], [1/3, 0.1, 53, 'BSC', 1, 0, False],
-
-[1/3, 0.02, 53, 'BSC', 0.95, 0.4, False], [1/3, 0.04, 53, 'BSC', 0.95, 0.4, False], [1/3, 0.06, 53, 'BSC', 0.95, 0.4, False],
-[1/3, 0.08, 53, 'BSC', 0.95, 0.4, False], [1/3, 0.1, 53, 'BSC', 0.95, 0.4, False],
-
-
-[1/2, 0.02, 21, 'BSC', 1, 0, False], [1/2, 0.04, 21, 'BSC', 1, 0, False], [1/2, 0.06, 21, 'BSC', 1, 0, False],
-[1/2, 0.08, 21, 'BSC', 1, 0, False], [1/2, 0.1, 21, 'BSC', 1, 0, False],
-[1/2, 0.02, 21, 'BSC', 0.95, 0.4, False], [1/2, 0.04, 21, 'BSC', 0.95, 0.4, False], [1/2, 0.06, 21, 'BSC', 0.95, 0.4, False],
-[1/2, 0.08, 21, 'BSC', 0.95, 0.4, False], [1/2, 0.1, 21, 'BSC', 0.95, 0.4, False],
-
-[1/2, 0.02, 53, 'BSC', 1, 0, False], [1/2, 0.04, 53, 'BSC', 1, 0, False], [1/2, 0.06, 53, 'BSC', 1, 0, False],
-[1/2, 0.08, 53, 'BSC', 1, 0, False], [1/2, 0.1, 53, 'BSC', 1, 0, False],
-[1/2, 0.02, 53, 'BSC', 0.95, 0.4, False], [1/2, 0.04, 53, 'BSC', 0.95, 0.4, False], [1/2, 0.06, 53, 'BSC', 0.95, 0.4, False],
-[1/2, 0.08, 53, 'BSC', 0.95, 0.4, False], [1/2, 0.1, 53, 'BSC', 0.95, 0.4, False],
-
-
-[1/2, 0.02, 21, 'BSC', 0.95, 0.4, True], [1/2, 0.04, 21, 'BSC', 0.95, 0.4, True], [1/2, 0.06, 21, 'BSC', 0.95, 0.4, True],
-[1/2, 0.08, 21, 'BSC', 0.95, 0.4, True], [1/2, 0.1, 21, 'BSC', 0.95, 0.4, True],
-
-[1/2, 0.02, 53, 'BSC', 0.95, 0.4, True], [1/2, 0.04, 53, 'BSC', 0.95, 0.4, True], [1/2, 0.06, 53, 'BSC', 0.95, 0.4, True],
-[1/2, 0.08, 53, 'BSC', 0.95, 0.4, True], [1/2, 0.1, 53, 'BSC', 0.95, 0.4, True],
-
-[1/3, 0.02, 21, 'BSC', 0.95, 0.4, True], [1/3, 0.04, 21, 'BSC', 0.95, 0.4, True], [1/3, 0.06, 21, 'BSC', 0.95, 0.4, True],
-[1/3, 0.08, 21, 'BSC', 0.95, 0.4, True], [1/3, 0.1, 21, 'BSC', 0.95, 0.4, True],
-
-[1/3, 0.02, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.04, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.06, 53, 'BSC', 0.95, 0.4, True],
-[1/3, 0.08, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.1, 53, 'BSC', 0.95, 0.4, True],
-
-"""
-"""
-[1/2, 7, 21, 'AWGN', 0.95, 0.4, True],[1/2, 6, 21, 'AWGN', 0.95, 0.4, True],[1/2, 5, 21, 'AWGN', 0.95, 0.4, True],
-[1/2, 4, 21, 'AWGN', 0.95, 0.4, True],[1/2, 3, 21, 'AWGN', 0.95, 0.4, True],[1/2, 2, 21, 'AWGN', 0.95, 0.4, True],
-[1/2, 1, 21, 'AWGN', 0.95, 0.4, True],
-"""
-"""
-[1/3, 0.02, 21, 'BSC', 1, 0, False], [1/3, 0.04, 21, 'BSC', 1, 0, False], [1/3, 0.06, 21, 'BSC', 1, 0, False],
-[1/3, 0.08, 21, 'BSC', 1, 0, False], [1/3, 0.1, 21, 'BSC', 1, 0, False],
-[1/3, 0.02, 21, 'BSC', 0.95, 0.4, False], [1/3, 0.04, 21, 'BSC', 0.95, 0.4, False], [1/3, 0.06, 21, 'BSC', 0.95, 0.4, False],
-[1/3, 0.08, 21, 'BSC', 0.95, 0.4, False], [1/3, 0.1, 21, 'BSC', 0.95, 0.4, False],
-
-[1/3, 0.02, 53, 'BSC', 1, 0, False], [1/3, 0.04, 53, 'BSC', 1, 0, False], [1/3, 0.06, 53, 'BSC', 1, 0, False],
-[1/3, 0.08, 53, 'BSC', 1, 0, False], [1/3, 0.1, 53, 'BSC', 1, 0, False],
-[1/3, 0.02, 53, 'BSC', 0.95, 0.4, False], [1/3, 0.04, 53, 'BSC', 0.95, 0.4, False], [1/3, 0.06, 53, 'BSC', 0.95, 0.4, False],
-[1/3, 0.08, 53, 'BSC', 0.95, 0.4, False], [1/3, 0.1, 53, 'BSC', 0.95, 0.4, False],
-
-
-[1/2, 0.02, 21, 'BSC', 1, 0, False], [1/2, 0.04, 21, 'BSC', 1, 0, False], [1/2, 0.06, 21, 'BSC', 1, 0, False],
-[1/2, 0.08, 21, 'BSC', 1, 0, False], [1/2, 0.1, 21, 'BSC', 1, 0, False],
-[1/2, 0.02, 21, 'BSC', 0.95, 0.4, False], [1/2, 0.04, 21, 'BSC', 0.95, 0.4, False], [1/2, 0.06, 21, 'BSC', 0.95, 0.4, False],
-[1/2, 0.08, 21, 'BSC', 0.95, 0.4, False], [1/2, 0.1, 21, 'BSC', 0.95, 0.4, False],
-
-[1/2, 0.02, 53, 'BSC', 1, 0, False], [1/2, 0.04, 53, 'BSC', 1, 0, False], [1/2, 0.06, 53, 'BSC', 1, 0, False],
-[1/2, 0.08, 53, 'BSC', 1, 0, False], [1/2, 0.1, 53, 'BSC', 1, 0, False],
-[1/2, 0.02, 53, 'BSC', 0.95, 0.4, False], [1/2, 0.04, 53, 'BSC', 0.95, 0.4, False], [1/2, 0.06, 53, 'BSC', 0.95, 0.4, False],
-[1/2, 0.08, 53, 'BSC', 0.95, 0.4, False], [1/2, 0.1, 53, 'BSC', 0.95, 0.4, False],
-
-
-[1/2, 0.02, 21, 'BSC', 0.95, 0.4, True], [1/2, 0.04, 21, 'BSC', 0.95, 0.4, True], [1/2, 0.06, 21, 'BSC', 0.95, 0.4, True],
-[1/2, 0.08, 21, 'BSC', 0.95, 0.4, True], [1/2, 0.1, 21, 'BSC', 0.95, 0.4, True],
-
-[1/2, 0.02, 53, 'BSC', 0.95, 0.4, True], [1/2, 0.04, 53, 'BSC', 0.95, 0.4, True], [1/2, 0.06, 53, 'BSC', 0.95, 0.4, True],
-[1/2, 0.08, 53, 'BSC', 0.95, 0.4, True], [1/2, 0.1, 53, 'BSC', 0.95, 0.4, True],
-
-[1/3, 0.02, 21, 'BSC', 0.95, 0.4, True], [1/3, 0.04, 21, 'BSC', 0.95, 0.4, True], [1/3, 0.06, 21, 'BSC', 0.95, 0.4, True],
-[1/3, 0.08, 21, 'BSC', 0.95, 0.4, True], [1/3, 0.1, 21, 'BSC', 0.95, 0.4, True],
-
-[1/3, 0.02, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.04, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.06, 53, 'BSC', 0.95, 0.4, True],
-[1/3, 0.08, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.1, 53, 'BSC', 0.95, 0.4, True],
 ]
 
 def non_zero_matrix(input_matrix):
@@ -267,6 +194,7 @@ for elem in runs_vals:
         print(f"sigma:{sig}, N0:{N0}, pross:{p}")
     BLER, BER, FAR, AVGit = 0, 0, 0, 0
     start_time = time.time()
+    #breakpoint()
     for iterations in range(runs):
         if BLER >= lim:
             break
@@ -283,11 +211,12 @@ for elem in runs_vals:
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
             HNZ = non_zero_matrix(HRM)
+        breakpoint()
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
         if channel == 'BEC':
             import minsum_BEC
-            aa, suces, iter = minsum_BEC.minsum_BEC(HRM, llr_r)
+            aa, suces, iter = minsum_BEC.minsum_BEC(H=HRM, r=llr_r, Zc=Zc, K=K)
             #print(suces, iter)
         else:
             import LDPC_MinSum

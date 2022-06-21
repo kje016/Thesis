@@ -37,7 +37,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_BEC(H, r):
+def minsum_BEC(H, r, Zc, K):
     Lj = r
     lv = []
     for i in range(H.nrows()):
@@ -48,13 +48,14 @@ def minsum_BEC(H, r):
 
     codeword, runs = False, 0
     LTOTS= []
+    breakpoint()
     while not codeword and runs < 20:
         Lc = nz_tanh(lv)
         ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         #ltot = vector(RealField(10), [a * oo if a != 0 else 0 for a in vector(RealField(10), nz_col_sum(Lc, Lj))])
-        if H * vhat == 0:    # check if v_hat is a valid codeword
+        if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0:    # check if v_hat is a valid codeword
             #print(f"MinSum runs := {runs, H*vhat == 0}")
             return vhat, True, runs
         if ltot in LTOTS:

@@ -11,9 +11,9 @@ def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
 
     ev = vector(GF(2), list(u[:K+ 4*Zc]))
     Hm = H.matrix_from_rows_and_columns(list(range(E-A_ap)), list(range(K + (E-A_ap))))
-    #Ht = H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc)))
-    #if Ht*ev != 0:
-    #    breakpoint()
+    Ht = H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc)))
+    if Ht*ev != 0:
+        breakpoint()
     return vector(RealField(10), e), Hm
 
 
@@ -34,7 +34,7 @@ def fill_w_llr(r, Zc, K, K_ap, p, N0, channel, HRM):
         punct_inf = [-oo]*punct
         p_bits = list(r[A:]*llr)
     else:   # channel = BEC
-        inf_bits = list(map(lambda y: 0 if y == 2 else y*-oo, r[:A]))
+        inf_bits = list(map(lambda y: 0 if y == 2 else y*oo, r[:A]))
         punct_inf = [-oo] * punct
-        p_bits = list(map(lambda y: 0 if y == 2 else y*-oo, r[A:]))
+        p_bits = list(map(lambda y: 0 if y == 2 else y*oo, r[A:]))
     return vector(RealField(10), col_inf + inf_bits + punct_inf + p_bits)#, vector(RealField(10), col_inf + list(r[:A]) + [-oo]*punct + list(r[A:]))
