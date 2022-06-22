@@ -142,13 +142,16 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 
 [1/3, 0.02, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.04, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.06, 53, 'BSC', 0.95, 0.4, True],
 [1/3, 0.08, 53, 'BSC', 0.95, 0.4, True], [1/3, 0.1, 53, 'BSC', 0.95, 0.4, True],
+
+[1/2, 6, 53, 'AWGN', 0.95, 0.4, False], [1/2, 5, 53, 'AWGN', 0.95, 0.4, False],[1/2, 4, 53, 'AWGN', 0.95, 0.4, False],
+[1/2, 3, 53, 'AWGN', 0.95, 0.4, False], [1/2, 2, 53, 'AWGN', 0.95, 0.4, False],
 """
-runs = 10000
-lim = 1000
+runs = 1500
+lim = 1500
 
 runs_vals =[
-[1/2, 0.1, 53, 'BEC', 1, 0, False],[1/2, 0.2, 53, 'BEC', 1, 0, False],[1/2, 0.3, 53, 'BEC', 1, 0, False],
-[1/2, 0.4, 53, 'BEC', 1, 0, False],[1/2, 0.5, 53, 'BEC', 1, 0, False],
+[1/2, 0.3, 53, 'BEC', 1, 0, False], [1/2, 0.4, 53, 'BEC', 1, 0, False],[1/2, 0.5, 53, 'BEC', 1, 0, False],
+
 ]
 
 def non_zero_matrix(input_matrix):
@@ -209,6 +212,7 @@ for elem in runs_vals:
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
             HNZ = non_zero_matrix(HRM)
+        #breakpoint()
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
         if channel == 'BEC':
@@ -230,6 +234,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},H-check not HRM', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},Hcore-check', datetime.datetime.now()])
         gc.collect()
 
