@@ -48,7 +48,6 @@ def minsum_BEC(H, r, Zc, K):
 
     codeword, runs = False, 0
     LTOTS= []
-    breakpoint()
     while not codeword and runs < 20:
         Lc = nz_tanh(lv)
         ltot = nz_col_sum(Lc, Lj) + vector(map(lambda a: sgn(a), r))
