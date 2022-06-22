@@ -209,7 +209,6 @@ for elem in runs_vals:
             u = LDPC_Encoding.Encoding(H=H, Bi=Bi, Zc=Zc, D=D, K=K, kb=Kb, BG=bg)
             e, HRM = LDPC_Rate_Matching.RM_main(u=u, Zc=Zc, H=H, K=K, K_ap=K_ap, rate=rate, B=B, channel=channel)
             HNZ = non_zero_matrix(HRM)
-        #breakpoint()
         r = HF.channel_noise(s=e, channel=channel, p=sig if channel == 'AWGN' else snr)
         llr_r = LDPC_Rate_Matching.fill_w_llr(r=r, Zc=Zc, K=K, K_ap=K_ap, p=snr, N0=N0, channel=channel, HRM=HRM)
         if channel == 'BEC':
