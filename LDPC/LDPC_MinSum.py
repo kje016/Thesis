@@ -110,6 +110,7 @@ def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core):
         runs += 1
         # check if v_hat is a valid codeword
         if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0:
+        #if H * vhat == 0:
             #print(f"MinSum runs := {runs}")
             return vhat, True, runs
 

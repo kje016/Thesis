@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/Tests/BEC_IOMS.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Tests/BSC.csv">
           <value>
             <Attribute>
@@ -88,13 +95,6 @@
           </value>
         </entry>
         <entry key="\Tests\BEC.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\Tests\BEC_IOMS.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
