@@ -33,7 +33,6 @@ AWGN_MS = {((0.5, 1.0, 0.0), 'BER'): [[0.1559852383179999, 0.1061239146046876, 0
 ((0.3333333333333333, 1.0, 0.0), 'BER'): [[0.053084116620028224, 0.017223809523809523, 0.003085714285714286, 0.0005666666666666667], [4.0, 5.0, 6.0, 7.0]],
 ((0.5, 1.0, 0.0), 'BLER'): [[0.9182736455463728, 0.6920415224913494, 0.3739016638624042, 0.12303906490310673, 0.022, 0.0029, 0.0003], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]],
 ((0.3333333333333333, 1.0, 0.0), 'BLER'): [[0.25113008538422904, 0.0784, 0.0148, 0.0027], [4.0, 5.0, 6.0, 7.0]]}
-
 AWGN_IOMS = {((0.5, 0.95, 0.4), 'BER'): [[0.09590442658963017, 0.05494957191265815, 0.021784034299005398, 0.006460377358490566, 0.0011471698113207547, 9.433962264150943e-05], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
 ((0.5, 0.95, 0.2), 'BER'): [[0.11075632962425415, 0.0661017076713504, 0.029037475002173723, 0.008665408805031447, 0.0012830188679245284, 0.00035943396226415094], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
 ((0.3333333333333333, 0.95, 0.4), 'BER'): [[0.15688440410795318, 0.0891882404563405, 0.034956084859819936, 0.009583018867924528, 0.0015320754716981132], [2.0, 3.0, 4.0, 5.0, 6.0]],
@@ -51,47 +50,8 @@ AWGN_OMS = {
 ((0.5, 1.0, 0.4), 'BLER'): [[0.8521516829995739, 0.5877167205406993, 0.2767783005812344, 0.0837, 0.01585, 0.0022], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
 }
 
-
-def update_dicts(input_file):
-    with open(input_file, mode='r',  newline='') as file:
-        myfile = csv.reader(file)
-        #next(myfile, None)
-        test_results = {}
-        breakpoint()
-        for row in myfile:
-            dict_getter = test_results.get((float(row[1]), float(row[8])), [0] * (4))
-            dict_getter[0] += int(row[0]) * int(row[4])  # tot information bits sent
-            dict_getter[1] += int(row[4])  # tot runs
-            dict_getter[2] += int(row[5])  # tot bit errors
-            dict_getter[3] += int(row[6])  # tot block errors
-            test_results.update({(float(row[1]), float(row[7])): dict_getter})
-        for key, value in test_results.items():
-            test_results.update({key: [value[0], value[1], value[2] / (value[0]), value[3] / value[1]]})
-        ber_plot, bler_plot = {}, {}
-        for key, value in test_results.items():
-            ber_get = ber_plot.get(key[0], [[], []])
-            bler_get = bler_plot.get(key[0], [[], []])
-
-            ber_get[0].append(value[2]);
-            ber_get[1].append(key[1])
-            bler_get[0].append(value[3]);
-            bler_get[1].append(key[1])
-
-            ber_plot.update({key[0]: ber_get})
-            bler_plot.update({key[0]: bler_get})
-
-        temp_dict = {}
-        for key, value in ber_plot.items():
-            plot_x = sorted(value[1])
-            plot_y = [value[0][value[1].index(a)] for a in plot_x]
-            temp_dict.update({(key, 'BER'): [plot_y, plot_x]})
-            print(f'({key}, {f_ber!r}): [{plot_y}, {plot_x}],')
-        for key, value in bler_plot.items():
-            plot_x = sorted(value[1])
-            plot_y = [value[0][value[1].index(a)] for a in plot_x]
-            temp_dict.update({(key, 'BLER'): [plot_y, plot_x]})
-            print(f'({key}, {f_bler!r}): [{plot_y}, {plot_x}],')
-        return ber_plot, bler_plot
+BEC_IOMS = {((0.5, 1.0, 0.0), 'BER'): [[0.0, 0.0, 0.00035471698113207547, 0.028471127530149028, 0.17650864707013833], [0.1, 0.2, 0.3, 0.4, 0.5]],
+((0.5, 1.0, 0.0), 'BLER'): [[0.0, 0.0, 0.0053, 0.25627883136852897, 0.9267840593141798], [0.1, 0.2, 0.3, 0.4, 0.5]]}
 
 
 def val_in_row(row, val):
@@ -181,22 +141,22 @@ def plot_dict(input_plot, name):
 
 
 def plot_dicts():
-    pl1 = BSC_MS
+    pl1 = BEC_IOMS
     pl2 = BSC_IOMS
     pl3 = BSC_AMS
-    name = 'BSC'
+    name = 'BEC'
     ber_val, bler_val = 'BER', 'BLER'
     fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
     ax1.set_title('BER'); ax1.set_facecolor('#F7F7F7')
     ax2.set_title('BLER'); ax2.set_facecolor('#F7F7F7')
     #breakpoint()
     ax1.semilogy(pl1.get(((0.5, 1.0, 0.0), ber_val))[1], pl1.get(((0.5, 1.0, 0.0), ber_val))[0], label='0.5_MS', linestyle='dotted', marker='|')
-    ax1.semilogy(pl2.get(((0.5, 0.95, 0.4), ber_val))[1], pl2.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_IOMS', linestyle='dotted', marker='|')
-    ax1.semilogy(pl3.get(((0.5, 0.95, 0.4), ber_val))[1], pl3.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
+    #ax1.semilogy(pl2.get(((0.5, 0.95, 0.4), ber_val))[1], pl2.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_IOMS', linestyle='dotted', marker='|')
+    #ax1.semilogy(pl3.get(((0.5, 0.95, 0.4), ber_val))[1], pl3.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
 
     ax2.semilogy(pl1.get(((0.5, 1.0, 0.0), bler_val))[1], pl1.get(((0.5, 1.0, 0.0), bler_val))[0], label=f'0.5_MS', linestyle='dotted', marker='|')
-    ax2.semilogy(pl2.get(((0.5, 0.95, 0.4), bler_val))[1], pl2.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_IOMS', linestyle='dotted',marker='|')
-    ax2.semilogy(pl3.get(((0.5, 0.95, 0.4), bler_val))[1], pl3.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
+    #ax2.semilogy(pl2.get(((0.5, 0.95, 0.4), bler_val))[1], pl2.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_IOMS', linestyle='dotted',marker='|')
+    #ax2.semilogy(pl3.get(((0.5, 0.95, 0.4), bler_val))[1], pl3.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
     #ax2.semilogy(pl3.get((1/3, bler_val))[1], pl3.get((1/3, bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
 
     ax1.legend()
@@ -213,8 +173,8 @@ def plot_dicts():
     fig.suptitle(f'{name}')
     fig.savefig(f'{name}.svg')
 
-#update_dicts('Tests/BSC_MS.csv')
-#plot_gam_var('Tests/BSC_AMS.csv')
+#update_dicts('Tests/BEC_IOMS.csv')
+#plot_gam_var('Tests/BEC_IOMS.csv')
 plot_dicts()
 
 #plot_dict(AWGN_IOMS, 'AWGN_IOMS')

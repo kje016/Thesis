@@ -94,6 +94,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\Tests\BEC_IOMS.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\Tests\BEC_MS.csv">
           <value>
             <Attribute>
