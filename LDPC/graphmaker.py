@@ -1,3 +1,6 @@
+# cd Desktop/Thesis/PySageMath/LDPC
+# cd PycharmProjects/Thesis/LDPC
+
 import csv
 import os.path
 import matplotlib as mpl
@@ -110,36 +113,6 @@ def plot_gam_var(input_file):
         return ber_plot, bler_plot
 
 
-def plot_dict(input_plot, name):
-    ber_val, bler_val = 'BER', 'BLER'
-    fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
-    ax1.set_title('BER'); ax1.set_facecolor('#F7F7F7')
-    ax2.set_title('BLER'); ax2.set_facecolor('#F7F7F7')
-    #breakpoint()
-
-    ax1.semilogy(input_plot.get(((0.5, 0.95, 0.4), ber_val))[1], input_plot.get(((0.5, 0.95, 0.4), ber_val))[0], label='0.5', linestyle='dotted', marker='|')
-    #ax1.semilogy(pl2.get((0.5, ber_val))[1], pl2.get((0.5, ber_val))[0], label=f'0.5_IOMS', linestyle='dotted', marker='|')
-    #ax1.semilogy(pl3.get((0.5, 0.95, 0.4), ber_val)[1], pl3.get((0.5, 0.95, 0.4), ber_val)[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
-
-    ax2.semilogy(input_plot.get(((0.5, 0.95, 0.4), bler_val))[1], input_plot.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5', linestyle='dotted', marker='|')
-    #ax2.semilogy(pl2.get((0.5, bler_val))[1], pl2.get((0.5, bler_val))[0], label=f'0.5_IOMS', linestyle='dotted',marker='|')
-    #ax2.semilogy(pl3.get((0.5, 0.95, 0.4), bler_val)[1], pl3.get((0.5, bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
-
-    ax1.legend()
-    ax1.grid(True, linewidth=0.5)
-    ax1.set_xlabel('SNR')
-    if name.split('_')[0] != 'AWGN':
-        ax1.invert_xaxis()
-
-    ax2.legend()
-    ax2.grid(True, linewidth=0.5)
-    ax2.set_xlabel('SNR')
-    if name.split('_')[0] != 'AWGN':
-        ax2.invert_xaxis()
-    fig.suptitle(f'{name}')
-    fig.savefig(f'{name}.svg')
-
-
 def plot_dicts():
     pl1 = BEC_IOMS
     pl2 = BSC_IOMS
@@ -173,8 +146,89 @@ def plot_dicts():
     fig.suptitle(f'{name}')
     fig.savefig(f'{name}.svg')
 
+def plot_H(input_file):
+    with open(input_file, mode='r',  newline='') as file:
+        myfile = csv.reader(file)
+        #next(myfile, None)
+        He, Hc = {}, {}
+        for row in myfile:
+            if row[-2].split(',')[-1] == 'Hcore-check':
+                dict_getter = Hc.get((float(row[1]), float(row[7])), [0]*5)
+            elif row[-2].split(',')[-1] == 'Hextension-check':
+                dict_getter = He.get((float(row[1]), float(row[7])), [0]*5)
+            else:
+                continue
+            dict_getter[0] += int(row[0]) * (int(row[4]) + 1)  # tot information bits sent
+            dict_getter[1] += int(row[4]) + 1  # tot runs
+            dict_getter[2] += int(row[5])  # tot bit errors
+            dict_getter[3] += int(row[6])  # tot block errors
+            dict_getter[4] += int(row[8])   # tot iterations
+
+            if row[-2].split(',')[-1] == 'Hcore-check':
+                Hc.update({(float(row[1]), float(row[7])): dict_getter})
+            elif row[-2].split(',')[-1] == 'Hextension-check':
+                He.update({(float(row[1]), float(row[7])): dict_getter})
+        #breakpoint()
+        for dict in [He, Hc]:
+            for key, value in dict.items():
+                dict.update({key: [value[0], value[1], value[2]/value[0], value[3]/value[1], value[4]/value[1]]})
+
+        ber_plot, bler_plot, iter_plot = {}, {}, {}
+        for key, value in He.items():
+            ber_get = ber_plot.get((key[0], 'He'), [[], []])
+            bler_get = bler_plot.get((key[0], 'He'), [[], []])
+
+            ber_get[0].append(value[2])
+            ber_get[1].append(key[1])
+            bler_get[0].append(value[3])
+            bler_get[1].append(key[1])
+            ber_plot.update({(key[0], 'He'): ber_get})
+            bler_plot.update({(key[0], 'He'): bler_get})
+        for key, value in Hc.items():
+            ber_get = ber_plot.get((key[0], 'Hc'), [[], []])
+            bler_get = bler_plot.get((key[0], 'Hc'), [[], []])
+
+            ber_get[0].append(value[2])
+            ber_get[1].append(key[1])
+            bler_get[0].append(value[3])
+            bler_get[1].append(key[1])
+            ber_plot.update({(key[0], 'Hc'): ber_get})
+            bler_plot.update({(key[0], 'Hc'): bler_get})
+
+        fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
+        ax1.set_title('BER'); ax1.set_facecolor('#F7F7F7')
+        ax2.set_title('BLER'); ax2.set_facecolor('#F7F7F7')
+        #breakpoint()
+        for key, value in ber_plot.items():
+            plot_x = sorted(value[1], reverse=True)
+            plot_y = [value[0][value[1].index(a)] for a in plot_x]
+            ax1.semilogy(plot_x, plot_y, label=f'{key[1]}', linestyle='dotted', marker='|')
+
+        for key, value in bler_plot.items():
+            plot_x = sorted(value[1], reverse=True)
+            plot_y = [value[0][value[1].index(a)] for a in plot_x]
+            ax2.semilogy(plot_x, plot_y, label=key[1], linestyle='dotted', marker='|')
+
+        ax1.legend()
+        ax1.grid(True, linewidth=0.5)
+        ax1.set_xlabel('SNR')
+        ax1.invert_xaxis()
+
+        ax2.legend()
+        ax2.grid(True, linewidth=0.5)
+        ax2.set_xlabel('SNR')
+        ax2.invert_xaxis()
+
+        fig.suptitle(f'He_Hc_check')
+        fig.savefig(f'Hc_BSC.svg')
+
+
+
+
+
 #update_dicts('Tests/BEC_IOMS.csv')
 #plot_gam_var('Tests/BEC_IOMS.csv')
-plot_dicts()
+plot_H('Tests/BSC_IOMS.csv')
+#plot_dicts()
 
 #plot_dict(AWGN_IOMS, 'AWGN_IOMS')
