@@ -152,7 +152,7 @@ runs = 10000
 lim = 1000
 
 runs_vals =[
-[1/2, 0.25, 53, 'BEC', 1, 0, False], [1/2, 0.25, 53, 'BEC', 1, 0, False]
+[1/2, 2, 53, 'AWGN', 0.95, 0.4, False], [1/2, 1, 53, 'AWGN', 0.95, 0.4, False],
 ]
 
 def non_zero_matrix(input_matrix):
@@ -222,12 +222,12 @@ for elem in runs_vals:
             #print(suces, iter)
         else:
             import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam,gamma=gamma, Zc=Zc,K=K, N0=N0, use_core=use_core)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam,gamma=gamma, Zc=Zc,K=K, N0=N0, use_core=use_core, B=B, pol=pol)
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign((aa[:A]+a).hamming_weight())
         FAR += sign((aa[:A]+a).hamming_weight()) and not sign(crc_check.hamming_weight())
-        AVGit += iter
+        AVGit += iter*suces
 
         #print(iter)
     decoder = 'AMS' if use_core else 'IOMS'
@@ -235,6 +235,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},Hcore-check', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},Hcore-check-CRC', datetime.datetime.now()])
         gc.collect()
 

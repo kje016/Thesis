@@ -1,6 +1,8 @@
 # cd Desktop/Thesis/PySageMath/LDPC
 from sage.all import *
 
+import CRC
+
 
 def nz_sum_approx(Lv, min_vals, rcore):
     output = []
@@ -90,7 +92,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core):
+def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core, B, pol):
     lv = [{} for i in range(len(HNZ))]
     Lc = [{} for i in range(len(HNZ))]
     for i, row in enumerate(HNZ):
@@ -110,9 +112,10 @@ def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core):
         runs += 1
         # check if v_hat is a valid codeword
         if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0:
+            if CRC.CRC_check(vhat[:B], B, pol) == 0:
         #if H * vhat == 0:
             #print(f"MinSum runs := {runs}")
-            return vhat, True, runs
+                return vhat, True, runs
 
         # update Lv
         colvecs = get_column_vectors(Lc, len(llr))
