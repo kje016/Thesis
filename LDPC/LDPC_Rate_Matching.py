@@ -5,6 +5,7 @@ def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
     colpunct, punct = 0 if channel == 'BEC' else 2 * Zc, floor((K - K_ap) // Zc) * Zc
     colpunct = 0# TODO
     A_ap = K - colpunct - punct   # A is the amount of crc bits after removing 2 cols and padding
+    breakpoint()
     E = ceil((B / rate) / Zc) * Zc
     pbits = u[K: K + (E-A_ap)]   # getting the parity bits and
     e = list(u[colpunct: B+(K-K_ap-punct)]) + list(pbits)

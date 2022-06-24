@@ -60,22 +60,18 @@ run_vals = [
 ]
 """
 run_vals = [
-['', 2, 21, 'AWGN', 'SC'],
-['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
-['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
-['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
-['', 1, 501, 'AWGN', 'SCL'],['', 2, 501, 'AWGN', 'SCL'],['', 3, 501, 'AWGN', 'SCL'],['', 4, 501, 'AWGN', 'SCL'],
+['', 0.01, 21, 'BSC', 'SCL', 0],['', 0.01, 8, 'BSC', 'SCL', 1],
 ]
 
-runs = 5000
-I_IL = 0
-#decoder = 'SC'
+runs = 10000
+#decoder = 'SC' or 'SCL'
 for elem in run_vals:
     rate = 1/2
     snr = elem[1]
     A = elem[2]
-    channel = elem[3]
-    decoder = elem[4]
+    channel = elem[3] # 'AWGN'/ 'BSC' / 'BEC'
+    decoder = elem[4] # 'SC'/ 'SCL'
+    I_IL = elem[5]  # '1'/ '0'
 
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()
@@ -107,7 +103,6 @@ for elem in run_vals:
             start_time = time.time()
             print(f"{BER}, {BLER}, {ET}")
             print(iteration)
-            breakpoint()
             a = random_vector(GF(2), A)
             #a = vector(GF(2), [1])
             c, H = CRC.CRC(a, A, pol, I_IL, PI)

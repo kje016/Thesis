@@ -51,7 +51,6 @@ def decoder(d, N, frozen_set, I_IL, PI, H):
             node.state = node_states[2]
             node_i = floor((node_i - 1) / 2)
             node, depth = tree[node_i], depth-1
-
     if PI:
         for dec in list_decoders:
             deinterleave = [0]*len(dec.inf_bits)
