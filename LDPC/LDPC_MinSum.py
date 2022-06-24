@@ -92,7 +92,7 @@ def get_column_vectors(nzmatrix, length):
 
 
 # Lj = [(4*sqrt(Ec)/N0)*r[j] for j in range(len(r))] # (4*sqrt(Ec)/N0)*r[j] = 1*r[j] = r[:] in this case
-def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core, B, pol):
+def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core, B, pol, Hcore):
     lv = [{} for i in range(len(HNZ))]
     Lc = [{} for i in range(len(HNZ))]
     for i, row in enumerate(HNZ):

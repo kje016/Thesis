@@ -152,7 +152,11 @@ runs = 10000
 lim = 1000
 
 runs_vals =[
-[1/2, 2, 53, 'AWGN', 0.95, 0.4, False], [1/2, 1, 53, 'AWGN', 0.95, 0.4, False],
+[1/2, 2, 200, 'AWGN', 0.95, 0.4, False, True],
+[1/2, 1, 200, 'AWGN', 0.95, 0.4, False, True],
+
+[1/2, 0.1, 200, 'BEC', 1, 0, False, True],[1/2, 0.2, 200, 'BEC', 1, 0, False, True],[1/2, 0.3, 200, 'BEC', 1, 0, False, True],
+[1/2, 0.3, 200, 'BEC', 1, 0, False, True],[1/2, 0.4, 200, 'BEC', 1, 0, False, True],[1/2, 0.5, 200, 'BEC', 1, 0, False, True],
 ]
 
 def non_zero_matrix(input_matrix):
@@ -173,6 +177,7 @@ for elem in runs_vals:
     channel = elem[3]
     gamma, lam = elem[4], elem[5]
     use_core = elem[6]
+    Hcore = elem[7]
 
     N0, sig = None, None
     pol = CRC.get_pol(A)
@@ -222,7 +227,8 @@ for elem in runs_vals:
             #print(suces, iter)
         else:
             import LDPC_MinSum
-            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam,gamma=gamma, Zc=Zc,K=K, N0=N0, use_core=use_core, B=B, pol=pol)
+            aa, suces, iter = LDPC_MinSum.minsum_SPA(H=HRM, HNZ=HNZ, llr=llr_r, rcore=4 * Zc, lam=lam,gamma=gamma, Zc=Zc,
+                                K=K, N0=N0, use_core=use_core, B=B, pol=pol, Hcore=Hcore)
         crc_check = CRC.CRC_check(aa[:B], len(aa[:B]), pol)
         BER += (aa[:A]+a).hamming_weight()
         BLER += sign((aa[:A]+a).hamming_weight())
@@ -231,6 +237,7 @@ for elem in runs_vals:
 
         #print(iter)
     decoder = 'AMS' if use_core else 'IOMS'
+    checker = 'Hcore-check-CRC' if Hcore else 'Hextension-check'
     with open(f'Tests/{channel}_{decoder}.csv', mode='a',
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
