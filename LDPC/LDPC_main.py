@@ -152,11 +152,16 @@ runs = 10000
 lim = 1000
 
 runs_vals =[
-[1/2, 2, 200, 'AWGN', 0.95, 0.4, False, True],
-[1/2, 1, 200, 'AWGN', 0.95, 0.4, False, True],
+[1/2, 7, 53, 'AWGN', 0.95, 0.4, False, True],[1/2, 6, 53, 'AWGN', 0.95, 0.4, False, True],[1/2, 5, 53, 'AWGN', 0.95, 0.4, False, True],
+[1/2, 4, 53, 'AWGN', 0.95, 0.4, False, True],[1/2, 3, 53, 'AWGN', 0.95, 0.4, False, True],[1/2, 2, 53, 'AWGN', 0.95, 0.4, False, True],
+[1/2, 1, 53, 'AWGN', 0.95, 0.4, False, True],
 
-[1/2, 0.1, 200, 'BEC', 1, 0, False, True],[1/2, 0.2, 200, 'BEC', 1, 0, False, True],[1/2, 0.3, 200, 'BEC', 1, 0, False, True],
-[1/2, 0.3, 200, 'BEC', 1, 0, False, True],[1/2, 0.4, 200, 'BEC', 1, 0, False, True],[1/2, 0.5, 200, 'BEC', 1, 0, False, True],
+[1/2, 0.01, 53, 'BSC', 0.95, 0.4, False, True],[1/2, 0.02, 53, 'BSC', 0.95, 0.4, False, True],[1/2, 0.04, 53, 'BSC', 0.95, 0.4, False, True],
+[1/2, 0.06, 53, 'BSC', 0.95, 0.4, False, True],[1/2, 0.08, 53, 'BSC', 0.95, 0.4, False, True],[1/2, 0.1, 53, 'BSC', 0.95, 0.4, False, True],
+
+[1/2, 0.1, 53, 'BEC', 1, 0, False, True],[1/2, 0.2, 53, 'BEC', 1, 0, False, True],
+[1/2, 0.25, 53, 'BEC', 1, 0, False, True],[1/2, 0.3, 53, 'BEC', 1, 0, False, True],
+[1/2, 0.3, 53, 'BEC', 1, 0, False, True],[1/2, 0.4, 53, 'BEC', 1, 0, False, True],[1/2, 0.5, 53, 'BEC', 1, 0, False, True],
 ]
 
 def non_zero_matrix(input_matrix):
@@ -242,6 +247,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},Hcore-check-CRC', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},colpunct,{decoder},Hcore-check-CRC', datetime.datetime.now()])
         gc.collect()
 
