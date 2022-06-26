@@ -36,12 +36,9 @@ AWGN_MS = {((0.5, 1.0, 0.0), 'BER'): [[0.1559852383179999, 0.1061239146046876, 0
 ((0.3333333333333333, 1.0, 0.0), 'BER'): [[0.053084116620028224, 0.017223809523809523, 0.003085714285714286, 0.0005666666666666667], [4.0, 5.0, 6.0, 7.0]],
 ((0.5, 1.0, 0.0), 'BLER'): [[0.9182736455463728, 0.6920415224913494, 0.3739016638624042, 0.12303906490310673, 0.022, 0.0029, 0.0003], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]],
 ((0.3333333333333333, 1.0, 0.0), 'BLER'): [[0.25113008538422904, 0.0784, 0.0148, 0.0027], [4.0, 5.0, 6.0, 7.0]]}
-AWGN_IOMS = {((0.5, 0.95, 0.4), 'BER'): [[0.09590442658963017, 0.05494957191265815, 0.021784034299005398, 0.006460377358490566, 0.0011471698113207547, 9.433962264150943e-05], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
-((0.5, 0.95, 0.2), 'BER'): [[0.11075632962425415, 0.0661017076713504, 0.029037475002173723, 0.008665408805031447, 0.0012830188679245284, 0.00035943396226415094], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
-((0.3333333333333333, 0.95, 0.4), 'BER'): [[0.15688440410795318, 0.0891882404563405, 0.034956084859819936, 0.009583018867924528, 0.0015320754716981132], [2.0, 3.0, 4.0, 5.0, 6.0]],
-((0.5, 0.95, 0.4), 'BLER'): [[0.7974481658692185, 0.5313496280552603, 0.22999080036798528, 0.0692, 0.013, 0.0014], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
-((0.5, 0.95, 0.2), 'BLER'): [[0.8547008547008547, 0.5983246908655764, 0.2764976958525346, 0.08026666666666667, 0.011666666666666667, 0.0031], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
-((0.3333333333333333, 0.95, 0.4), 'BLER'): [[0.7911392405063291, 0.46511627906976744, 0.19436345966958213, 0.0509, 0.009], [2.0, 3.0, 4.0, 5.0, 6.0]],}
+AWGN_IOMS = {((0.5, 0.95, 0.4), 'BER'): [[0.09616796798896998, 0.052857862953042685, 0.022314038403420854, 0.006669811320754717, 0.0012283018867924528, 0.00017358490566037735, 5.660377358490566e-06], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]],
+((0.5, 0.95, 0.4), 'BLER'): [[0.7942811755361397, 0.5238344683080147, 0.2390628735357399, 0.0727, 0.0122, 0.0019, 0.0001], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]]}
+
 AWGN_AMS = {((0.5, 0.95, 0.4), 'BER'): [[0.10232100462326628, 0.059493359303930904, 0.026740174972867486, 0.0070849056603773585, 0.0013622641509433962, 0.00013773584905660377, 2.4528301886792453e-05], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]],
 ((0.3333333333333333, 0.95, 0.4), 'BER'): [[0.23713383745686809, 0.19580928360091188, 0.11654896173711395, 0.04817222836371812, 0.012964150943396226, 0.0025735849056603773, 0.0002849056603773585], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]],
 ((0.5, 0.95, 0.4), 'BLER'): [[0.8278145695364238, 0.5672149744753261, 0.2700513097488523, 0.0743, 0.0133, 0.0012, 0.0003], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]],
@@ -53,8 +50,8 @@ AWGN_OMS = {
 ((0.5, 1.0, 0.4), 'BLER'): [[0.8521516829995739, 0.5877167205406993, 0.2767783005812344, 0.0837, 0.01585, 0.0022], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
 }
 
-BEC_IOMS = {((0.5, 1.0, 0.0), 'BER'): [[0.0, 0.0, 0.00035471698113207547, 0.028471127530149028, 0.17650864707013833], [0.1, 0.2, 0.3, 0.4, 0.5]],
-((0.5, 1.0, 0.0), 'BLER'): [[0.0, 0.0, 0.0053, 0.25627883136852897, 0.9267840593141798], [0.1, 0.2, 0.3, 0.4, 0.5]]}
+BEC_IOMS = {((0.5, 1.0, 0.0), 'BER'): [[0.0, 0.0, 1.8010291595197256e-05, 0.0003915984336062656, 0.030473034270488395, 0.17410383510183103], [0.1, 0.2, 0.25, 0.3, 0.4, 0.5]],
+((0.5, 1.0, 0.0), 'BLER'): [[0.0, 0.0, 0.00042424242424242425, 0.005415094339622641, 0.2660310766833203, 0.9268221996812056], [0.1, 0.2, 0.25, 0.3, 0.4, 0.5]]}
 
 
 def val_in_row(row, val):
@@ -70,17 +67,17 @@ def plot_gam_var(input_file):
         test_results = {}
         #breakpoint()
         for row in myfile:
-            #gami, lami = row.split
-            gam = val_in_row(row, 'gamma')
-            lam = val_in_row(row, 'lam')
-            #gam = float(row[-2].split(',')[1].split(':')[1])
-            #lam = float(row[-2].split(',')[-1][-3:])
-            dict_getter = test_results.get((float(row[1]), gam, lam), [0] * (4))
-            dict_getter[0] += int(row[0]) * (int(row[4])+1)  # tot information bits sent
-            dict_getter[1] += int(row[4])+1  # tot runs
-            dict_getter[2] += int(row[5])  # tot bit errors
-            dict_getter[3] += int(row[6])  # tot block errors
-            test_results.update({(float(row[1]), gam, lam, float(row[7])): dict_getter})
+            if not row[-2].split(',')[-1] == 'Hcore-check-CRC':
+                continue
+            else:
+                gam = val_in_row(row, 'gamma')
+                lam = val_in_row(row, 'lam')
+                dict_getter = test_results.get((float(row[1]), gam, lam, float(row[7])), [0] * (4))
+                dict_getter[0] += int(row[0]) * (int(row[4])+1)  # tot information bits sent
+                dict_getter[1] += int(row[4])+1  # tot runs
+                dict_getter[2] += int(row[5])  # tot bit errors
+                dict_getter[3] += int(row[6])  # tot block errors
+                test_results.update({(float(row[1]), gam, lam, float(row[7])): dict_getter})
         #breakpoint()
         for key, value in test_results.items():
             test_results.update({key: [value[0], value[1], value[2] / (value[0]), value[3] / value[1]]})
@@ -114,45 +111,46 @@ def plot_gam_var(input_file):
 
 
 def plot_dicts():
-    pl1 = BEC_IOMS
+    pl1 = BSC_MS
     pl2 = BSC_IOMS
     pl3 = BSC_AMS
-    name = 'BEC'
+    name = 'BSC'
     ber_val, bler_val = 'BER', 'BLER'
     fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
+    fig.set_figheight(7)
     ax1.set_title('BER'); ax1.set_facecolor('#F7F7F7')
     ax2.set_title('BLER'); ax2.set_facecolor('#F7F7F7')
-    #breakpoint()
-    ax1.semilogy(pl1.get(((0.5, 1.0, 0.0), ber_val))[1], pl1.get(((0.5, 1.0, 0.0), ber_val))[0], label='0.5_MS', linestyle='dotted', marker='|')
-    #ax1.semilogy(pl2.get(((0.5, 0.95, 0.4), ber_val))[1], pl2.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_IOMS', linestyle='dotted', marker='|')
-    #ax1.semilogy(pl3.get(((0.5, 0.95, 0.4), ber_val))[1], pl3.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
+    ax1.semilogy(pl1.get(((0.5, 1.0, 0.0), ber_val))[1], pl1.get(((0.5, 1.0, 0.0), ber_val))[0], label='0.5_MS', linestyle='dotted', marker='|', linewidth=2)
+    ax1.semilogy(pl2.get(((0.5, 0.95, 0.4), ber_val))[1], pl2.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_IOMS', linestyle='dotted', marker='|', linewidth=2)
+    ax1.semilogy(pl3.get(((0.5, 0.95, 0.4), ber_val))[1], pl3.get(((0.5, 0.95, 0.4), ber_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|', linewidth=2)
 
-    ax2.semilogy(pl1.get(((0.5, 1.0, 0.0), bler_val))[1], pl1.get(((0.5, 1.0, 0.0), bler_val))[0], label=f'0.5_MS', linestyle='dotted', marker='|')
-    #ax2.semilogy(pl2.get(((0.5, 0.95, 0.4), bler_val))[1], pl2.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_IOMS', linestyle='dotted',marker='|')
-    #ax2.semilogy(pl3.get(((0.5, 0.95, 0.4), bler_val))[1], pl3.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
-    #ax2.semilogy(pl3.get((1/3, bler_val))[1], pl3.get((1/3, bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|')
+    ax2.semilogy(pl1.get(((0.5, 1.0, 0.0), bler_val))[1], pl1.get(((0.5, 1.0, 0.0), bler_val))[0], label=f'0.5_MS', linestyle='dotted', marker='|', linewidth=2)
+    ax2.semilogy(pl2.get(((0.5, 0.95, 0.4), bler_val))[1], pl2.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_IOMS', linestyle='dotted',marker='|', linewidth=2)
+    ax2.semilogy(pl3.get(((0.5, 0.95, 0.4), bler_val))[1], pl3.get(((0.5, 0.95, 0.4), bler_val))[0], label=f'0.5_AMS', linestyle='dotted', marker='|', linewidth=2)
 
     ax1.legend()
     ax1.grid(True, linewidth=0.5)
-    ax1.set_xlabel('SNR')
+    ax1.set_xlabel('p')
     if name != 'AWGN':
         ax1.invert_xaxis()
 
     ax2.legend()
     ax2.grid(True, linewidth=0.5)
-    ax2.set_xlabel('SNR')
+    ax2.set_xlabel('p')#alpha: '\u03B1'
     if name != 'AWGN':
         ax2.invert_xaxis()
     fig.suptitle(f'{name}')
-    fig.savefig(f'{name}.svg')
+    fig.savefig(f'LDPC_{name}.svg')
+
 
 def plot_H(input_file):
     with open(input_file, mode='r',  newline='') as file:
         myfile = csv.reader(file)
         #next(myfile, None)
         He, Hc = {}, {}
+
         for row in myfile:
-            if row[-2].split(',')[-1] == 'Hcore-check':
+            if row[-2].split(',')[-1] == 'Hcore-check-CRC':
                 dict_getter = Hc.get((float(row[1]), float(row[7])), [0]*5)
             elif row[-2].split(',')[-1] == 'Hextension-check':
                 dict_getter = He.get((float(row[1]), float(row[7])), [0]*5)
@@ -164,15 +162,14 @@ def plot_H(input_file):
             dict_getter[3] += int(row[6])  # tot block errors
             dict_getter[4] += int(row[8])   # tot iterations
 
-            if row[-2].split(',')[-1] == 'Hcore-check':
+            if row[-2].split(',')[-1] == 'Hcore-check-CRC':
                 Hc.update({(float(row[1]), float(row[7])): dict_getter})
             elif row[-2].split(',')[-1] == 'Hextension-check':
                 He.update({(float(row[1]), float(row[7])): dict_getter})
-        #breakpoint()
         for dict in [He, Hc]:
             for key, value in dict.items():
-                dict.update({key: [value[0], value[1], value[2]/value[0], value[3]/value[1], value[4]/value[1]]})
-
+                dict.update({key: [value[0], value[1], value[2]/value[0], value[3]/value[1], value[4]/(value[1]-value[3])]})
+        #breakpoint()
         ber_plot, bler_plot, iter_plot = {}, {}, {}
         for key, value in He.items():
             ber_get = ber_plot.get((key[0], 'He'), [[], []])
@@ -196,39 +193,40 @@ def plot_H(input_file):
             bler_plot.update({(key[0], 'Hc'): bler_get})
 
         fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
+        fig.set_figheight(7)
         ax1.set_title('BER'); ax1.set_facecolor('#F7F7F7')
         ax2.set_title('BLER'); ax2.set_facecolor('#F7F7F7')
         #breakpoint()
         for key, value in ber_plot.items():
             plot_x = sorted(value[1], reverse=True)
             plot_y = [value[0][value[1].index(a)] for a in plot_x]
-            ax1.semilogy(plot_x, plot_y, label=f'{key[1]}', linestyle='dotted', marker='|')
+            ax1.semilogy(plot_x, plot_y, label=f'{key[1]}', linestyle='dotted', marker='|', linewidth=2)
 
         for key, value in bler_plot.items():
             plot_x = sorted(value[1], reverse=True)
             plot_y = [value[0][value[1].index(a)] for a in plot_x]
-            ax2.semilogy(plot_x, plot_y, label=key[1], linestyle='dotted', marker='|')
+            ax2.semilogy(plot_x, plot_y, label=key[1], linestyle='dotted', marker='|', linewidth=2)
 
         ax1.legend()
         ax1.grid(True, linewidth=0.5)
         ax1.set_xlabel('SNR')
-        ax1.invert_xaxis()
+        #ax1.invert_xaxis()
 
         ax2.legend()
         ax2.grid(True, linewidth=0.5)
-        ax2.set_xlabel('SNR')
-        ax2.invert_xaxis()
+        ax2.set_xlabel('SNR') #alpha: '\u03B1'
+        #ax2.invert_xaxis()
 
-        fig.suptitle(f'He_Hc_check')
-        fig.savefig(f'Hc_BSC.svg')
+        fig.suptitle(f'He,Hc,AWGN')
+        fig.savefig(f'Hc_AWGN.svg')
 
 
 
 
 
 #update_dicts('Tests/BEC_IOMS.csv')
-#plot_gam_var('Tests/BEC_IOMS.csv')
-plot_H('Tests/BSC_IOMS.csv')
+#plot_gam_var('Tests/AWGN_IOMS.csv')
+plot_H('Tests/AWGN_IOMS.csv')
 #plot_dicts()
 
 #plot_dict(AWGN_IOMS, 'AWGN_IOMS')

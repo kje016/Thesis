@@ -60,10 +60,11 @@ run_vals = [
 ]
 """
 run_vals = [
-['', 0.01, 21, 'BSC', 'SCL', 0],['', 0.01, 8, 'BSC', 'SCL', 1],
+['', 0.01, 8, 'BSC', 'SCL', 0],['', 0.01, 8, 'BSC', 'SCL', 1],
 ]
 
 runs = 10000
+I_IL = 1
 #decoder = 'SC' or 'SCL'
 for elem in run_vals:
     rate = 1/2
@@ -71,7 +72,6 @@ for elem in run_vals:
     A = elem[2]
     channel = elem[3] # 'AWGN'/ 'BSC' / 'BEC'
     decoder = elem[4] # 'SC'/ 'SCL'
-    I_IL = elem[5]  # '1'/ '0'
 
     pol = CRC.get_pol(A, I_IL)
     K = A + pol.degree()
@@ -130,5 +130,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}, H-check, SCL', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}, H-check, CR-SCL', snr, I_IL, datetime.datetime.now()])
         gc.collect()

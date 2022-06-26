@@ -148,15 +148,11 @@ lss = {0: [2, 4, 8, 16, 32, 64, 128, 256], 1: [3, 6, 12, 24, 48, 96, 192, 384],
 [1/2, 0.25, 53, 'BEC', 1, 0, False],[1/2, 0.25, 53, 'BEC', 1, 0, False],
 [1/2, 0.3, 53, 'BEC', 1, 0, False], [1/2, 0.4, 53, 'BEC', 1, 0, False],[1/2, 0.5, 53, 'BEC', 1, 0, False],
 """
-runs = 10000
-lim = 1000
+runs = 5000
+lim = 500
 
 runs_vals =[
-[1/2, 2, 200, 'AWGN', 0.95, 0.4, False, True],
-[1/2, 1, 200, 'AWGN', 0.95, 0.4, False, True],
-
-[1/2, 0.1, 200, 'BEC', 1, 0, False, True],[1/2, 0.2, 200, 'BEC', 1, 0, False, True],[1/2, 0.3, 200, 'BEC', 1, 0, False, True],
-[1/2, 0.3, 200, 'BEC', 1, 0, False, True],[1/2, 0.4, 200, 'BEC', 1, 0, False, True],[1/2, 0.5, 200, 'BEC', 1, 0, False, True],
+[1/2, 0.08, 53, 'BSC', 0.95, 0.4, False, False],
 ]
 
 def non_zero_matrix(input_matrix):
@@ -242,6 +238,6 @@ for elem in runs_vals:
               newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},Hcore-check-CRC', datetime.datetime.now()])
+            [A, rate, B, HRM.ncols(), iterations, BER, BLER, snr, AVGit, f'gamma:{gamma},lam:{lam},{decoder},{checker}', datetime.datetime.now()])
         gc.collect()
 

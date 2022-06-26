@@ -152,13 +152,14 @@ def update_RM_dicts(input_file):
 
 def plot_RM(input_dict, name):
     fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
+    fig.set_figheight(7)
     ax1.set_title('BER')
     ax2.set_title('BLER')
     U_set = [0, 8, 32, 24, 40, 56, 64]
     for u in U_set:
-        ax1.semilogy(input_dict.get( ((0.5, u), 'BER'))[1], input_dict.get( ((0.5, u), 'BER'))[0], label=f'{0.5, u}',linestyle='dotted', marker='|')
+        ax1.semilogy(input_dict.get( ((0.5, u), 'BER'))[1], input_dict.get( ((0.5, u), 'BER'))[0], label=f'{0.5, u}',linestyle='dotted', marker='|', linewidth=2)
         ax2.semilogy(input_dict.get(((0.5, u), 'BLER'))[1], input_dict.get(((0.5, u), 'BER'))[0], label=f'{0.5, u}',linestyle='dotted',
-                     marker='|')
+                     marker='|', linewidth=2)
 
     ax1.legend()
     ax1.grid(True, linewidth=0.5)
@@ -178,5 +179,5 @@ def plot_RM(input_dict, name):
 #update_CA_dicts('Tests/CA_BSC.csv')
 
 #update_RM_dicts('Tests/RM_BSC.csv')
-plot_RM(RM_BEC, 'BEC')
+plot_RM(RM_AWGN, 'AWGN')
 #Graph_Maker.plot_dict(CA_BEC, 'BEC_CA')

@@ -111,10 +111,11 @@ def minsum_SPA(H, HNZ, llr, rcore, lam, gamma, Zc, K, N0, use_core, B, pol, Hcor
         vhat = vector(GF(2), [0 if elem <= 0 else 1 for elem in ltot])
         runs += 1
         # check if v_hat is a valid codeword
-        if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0:
-            if CRC.CRC_check(vhat[:B], B, pol) == 0:
-        #if H * vhat == 0:
-            #print(f"MinSum runs := {runs}")
+        if Hcore:
+            if H.matrix_from_rows_and_columns(list(range(4*Zc)), list(range(K + 4*Zc))) * vhat[:K+4*Zc] == 0 and CRC.CRC_check(vhat[:B], B, pol) == 0:
+                return vhat, True, runs
+        else:
+            if H*vhat == 0:
                 return vhat, True, runs
 
         # update Lv
