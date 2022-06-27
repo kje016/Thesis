@@ -152,8 +152,8 @@ runs = 10000
 lim = 1000
 
 runs_vals =[
-[1/2, 0.01, 53, 'BSC', 0.95, 0, True, True],[1/2, 0.02, 53, 'BSC', 1, 0, True, True],[1/2, 0.04, 53, 'BSC', 1, 0, True, True],
-[1/2, 0.06, 53, 'BSC', 1, 0, True, True],[1/2, 0.08, 53, 'BSC', 1, 0, True, True],[1/2, 0.1, 53, 'BSC', 1, 0, True, True]
+[1/2, 0.01, 53, 'BSC', 0.95, 0.4, True, True],[1/2, 0.02, 53, 'BSC', 0.95, 0.4, True, True],[1/2, 0.04, 53, 'BSC', 0.95, 0.4, True, True],
+[1/2, 0.06, 53, 'BSC', 0.95, 0.4, True, True],[1/2, 0.08, 53, 'BSC', 0.95, 0.4, True, True],[1/2, 0.1, 53, 'BSC', 0.95, 0.4, True, True]
 ]
 
 def non_zero_matrix(input_matrix):
