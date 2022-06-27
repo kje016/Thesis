@@ -14,6 +14,7 @@ F = RealField(10)
 
 def decoder(d, N, frozen_set, I_IL, PI, H):
     pis = []
+    C_perm, CRCpos = [], []
     if I_IL:
         pis = [PI.index(a) for a in PI if a >= len(PI)-24]
         C_perm = CRC.gen_CRC_mat(8, CRC.crc24)
@@ -30,8 +31,8 @@ def decoder(d, N, frozen_set, I_IL, PI, H):
     while not done:
         if depth == log(N, 2):
             is_frozen = node_i-(N-1) in frozen_set
-            #list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], list_decoders, L, H, PI, pis)
-            list_decoders = HF.G_update(is_frozen, node.beliefs[0], list_decoders, L, C_perm, CRCpos)
+            list_decoders = HF.update_decoders(is_frozen, node.beliefs[0], list_decoders, L, H, PI, pis)
+            #list_decoders = HF.G_update(is_frozen, node.beliefs[0], list_decoders, L, C_perm, CRCpos)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             node.beliefs = vector(F, [HF.sign_rev(node.beliefs)*(not is_frozen)])

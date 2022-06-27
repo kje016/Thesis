@@ -9,6 +9,7 @@ F = RealField(10)
 
 def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
     pis = []
+    C_perm, CRCpos = [], []
     if I_IL:
         pis = [PI.index(a) for a in PI if a >= len(PI)-24]
         C_perm = CRC.gen_CRC_mat(8, CRC.crc24)
@@ -25,8 +26,8 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = node_i-(N-1) in frozen_set # alternatively var name,
-            #list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, H, pis)
-            list_decoders = HF.G_update_BEC(is_frozen_node=is_frozen, belief=node.beliefs[0], llr=llr, input_decoders=list_decoders, L=L, C_perm=C_perm, crcbit=CRCpos)
+            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, H, pis)
+            #list_decoders = HF.G_update_BEC(is_frozen_node=is_frozen, belief=node.beliefs[0], llr=llr, input_decoders=list_decoders, L=L, C_perm=C_perm, crcbit=CRCpos)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             #breakpoint()
@@ -52,7 +53,6 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
             node.state = node_states[2]
             node_i = floor((node_i - 1) / 2)
             node, depth = tree[node_i], depth-1
-
     if PI:
         for dec in list_decoders:
             deinterleave = [0]*len(dec.inf_bits)

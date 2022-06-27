@@ -60,12 +60,14 @@ run_vals = [
 ]
 """
 run_vals = [
-['', 0.1, 8, 'BEC', 'SCL'],['', 0.2, 8, 'BEC', 'SCL'],['', 0.3, 8, 'BEC', 'SCL'],['', 0.4, 8, 'BEC', 'SCL'],
-['', 0.5, 8, 'BEC', 'SCL'],
+['', 0.1, 21, 'BEC', 'SC'],['', 0.2, 21, 'BEC', 'SC'],['', 0.3, 21, 'BEC', 'SC'],['', 0.4, 21, 'BEC', 'SC'],
+['', 0.5, 21, 'BEC', 'SC'],
+['', 0.1, 21, 'BEC', 'SCL'],['', 0.2, 21, 'BEC', 'SCL'],['', 0.3, 21, 'BEC', 'SCL'],['', 0.4, 21, 'BEC', 'SCL'],
+['', 0.5, 21, 'BEC', 'SCL'],
 ]
 
 runs = 10000
-I_IL = 1
+I_IL = 0
 #decoder = 'SC' or 'SCL'
 for elem in run_vals:
     rate = 1/2
@@ -131,5 +133,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)},E:{E},H-check,CR-SCL', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)},E:{E},H-check', snr, I_IL, datetime.datetime.now()])
         gc.collect()
