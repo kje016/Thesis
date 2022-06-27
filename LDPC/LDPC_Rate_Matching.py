@@ -3,7 +3,7 @@ from sage.all import *
 
 def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
     colpunct, punct = 0 if channel == 'BEC' else 2 * Zc, floor((K - K_ap) // Zc) * Zc
-    #colpunct = 0# TODO
+    colpunct = 0# TODO
     A_ap = K - colpunct - punct   # A is the amount of crc bits after removing 2 cols and padding
     E = ceil((B / rate) / Zc) * Zc
     pbits = u[K: K + (E-A_ap)]   # getting the parity bits and
@@ -21,7 +21,7 @@ def RM_main(u, Zc, H, K, K_ap, rate, B, channel):
 # shortened filler bits are known to be 0
 def fill_w_llr(r, Zc, K, K_ap, p, N0, channel, HRM):
     colpunct, punct = 0 if channel == 'BEC' else 2 * Zc, floor((K - K_ap) // Zc) * Zc
-    #colpunct = 0# TODO
+    colpunct = 0# TODO
     A = K - colpunct - punct
     llr = (4/N0) if channel== 'AWGN' else log(((1-p) / p), 2)   #where p = N0
     col_inf = [0] * colpunct
