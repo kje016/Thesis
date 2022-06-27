@@ -21,6 +21,7 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
     list_decoders = [HF.Decoder("", 0)]
     depth, done, node = 0, False, tree[0]
     node_i = tree.index(node)
+    breakpoint()
     while not done:
         if depth == log(N, 2):
             node.state = node_states[2]
@@ -29,6 +30,7 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
             list_decoders = HF.G_update_BEC(is_frozen_node=is_frozen, belief=node.beliefs[0], llr=llr, input_decoders=list_decoders, L=L, C_perm=C_perm, crcbit=CRCpos)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
+            #breakpoint()
             node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
             if tree.index(node) == len(tree)-1:
                 done = True

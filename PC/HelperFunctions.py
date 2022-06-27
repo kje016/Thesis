@@ -80,7 +80,10 @@ def bec_uhat(belief, frozen):
         return vector(RealField(7), [oo])
     else:
         if abs(belief) == oo:
-            return vector(RealField(7), [belief[0]*oo])
+            try:
+                return vector(RealField(7), [belief[0]*oo])
+            except:
+                return vector(RealField(7), [belief * oo])
         else:
             return vector(RealField(7), [2])
 
