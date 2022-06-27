@@ -1,6 +1,7 @@
 # cd Desktop/Thesis/PySageMath/PC
 from sage.all import *
 import HelperFunctions as HF
+import CRC
 
 node_states = ['l', 'r', 'u']
 F = RealField(10)
@@ -10,6 +11,9 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
     pis = []
     if I_IL:
         pis = [PI.index(a) for a in PI if a >= len(PI)-24]
+        C_perm = CRC.gen_CRC_mat(8, CRC.crc24)
+        C_perm = [C_perm[a] for a in [a for a in PI if a < (H.ncols() - H.nrows())]]
+        CRCpos = [PI.index(a) for a in PI if a >= 8]
     llr = -p_cross
     tree = HF.init_tree(N, d)
     """SCL initialization"""
@@ -21,7 +25,8 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
         if depth == log(N, 2):
             node.state = node_states[2]
             is_frozen = node_i-(N-1) in frozen_set # alternatively var name,
-            list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, H, pis)
+            #list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, H, pis)
+            list_decoders = HF.G_update(is_frozen, node.beliefs[0], list_decoders, L, C_perm, CRCpos)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)
