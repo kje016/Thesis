@@ -26,7 +26,7 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
             node.state = node_states[2]
             is_frozen = node_i-(N-1) in frozen_set # alternatively var name,
             #list_decoders = HF.bec_update_decoders(is_frozen, node.beliefs[0], llr,  list_decoders, L, H, pis)
-            list_decoders = HF.G_update(is_frozen, node.beliefs[0], list_decoders, L, C_perm, CRCpos)
+            list_decoders = HF.G_update_BEC(is_frozen, node.beliefs[0], list_decoders, L, C_perm, CRCpos)
             if not list_decoders:   # no surviving paths
                 return [HF.Decoder('', +oo)]
             node.beliefs = HF.bec_uhat(node.beliefs, is_frozen)

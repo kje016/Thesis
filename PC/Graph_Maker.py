@@ -60,7 +60,16 @@ CA_BEC = {(0.5, 'BER'): [[0.0, 0.0007203125, 0.017209375, 0.118646875, 0.3253843
 (0.5, 'BLER'): [[0.0, 0.0011625, 0.030033333333333332, 0.20846666666666666, 0.5795333333333333], [0.1, 0.2, 0.3, 0.4, 0.5]]}
 CA_AWGN = {(0.5, 'BER'): [[0.08906354166666666, 0.0335890625, 0.008734375, 0.0014765625, 0.000140625], [1.0, 2.0, 3.0, 4.0, 5.0]],
 (0.5, 'BLER'): [[0.20565833333333333, 0.0786875, 0.0203625, 0.0033875, 0.000325], [1.0, 2.0, 3.0, 4.0, 5.0]]}
+
+CR_BSC = {(0.5, 'BER'): [[0.00025, 0.003475, 0.03885, 0.138025, 0.292075, 0.477425], [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]],
+(0.5, 'BLER'): [[0.00025, 0.003475, 0.03885, 0.138025, 0.292075, 0.477425], [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]]}
+
+CR_AWGN = {(0.5, 'BER'): [[0.34485, 0.14935, 0.041, 0.0072125, 0.0007, 5e-05], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]],
+(0.5, 'BLER'): [[0.34485, 0.14935, 0.041, 0.0072125, 0.0007, 5e-05], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]]}
+CR_BEC = {(0.5, 'BER'): [[0.735025, 0.786484375, 0.7898, 0.866065625, 0.898878125], [0.1, 0.2, 0.3, 0.4, 0.5]],
+(0.5, 'BLER'): [[0.735025, 0.7865, 0.79105, 0.8811, 0.972525], [0.1, 0.2, 0.3, 0.4, 0.5]]}
 rates = [1/2]
+
 
 def update_dicts(input_file):
     with open(input_file, mode='r',  newline='') as file:
@@ -69,12 +78,13 @@ def update_dicts(input_file):
         test_results = {}
         #breakpoint()
         for row in myfile:
-            dict_getter = test_results.get((float(row[1]), float(row[8]) ), [0]*(4))
-            dict_getter[0]+=int(row[0])*int(row[4]) # tot information bits sent
-            dict_getter[1]+= int(row[4])   # tot runs
-            dict_getter[2]+= int(row[5])    # tot bit errors
-            dict_getter[3]+= int(row[6])   # tot block errors
-            test_results.update({(float(row[1]), float(row[8])): dict_getter})
+            if row[-4].split(',')[-1] == 'CR-SCL':
+                dict_getter = test_results.get((float(row[1]), float(row[8]) ), [0]*(4))
+                dict_getter[0]+=int(row[0])*int(row[4]) # tot information bits sent
+                dict_getter[1]+= int(row[4])   # tot runs
+                dict_getter[2]+= int(row[5])    # tot bit errors
+                dict_getter[3]+= int(row[6])   # tot block errors
+                test_results.update({(float(row[1]), float(row[8])): dict_getter})
     #breakpoint()
     for key, value in test_results.items():
         test_results.update({key : [value[0], value[1], value[2]/(value[0]), value[3]/value[1]]})
@@ -179,10 +189,11 @@ def plot_SC_SCL():
 
 
 def plot_SC_SCL_CA():
-    pl1 = BEC_SC
-    pl2 = BEC_SCL
-    pl3 = CA_BEC
-    name = 'BEC'
+    pl1 = AWGN_SC
+    pl2 = AWGN_SCL
+    pl3 = CA_AWGN
+    pl4 = CR_AWGN
+    name = 'AWGN'
     ber_val, bler_val = 'BER', 'BLER'
     fig, (ax1, ax2) = plt.subplots(2, constrained_layout=True, facecolor='#F7F7F7')
     fig.set_figheight(7)
@@ -192,26 +203,28 @@ def plot_SC_SCL_CA():
     ax1.semilogy(pl1.get((0.5, ber_val))[1], pl1.get((0.5, ber_val))[0], label='0.5_SC', linestyle='dotted', marker='|', linewidth=2)
     ax1.semilogy(pl2.get((0.5, ber_val))[1], pl2.get((0.5, ber_val))[0], label=f'0.5_SCL', linestyle='dotted', marker='|', linewidth=2)
     ax1.semilogy(pl3.get((0.5, ber_val))[1], pl3.get((0.5, ber_val))[0], label=f'0.5_CA', linestyle='dotted', marker='|', linewidth=2)
+    ax1.semilogy(pl4.get((0.5, ber_val))[1], pl4.get((0.5, ber_val))[0], label=f'0.5_CR', linestyle='dotted', marker='|', linewidth=2)
 
     ax2.semilogy(pl1.get((0.5, bler_val))[1], pl1.get((0.5, bler_val))[0], label=f'0.5_SC', linestyle='dotted',marker='|', linewidth=2)
     ax2.semilogy(pl2.get((0.5, bler_val))[1], pl2.get((0.5, bler_val))[0], label=f'0.5_SCL', linestyle='dotted',marker='|', linewidth=2)
     ax2.semilogy(pl3.get((0.5, bler_val))[1], pl3.get((0.5, bler_val))[0], label=f'0.5_CA', linestyle='dotted',marker='|', linewidth=2)
+    ax2.semilogy(pl4.get((0.5, bler_val))[1], pl4.get((0.5, bler_val))[0], label=f'0.5_CR', linestyle='dotted',marker='|', linewidth=2)
 
     ax1.legend()
     ax1.grid(True, linewidth=0.5)
-    ax1.set_xlabel('\u03B1')
+    ax1.set_xlabel('SNR')
     if name != 'AWGN':
         ax1.invert_xaxis()
 
     ax2.legend()
     ax2.grid(True, linewidth=0.5)
-    ax2.set_xlabel('\u03B1')
+    ax2.set_xlabel('SNR')    # \u03B1
     if name != 'AWGN':
         ax2.invert_xaxis()
     fig.suptitle(f'{name}')
     fig.savefig(f'PC_{name}.svg')
 
-#update_dicts('Tests/CA_BSC.csv')
+#update_dicts('Tests/BEC_SCL.csv')
 #plot_SC_SCL()
 #plot_dict(BEC_SC, 'AWGN_SC')
-#plot_SC_SCL_CA()
+plot_SC_SCL_CA()
