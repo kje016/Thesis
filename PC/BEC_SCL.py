@@ -21,7 +21,6 @@ def decoder(d, N, frozen_set, p_cross, I_IL, PI, H):
     list_decoders = [HF.Decoder("", 0)]
     depth, done, node = 0, False, tree[0]
     node_i = tree.index(node)
-    breakpoint()
     while not done:
         if depth == log(N, 2):
             node.state = node_states[2]

@@ -131,5 +131,5 @@ for elem in run_vals:
     with open(f'Tests/{file_getter}.csv', mode='a', newline='') as file:
         result_writer = csv.writer(file)  # , delimeter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         result_writer.writerow(
-            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)}, E:{E}, H-check, CR-SCL', snr, I_IL, datetime.datetime.now()])
+            [A, rate, K, N, runs, BER, BLER, f'U={len(MS)},E:{E},H-check,CR-SCL', snr, I_IL, datetime.datetime.now()])
         gc.collect()
